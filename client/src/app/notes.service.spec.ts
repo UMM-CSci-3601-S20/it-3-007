@@ -6,26 +6,44 @@ import { NotesService } from './notes.service';
 
 describe('Note service:', () => {
 
+  const yogiId = 'yogi_id';
+  const yogiNotes = [
+    {
+      _id: 'y1',
+      owner_id: yogiId,
+      body: 'You can observe a lot by watching.',
+      posted: true,
+    },
+    {
+      _id: 'y2',
+      owner_id: yogiId,
+      body: 'Nobody goes there anymore. It\'s too crowded.',
+      posted: true,
+    },
+  ];
+
   const testNotes: Note[] = [
     {
       _id: 'first_id',
       owner_id: 'rachel_id',
       body: 'This is the first note',
-      posted: true
+      posted: true,
     },
     {
       _id: 'second_id',
       owner_id: 'joe_id',
       body: 'This is the second note',
-      posted: true
+      posted: true,
     },
     {
       _id: 'third_id',
       owner_id: 'james_id',
       body: 'This is the third note',
-      posted: true
+      posted: true,
     },
+    ...yogiNotes,
   ];
+
   let noteService: NotesService;
   // These are used to mock the HTTP requests so that we (a) don't have to
   // have the server running and (b) we can check exactly which HTTP
@@ -52,13 +70,35 @@ describe('Note service:', () => {
 
   describe('The getOwnerNotes() method:', () => {
     it('gets all the notes in the database when given no filters', async(() => {
-      noteService.getOwnerNotes().subscribe(
-        notes => expect(notes).toBe(testNotes)
-      );
+      noteService.getOwnerNotes().subscribe(notes => {
+        expect(notes).toEqual(testNotes);
+      });
 
-      const req = httpTestingController.expectOne(noteService.noteUrl);
-      expect(req.request.method).toEqual('GET');
+      const req = httpTestingController.expectOne({ method: 'GET' });
+      expect(req.request.url).toEqual(noteService.noteUrl);
       req.flush(testNotes);
+    }));
+
+    it('filters by owner', async(() => {
+      noteService.getOwnerNotes({ owner_id: yogiId }).subscribe(notes => {
+        expect(notes).toEqual(yogiNotes);
+      });
+
+      const req = httpTestingController.expectOne({ method: 'GET' });
+      expect(req.request.url).toEqual(noteService.noteUrl);
+      expect(req.request.params.get('owner_id')).toEqual(yogiId);
+      req.flush(yogiNotes);
+    }));
+
+    it('filters by posted status', async(() => {
+      noteService.getOwnerNotes({ posted: false }).subscribe(notes => {
+        expect(notes).toEqual([]);
+      });
+
+      const req = httpTestingController.expectOne({ method: 'GET' });
+      expect(req.request.url).toEqual(noteService.noteUrl);
+      expect(req.request.params.get('posted')).toEqual('false');
+      req.flush([]);
     }));
   });
 
