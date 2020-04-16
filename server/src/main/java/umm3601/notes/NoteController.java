@@ -38,9 +38,6 @@ public class NoteController {
   private final TokenVerifier tokenVerifier;
   private final OwnerController ownerController;
 
-  public static final String DELETED_RESPONSE = "deleted";
-  public static final String NOT_DELETED_RESPONSE = "nothing deleted";
-
   public NoteController(MongoDatabase database) {
     jacksonCodecRegistry.addCodecForClass(Note.class);
     noteCollection = database.getCollection("notes").withDocumentClass(Note.class)
