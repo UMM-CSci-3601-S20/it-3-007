@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpParams, HttpErrorResponse } from '@angular/common/http';
 import { environment } from '../environments/environment';
 import { Note } from './note';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { Observable, throwError, of, OperatorFunction } from 'rxjs';
+import { map, catchError } from 'rxjs/operators';
 
 
 @Injectable({
@@ -49,16 +49,14 @@ export class NotesService {
    * Usually, you can just ignore the return value.
    */
   deleteNote(id: string): Observable<boolean> {
-    type DeleteResponse = 'moved to trash' | 'failed to move to trash';
+    const response = this.httpClient.delete(`${this.noteUrl}/${encodeURI(id)}`)
 
-    const response = this.httpClient.delete(
-      this.noteUrl + '/' + encodeURI(id),
-      {
-        responseType: 'text',
-      },
-    ) as Observable<DeleteResponse>;
-
-    return response.pipe(map(theResponse => theResponse === 'moved to trash'));
+    // Note that functions without arguments will just ignore any inputs given
+    // to them.
+    return response.pipe(
+      map(() => true),
+      this.handleHttpError(404, () => of(false)),
+    );
   }
 
   permanentlyDeleteNote(id: string): Observable<boolean> {
@@ -109,5 +107,24 @@ export class NotesService {
       });
     }
     return notes;
+  }
+
+  /**
+   * Return an RxJS operator similar to catchError, except that it only
+   * triggers if the error is an HttpErrorResponse with a given status code.
+   *
+   * (For example, you can use this operator to only handle not-found errors,
+   * while letting other errors pass through.)
+   */
+  private handleHttpError<T, U>(
+    status: number,
+    handler: (err: HttpErrorResponse, caught: Observable<T>) => Observable<U>
+  ): OperatorFunction<T, T | U> {
+    return catchError((error: HttpErrorResponse, caught: Observable<T>) => {
+      if (error.status === status) {
+        return handler(error, caught);
+      }
+      return throwError(error);
+    });
   }
 }

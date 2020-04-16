@@ -149,6 +149,20 @@ describe('Note service:', () => {
       const req = httpTestingController.expectOne(noteService.noteUrl + '/' + encodeURI(id));
       req.flush(null, { status: 404, statusText: 'The requested note was not found' });
     }));
+
+    it('passes other HTTP errors through transparently', async(() => {
+      // We don't want deleteNote to catch *all* HTTP errors, only 404 errors.
+      const id = 'Good Evening!';
+      noteService.deleteNote(id).subscribe({
+        next: () => { fail('This Observable should throw.'); },
+        error: error => { expect(error.status).toEqual(500); },
+        complete: () => { fail('This Observable should throw.'); },
+      });
+
+      const req = httpTestingController.expectOne(noteService.noteUrl + '/' + encodeURI(id));
+      req.flush(null, { status: 500, statusText: 'There was an internal server error!' });
+    }));
+
   });
 
   // describe('The editNote() method:', () => {
