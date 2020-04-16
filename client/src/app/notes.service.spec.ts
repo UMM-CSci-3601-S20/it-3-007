@@ -118,38 +118,38 @@ describe('Note service:', () => {
     }));
   });
 
-  // describe('The deleteNote() method:', () => {
-  //   it('calls DELETE on api/notes/:id', async () => {
-  //     const id = 'Hi! I\'m an ID';
-  //     // We need an empty `subscribe` block to make sure the delete request
-  //     // is actually sent.
-  //     noteService.deleteNote(id).subscribe(result => {});
+  describe('The deleteNote() method:', () => {
+    it('sends a delete request', async(() => {
+      const id = 'Hi! I\'m an ID';
+      // For unknown reasons, we need to provide an empty subscribe block.
+      // (Otherwise httpTestingController isn't happy.)
+      noteService.deleteNote(id).subscribe(() => {});
 
-  //     const req = httpTestingController.expectOne(noteService.noteUrl + '/' + encodeURI(id));
-  //     expect(req.request.method).toEqual('DELETE');
-  //     req.flush('deleted');
-  //   });
+      const req = httpTestingController.expectOne({ method: 'DELETE' });
+      expect(req.request.url).toEqual(`${noteService.noteUrl}/${encodeURI(id)}`);
+      req.flush({ id });
+    }));
 
-  //   it('returns true if the server says "deleted"', () => {
-  //     const id = 'This is totes a legit ID';
-  //     noteService.deleteNote(id).subscribe(
-  //       wasAnythingDeleted => expect(wasAnythingDeleted).toBe(true)
-  //     );
+    it('returns true when the note to be deleted exists', async(() => {
+      const id = 'This is totes a legit ID';
+      noteService.deleteNote(id).subscribe(wasAnythingDeleted => {
+        expect(wasAnythingDeleted).toBe(true);
+      });
 
-  //     const req = httpTestingController.expectOne(noteService.noteUrl + '/' + encodeURI(id));
-  //     req.flush('deleted');
-  //   });
+      const req = httpTestingController.expectOne({ method: 'DELETE' });
+      req.flush({ id });
+    }));
 
-  //   it('returns false if the server says "nothing deleted"', () => {
-  //     const id = 'This ID is bogus, man';
-  //     noteService.deleteNote(id).subscribe(
-  //       wasAnythingDeleted => expect(wasAnythingDeleted).toBe(false)
-  //     );
+    it('returns false when the note to be deleted doesn\'t exist', async(() => {
+      const id = 'This ID is bogus, man';
+      noteService.deleteNote(id).subscribe(wasAnythingDeleted => {
+        expect(wasAnythingDeleted).toBe(false);
+      });
 
-  //     const req = httpTestingController.expectOne(noteService.noteUrl + '/' + encodeURI(id));
-  //     req.flush('nothing deleted');
-  //   });
-  // });
+      const req = httpTestingController.expectOne(noteService.noteUrl + '/' + encodeURI(id));
+      req.flush(null, { status: 404, statusText: 'The requested note was not found' });
+    }));
+  });
 
   // describe('The editNote() method:', () => {
   //   it('calls api/notes/edit/:id', () => {
