@@ -21,7 +21,7 @@ export class NotesService {
   //   return this.httpClient.get<Note[]>(this.noteUrl);
   // }
 
-  getOwnerNotes(filters?: { owner_id?: string, posted?: boolean}): Observable<Note[]> {
+  getOwnerNotes(filters: { owner_id?: string, posted?: boolean } = {}): Observable<Note[]> {
     let httpParams: HttpParams = new HttpParams();
     if (filters.owner_id) {
       httpParams = httpParams.set('owner_id', filters.owner_id);
