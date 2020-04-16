@@ -13,6 +13,7 @@ import { map } from 'rxjs/operators';
 export class NotesService {
 
   readonly noteUrl: string = environment.API_URL + 'notes';
+  readonly addNoteUrl: string = environment.API_URL + 'new/notes'
   readonly deleteNoteUrl: string = environment.API_URL + 'notes/delete'
 
   constructor(private httpClient: HttpClient) {}

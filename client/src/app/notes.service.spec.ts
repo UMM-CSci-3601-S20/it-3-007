@@ -102,34 +102,21 @@ describe('Note service:', () => {
     }));
   });
 
-  // describe('The getNoteById() method:', () => {
-  //   it('calls api/notes/:id', () => {
-  //     noteService.getNoteById('testid').subscribe(
-  //       note => expect(note).toBe(testNotes[2])
-  //     );
+  describe('The addNote() method:', () => {
+    it('sends the newly-created note to the server and returns its id', async(() => {
 
-  //     const req = httpTestingController.expectOne(noteService.noteUrl + '/testid');
-  //     expect(req.request.method).toEqual('GET');
-  //     req.flush(testNotes[2]);
-  //   });
-  // });
+      noteService.addNote(testNotes[1]).subscribe(id => {
+        expect(id).toBe('test_id');
+      });
 
+      const req = httpTestingController.expectOne({ method: 'POST' });
 
-  // describe('The addNote() method:', () => {
-  //   it('calls api/notes/new', () => {
+      expect(req.request.url).toEqual(noteService.addNoteUrl);
+      expect(req.request.body).toEqual(testNotes[1]);
 
-  //     noteService.addNote(testNotes[1]).subscribe(
-  //       id => expect(id).toBe('testid')
-  //     );
-
-  //     const req = httpTestingController.expectOne(noteService.noteUrl + '/new');
-
-  //     expect(req.request.method).toEqual('POST');
-  //     expect(req.request.body).toEqual(testNotes[1]);
-
-  //     req.flush({id: 'testid'});
-  //   });
-  // });
+      req.flush({ id: 'test_id' });
+    }));
+  });
 
   // describe('The deleteNote() method:', () => {
   //   it('calls DELETE on api/notes/:id', async () => {
