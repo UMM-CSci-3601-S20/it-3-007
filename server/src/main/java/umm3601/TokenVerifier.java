@@ -20,7 +20,7 @@ public class TokenVerifier {
 
   private JwkProvider provider;
 
-  public static final String AUTH0_TENANT = "https://dev-h60mw6th.auth0.com/";
+  public static final String AUTH0_TENANT = "https://doorbboard-dev.auth0.com/";
 
   /**
    * This constructor makes a TokenVerifier for production use. (If you don't
