@@ -93,16 +93,13 @@ export class NotesService {
   filterNotes(notes: Note[], filters: {
     posted?: boolean
   }): Note[] {
-    // Filter by trash field
-    if (filters.posted === true) {
-      console.log('posted notes');
-
-      notes = notes.filter(note => {
-        return note.posted.valueOf() === true;
-      });
+    if (filters.posted !== null && filters.posted !== undefined) {
+      notes = notes.filter(note => note.posted === filters.posted);
     }
     return notes;
   }
+  // We could simplify that if statement using a ==, but I've left it
+  // in its expanded form for explicitness' sake.
 
   /**
    * Return an RxJS operator similar to catchError, except that it only
