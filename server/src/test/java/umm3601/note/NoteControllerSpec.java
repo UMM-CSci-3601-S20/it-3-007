@@ -229,6 +229,10 @@ public class NoteControllerSpec {
     Context ctx = ContextUtil.init(mockReq, mockRes, "api/notes/:id", ImmutableMap.of("id", importantNoteId.toHexString()));
     noteController.deleteNote(ctx);
 
+    String result = ctx.resultString();
+    String id = jsonMapper.readValue(result, ObjectNode.class).get("id").asText();
+    assertEquals(id, importantNoteId.toHexString());
+
     assertEquals(1, db.getCollection("notes").countDocuments(eq("_id", importantNoteId)));
     Document trashNote = db.getCollection("notes").find(eq("_id", importantNoteId)).first();
     assertNotNull(trashNote);
@@ -241,23 +245,36 @@ public class NoteControllerSpec {
     Context ctx = ContextUtil.init(mockReq, mockRes, "api/notes/delete/:id", ImmutableMap.of("id", importantNoteId.toHexString()));
     noteController.permanentlyDeleteNote(ctx);
 
+    String result = ctx.resultString();
+    String id = jsonMapper.readValue(result, ObjectNode.class).get("id").asText();
+    assertEquals(id, importantNoteId.toHexString());
+
     assertEquals(0, db.getCollection("notes").countDocuments(eq("_id", importantNoteId)));
   }
 
   @Test
-  public void DeletingANonexistentNoteHasNoEffect() throws IOException {
+  public void DeletingANonexistentNoteGivesANotFoundResponse() throws IOException {
+    ObjectId noSuchNoteId = new ObjectId();
+
+    Context ctx = ContextUtil.init(mockReq, mockRes, "api/notes/:id", ImmutableMap.of("id", noSuchNoteId.toHexString()));
+    noteController.permanentlyDeleteNote(ctx);
+
+    assertEquals(404, mockRes.getStatus());
+
+    assertEquals(0, db.getCollection("notes").countDocuments(eq("_id", noSuchNoteId)));
+  }
+
+  @Test
+  public void PermanentlyDeletingANonexistentNoteGivesANotFoundResponse() throws IOException {
     ObjectId noSuchNoteId = new ObjectId();
 
     Context ctx = ContextUtil.init(mockReq, mockRes, "api/notes/delete/:id", ImmutableMap.of("id", noSuchNoteId.toHexString()));
     noteController.permanentlyDeleteNote(ctx);
 
-    //assertEquals(200, mockRes.getStatus());
-    //assertEquals(ctx.resultString(), NoteController.NOT_DELETED_RESPONSE);
-
+    assertEquals(404, mockRes.getStatus());
 
     assertEquals(0, db.getCollection("notes").countDocuments(eq("_id", noSuchNoteId)));
   }
-
 
   @Test
   public void EditNote() throws IOException {
