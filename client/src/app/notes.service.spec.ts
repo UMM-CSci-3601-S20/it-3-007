@@ -286,4 +286,38 @@ describe('Note service:', () => {
       req.flush(testNotes[0]);
     }));
   });
+
+  describe('The filterNotes() method:', () => {
+    it('can give you a list of all the posted notes', () => {
+      const filteredNotes =
+        noteService.filterNotes(testNotes, { posted: true });
+
+      // All of the testNotes are posted.
+      expect(filteredNotes).toEqual(testNotes);
+    });
+
+    it('can give you a list of all the un-posted notes', () => {
+      const filteredNotes =
+        noteService.filterNotes(testNotes, { posted: false });
+
+      // None of the testNotes are un-posted.
+      expect(filteredNotes).toEqual([]);
+    });
+
+    it('doesn\'t break if you give it an empty array of notes', () => {
+      const filteredNotes =
+        noteService.filterNotes([], { posted: false });
+
+      // None of the testNotes are un-posted.
+      expect(filteredNotes).toEqual([]);
+    });
+
+    it('can be used without specifying any filters at all', () => {
+      const filteredNotes =
+        noteService.filterNotes(testNotes, {});
+
+      // None of the testNotes are un-posted.
+      expect(filteredNotes).toEqual(testNotes);
+    });
+  })
 });
