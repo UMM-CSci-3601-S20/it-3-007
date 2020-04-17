@@ -71,16 +71,13 @@ export class NotesService {
   }
 
   restoreNote(id: string): Observable<boolean> {
-    type RestoreResponse = 'restored note' | 'failed to restore note';
+    const response =
+      this.httpClient.post(`${this.noteUrl}/${encodeURI(id)}`, null);
 
-    const response = this.httpClient.post(
-      this.noteUrl + '/' + encodeURI(id),
-      {
-        responseType: 'text',
-      },
-    ) as Observable<RestoreResponse>;
-
-    return response.pipe(map(theResponse => theResponse === 'restored note'));
+    return response.pipe(
+      map(() => true),
+      this.handleHttpError(404, () => of(false)),
+    );
   }
 
 
