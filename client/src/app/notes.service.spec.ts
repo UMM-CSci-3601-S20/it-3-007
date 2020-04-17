@@ -255,7 +255,7 @@ describe('Note service:', () => {
   });
 
   describe('The editNote() method:', () => {
-    it('sends a POST request to the right endpoint', async(() => {
+    it('sends a post request to the right endpoint', async(() => {
       const newNote = {
         body: 'We sailed on the Sloop John B / My grandfather and me'
       } as Note;
