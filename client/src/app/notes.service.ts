@@ -49,7 +49,8 @@ export class NotesService {
    * Usually, you can just ignore the return value.
    */
   deleteNote(id: string): Observable<boolean> {
-    const response = this.httpClient.delete(`${this.noteUrl}/${encodeURI(id)}`)
+    const response =
+      this.httpClient.delete(`${this.noteUrl}/${encodeURI(id)}`);
 
     // Note that functions without arguments will just ignore any inputs given
     // to them.
@@ -60,16 +61,13 @@ export class NotesService {
   }
 
   permanentlyDeleteNote(id: string): Observable<boolean> {
-    type PermDeleteResponse = 'removed from trash' | 'failed to remove from trash';
+    const response =
+      this.httpClient.delete(`${this.deleteNoteUrl}/${encodeURI(id)}`);
 
-    const response = this.httpClient.delete(
-      this.deleteNoteUrl + '/' + encodeURI(id),
-      {
-        responseType: 'text',
-      },
-    ) as Observable<PermDeleteResponse>;
-
-    return response.pipe(map(theResponse => theResponse === 'removed from trash'));
+    return response.pipe(
+      map(() => true),
+      this.handleHttpError(404, () => of(false)),
+    );
   }
 
   restoreNote(id: string): Observable<boolean> {
