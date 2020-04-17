@@ -146,7 +146,7 @@ describe('Note service:', () => {
         expect(wasAnythingDeleted).toBe(false);
       });
 
-      const req = httpTestingController.expectOne(noteService.noteUrl + '/' + encodeURI(id));
+      const req = httpTestingController.expectOne({ method: 'DELETE' });
       req.flush(null, { status: 404, statusText: 'The requested note was not found' });
     }));
 
@@ -159,11 +159,57 @@ describe('Note service:', () => {
         complete: () => { fail('This Observable should throw.'); },
       });
 
-      const req = httpTestingController.expectOne(noteService.noteUrl + '/' + encodeURI(id));
+      const req = httpTestingController.expectOne({ method: 'DELETE' });
       req.flush(null, { status: 500, statusText: 'There was an internal server error!' });
     }));
-
   });
+
+  describe('The permanentlyDeleteNote() method:', () => {
+    it('sends a delete request', async(() => {
+      const id = 'Hi! I\'m an ID';
+      // For unknown reasons, we need to provide an empty subscribe block.
+      // (Otherwise httpTestingController isn't happy.)
+      noteService.permanentlyDeleteNote(id).subscribe(() => {});
+
+      const req = httpTestingController.expectOne({ method: 'DELETE' });
+      expect(req.request.url).toEqual(`${noteService.deleteNoteUrl}/${encodeURI(id)}`);
+      req.flush({ id });
+    }));
+
+    it('returns true when the note to be deleted exists', async(() => {
+      const id = 'This is totes a legit ID';
+      noteService.permanentlyDeleteNote(id).subscribe(wasAnythingDeleted => {
+        expect(wasAnythingDeleted).toBe(true);
+      });
+
+      const req = httpTestingController.expectOne({ method: 'DELETE' });
+      req.flush({ id });
+    }));
+
+    it('returns false when the note to be deleted doesn\'t exist', async(() => {
+      const id = 'This ID is bogus, man';
+      noteService.permanentlyDeleteNote(id).subscribe(wasAnythingDeleted => {
+        expect(wasAnythingDeleted).toBe(false);
+      });
+
+      const req = httpTestingController.expectOne({ method: 'DELETE' });
+      req.flush(null, { status: 404, statusText: 'The requested note was not found' });
+    }));
+
+    it('passes other HTTP errors through transparently', async(() => {
+      // We don't want deleteNote to catch *all* HTTP errors, only 404 errors.
+      const id = 'Good Evening!';
+      noteService.permanentlyDeleteNote(id).subscribe({
+        next: () => { fail('This Observable should throw.'); },
+        error: error => { expect(error.status).toEqual(500); },
+        complete: () => { fail('This Observable should throw.'); },
+      });
+
+      const req = httpTestingController.expectOne({ method: 'DELETE' });
+      req.flush(null, { status: 500, statusText: 'There was an internal server error!' });
+    }));
+  });
+
 
   // describe('The editNote() method:', () => {
   //   it('calls api/notes/edit/:id', () => {
