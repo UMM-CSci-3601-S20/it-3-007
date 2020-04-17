@@ -1,145 +1,323 @@
-// import { HttpClient } from '@angular/common/http';
-// import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-// import { TestBed } from '@angular/core/testing';
-// import { Note } from './note';
-// import { NotesService } from './notes.service';
+import { HttpClient } from '@angular/common/http';
+import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { TestBed, async } from '@angular/core/testing';
+import { Note } from './note';
+import { NotesService } from './notes.service';
 
-// describe('Note service:', () => {
+describe('Note service:', () => {
 
-//   const testNotes: Note[] = [
-//     {
-//       _id: 'first_id',
-//       owner_id: 'rachel_id',
-//       body: 'This is the first note',
-//       posted: true
-//     },
-//     {
-//       _id: 'second_id',
-//       owner_id: 'joe_id',
-//       body: 'This is the second note',
-//       posted: true
-//     },
-//     {
-//       _id: 'third_id',
-//       owner_id: 'james_id',
-//       body: 'This is the third note',
-//       posted: true
-//     },
-//   ];
-//   let noteService: NotesService;
-//   // These are used to mock the HTTP requests so that we (a) don't have to
-//   // have the server running and (b) we can check exactly which HTTP
-//   // requests were made to ensure that we're making the correct requests.
-//   let httpClient: HttpClient;
-//   let httpTestingController: HttpTestingController;
+  const yogiId = 'yogi_id';
+  const yogiNotes = [
+    {
+      _id: 'y1',
+      owner_id: yogiId,
+      body: 'You can observe a lot by watching.',
+      posted: true,
+    },
+    {
+      _id: 'y2',
+      owner_id: yogiId,
+      body: 'Nobody goes there anymore. It\'s too crowded.',
+      posted: true,
+    },
+  ];
 
-//   beforeEach(() => {
-//     // Set up the mock handling of the HTTP requests
-//     TestBed.configureTestingModule({
-//       imports: [HttpClientTestingModule]
-//     });
-//     httpClient = TestBed.inject(HttpClient);
-//     httpTestingController = TestBed.inject(HttpTestingController);
-//     // Construct an instance of the service with the mock
-//     // HTTP client.
-//     noteService = new NotesService(httpClient);
-//   });
+  const testNotes: Note[] = [
+    {
+      _id: 'first_id',
+      owner_id: 'rachel_id',
+      body: 'This is the first note',
+      posted: true,
+    },
+    {
+      _id: 'second_id',
+      owner_id: 'joe_id',
+      body: 'This is the second note',
+      posted: true,
+    },
+    {
+      _id: 'third_id',
+      owner_id: 'james_id',
+      body: 'This is the third note',
+      posted: true,
+    },
+    ...yogiNotes,
+  ];
 
-//   afterEach(() => {
-//     // After every test, assert that there are no more pending requests.
-//     httpTestingController.verify();
-//   });
+  let noteService: NotesService;
+  // These are used to mock the HTTP requests so that we (a) don't have to
+  // have the server running and (b) we can check exactly which HTTP
+  // requests were made to ensure that we're making the correct requests.
+  let httpClient: HttpClient;
+  let httpTestingController: HttpTestingController;
 
-//   describe('The getOwnerNotes() method:', () => {
-//     it('calls api/notes', () => {
-//       noteService.getOwnerNotes().subscribe(
-//         notes => expect(notes).toBe(testNotes)
-//       );
+  beforeEach(() => {
+    // Set up the mock handling of the HTTP requests
+    TestBed.configureTestingModule({
+      imports: [HttpClientTestingModule]
+    });
+    httpClient = TestBed.inject(HttpClient);
+    httpTestingController = TestBed.inject(HttpTestingController);
+    // Construct an instance of the service with the mock
+    // HTTP client.
+    noteService = new NotesService(httpClient);
+  });
 
-//       const req = httpTestingController.expectOne(noteService.noteUrl);
-//       expect(req.request.method).toEqual('GET');
-//       req.flush(testNotes);
-//     });
-//   });
+  afterEach(() => {
+    // After every test, assert that there are no more pending requests.
+    httpTestingController.verify();
+  });
 
-//   describe('The getNoteById() method:', () => {
-//     it('calls api/notes/:id', () => {
-//       noteService.getNoteById('testid').subscribe(
-//         note => expect(note).toBe(testNotes[2])
-//       );
+  describe('The getOwnerNotes() method:', () => {
+    it('gets all the notes in the database when given no filters', async(() => {
+      noteService.getOwnerNotes().subscribe(notes => {
+        expect(notes).toEqual(testNotes);
+      });
 
-//       const req = httpTestingController.expectOne(noteService.noteUrl + '/testid');
-//       expect(req.request.method).toEqual('GET');
-//       req.flush(testNotes[2]);
-//     });
-//   });
+      const req = httpTestingController.expectOne({ method: 'GET' });
+      expect(req.request.url).toEqual(noteService.noteUrl);
+      req.flush(testNotes);
+    }));
 
+    it('filters by owner', async(() => {
+      noteService.getOwnerNotes({ owner_id: yogiId }).subscribe(notes => {
+        expect(notes).toEqual(yogiNotes);
+      });
 
-//   describe('The addNote() method:', () => {
-//     it('calls api/notes/new', () => {
+      const req = httpTestingController.expectOne({ method: 'GET' });
+      expect(req.request.url).toEqual(noteService.noteUrl);
+      expect(req.request.params.get('owner_id')).toEqual(yogiId);
+      req.flush(yogiNotes);
+    }));
 
-//       noteService.addNote(testNotes[1]).subscribe(
-//         id => expect(id).toBe('testid')
-//       );
+    it('filters by posted status', async(() => {
+      noteService.getOwnerNotes({ posted: false }).subscribe(notes => {
+        expect(notes).toEqual([]);
+      });
 
-//       const req = httpTestingController.expectOne(noteService.noteUrl + '/new');
+      const req = httpTestingController.expectOne({ method: 'GET' });
+      expect(req.request.url).toEqual(noteService.noteUrl);
+      expect(req.request.params.get('posted')).toEqual('false');
+      req.flush([]);
+    }));
+  });
 
-//       expect(req.request.method).toEqual('POST');
-//       expect(req.request.body).toEqual(testNotes[1]);
+  describe('The addNote() method:', () => {
+    it('sends the newly-created note to the server and returns its id', async(() => {
 
-//       req.flush({id: 'testid'});
-//     });
-//   });
+      noteService.addNote(testNotes[1]).subscribe(id => {
+        expect(id).toBe('test_id');
+      });
 
-//   describe('The deleteNote() method:', () => {
-//     it('calls DELETE on api/notes/:id', async () => {
-//       const id = 'Hi! I\'m an ID';
-//       // We need an empty `subscribe` block to make sure the delete request
-//       // is actually sent.
-//       noteService.deleteNote(id).subscribe(result => {});
+      const req = httpTestingController.expectOne({ method: 'POST' });
 
-//       const req = httpTestingController.expectOne(noteService.noteUrl + '/' + encodeURI(id));
-//       expect(req.request.method).toEqual('DELETE');
-//       req.flush('deleted');
-//     });
+      expect(req.request.url).toEqual(noteService.addNoteUrl);
+      expect(req.request.body).toEqual(testNotes[1]);
 
-//     it('returns true if the server says "deleted"', () => {
-//       const id = 'This is totes a legit ID';
-//       noteService.deleteNote(id).subscribe(
-//         wasAnythingDeleted => expect(wasAnythingDeleted).toBe(true)
-//       );
+      req.flush({ id: 'test_id' });
+    }));
+  });
 
-//       const req = httpTestingController.expectOne(noteService.noteUrl + '/' + encodeURI(id));
-//       req.flush('deleted');
-//     });
+  describe('The deleteNote() method:', () => {
+    it('sends a delete request', async(() => {
+      const id = 'Hi! I\'m an ID';
+      // For unknown reasons, we need to provide an empty subscribe block.
+      // (Otherwise httpTestingController isn't happy.)
+      noteService.deleteNote(id).subscribe(() => {});
 
-//     it('returns false if the server says "nothing deleted"', () => {
-//       const id = 'This ID is bogus, man';
-//       noteService.deleteNote(id).subscribe(
-//         wasAnythingDeleted => expect(wasAnythingDeleted).toBe(false)
-//       );
+      const req = httpTestingController.expectOne({ method: 'DELETE' });
+      expect(req.request.url).toEqual(`${noteService.noteUrl}/${encodeURI(id)}`);
+      req.flush({ id });
+    }));
 
-//       const req = httpTestingController.expectOne(noteService.noteUrl + '/' + encodeURI(id));
-//       req.flush('nothing deleted');
-//     });
-//   });
+    it('returns true when the note to be deleted exists', async(() => {
+      const id = 'This is totes a legit ID';
+      noteService.deleteNote(id).subscribe(wasAnythingDeleted => {
+        expect(wasAnythingDeleted).toBe(true);
+      });
 
-//   describe('The editNote() method:', () => {
-//     it('calls api/notes/edit/:id', () => {
-//       const newNote = {
-//         body: 'We sailed on the Sloop John B / My grandfather and me'
-//       } as Note;
+      const req = httpTestingController.expectOne({ method: 'DELETE' });
+      req.flush({ id });
+    }));
 
-//       noteService.editNote(newNote, 'testid').subscribe(
-//         id => expect(id).toBe('testid')
-//       );
+    it('returns false when the note to be deleted doesn\'t exist', async(() => {
+      const id = 'This ID is bogus, man';
+      noteService.deleteNote(id).subscribe(wasAnythingDeleted => {
+        expect(wasAnythingDeleted).toBe(false);
+      });
 
-//       const req = httpTestingController.expectOne(noteService.noteUrl + '/edit/testid');
+      const req = httpTestingController.expectOne({ method: 'DELETE' });
+      req.flush(null, { status: 404, statusText: 'The requested note was not found' });
+    }));
 
-//       expect(req.request.method).toEqual('POST');
-//       expect(req.request.body).toEqual(newNote);
+    it('passes other HTTP errors through transparently', async(() => {
+      // We don't want deleteNote to catch *all* HTTP errors, only 404 errors.
+      const id = 'Good Evening!';
+      noteService.deleteNote(id).subscribe({
+        next: () => { fail('This Observable should throw.'); },
+        error: error => { expect(error.status).toEqual(500); },
+        complete: () => { fail('This Observable should throw.'); },
+      });
 
-//       req.flush({id: 'testid'});
-//     });
-//   });
-// });
+      const req = httpTestingController.expectOne({ method: 'DELETE' });
+      req.flush(null, { status: 500, statusText: 'There was an internal server error!' });
+    }));
+  });
+
+  describe('The permanentlyDeleteNote() method:', () => {
+    it('sends a delete request', async(() => {
+      const id = 'Hi! I\'m an ID';
+      // For unknown reasons, we need to provide an empty subscribe block.
+      // (Otherwise httpTestingController isn't happy.)
+      noteService.permanentlyDeleteNote(id).subscribe(() => {});
+
+      const req = httpTestingController.expectOne({ method: 'DELETE' });
+      expect(req.request.url).toEqual(`${noteService.deleteNoteUrl}/${encodeURI(id)}`);
+      req.flush({ id });
+    }));
+
+    it('returns true when the note to be deleted exists', async(() => {
+      const id = 'This is totes a legit ID';
+      noteService.permanentlyDeleteNote(id).subscribe(wasAnythingDeleted => {
+        expect(wasAnythingDeleted).toBe(true);
+      });
+
+      const req = httpTestingController.expectOne({ method: 'DELETE' });
+      req.flush({ id });
+    }));
+
+    it('returns false when the note to be deleted doesn\'t exist', async(() => {
+      const id = 'This ID is bogus, man';
+      noteService.permanentlyDeleteNote(id).subscribe(wasAnythingDeleted => {
+        expect(wasAnythingDeleted).toBe(false);
+      });
+
+      const req = httpTestingController.expectOne({ method: 'DELETE' });
+      req.flush(null, { status: 404, statusText: 'The requested note was not found' });
+    }));
+
+    it('passes other HTTP errors through transparently', async(() => {
+      const id = 'Good Evening!';
+      noteService.permanentlyDeleteNote(id).subscribe({
+        next: () => { fail('This Observable should throw.'); },
+        error: error => { expect(error.status).toEqual(500); },
+        complete: () => { fail('This Observable should throw.'); },
+      });
+
+      const req = httpTestingController.expectOne({ method: 'DELETE' });
+      req.flush(null, { status: 500, statusText: 'There was an internal server error!' });
+    }));
+  });
+
+  describe('The restoreNote() method:', () => {
+    it('sends a post request', async(() => {
+      const id = 'Hi! I\'m an ID';
+      // For unknown reasons, we need to provide an empty subscribe block.
+      // (Otherwise httpTestingController isn't happy.)
+      noteService.restoreNote(id).subscribe(() => {});
+
+      const req = httpTestingController.expectOne({ method: 'POST' });
+      expect(req.request.url).toEqual(`${noteService.noteUrl}/${encodeURI(id)}`);
+      req.flush({ id });
+    }));
+
+    it('returns true when the note to be deleted exists', async(() => {
+      const id = 'This is totes a legit ID';
+      noteService.restoreNote(id).subscribe(wasAnythingDeleted => {
+        expect(wasAnythingDeleted).toBe(true);
+      });
+
+      const req = httpTestingController.expectOne({ method: 'POST' });
+      req.flush({ id });
+    }));
+
+    it('returns false when the note to be deleted doesn\'t exist', async(() => {
+      const id = 'This ID is bogus, man';
+      noteService.restoreNote(id).subscribe(wasAnythingDeleted => {
+        expect(wasAnythingDeleted).toBe(false);
+      });
+
+      const req = httpTestingController.expectOne({ method: 'POST' });
+      req.flush(null, { status: 404, statusText: 'The requested note was not found' });
+    }));
+
+    it('passes other HTTP errors through transparently', async(() => {
+      const id = 'Good Evening!';
+      noteService.restoreNote(id).subscribe({
+        next: () => { fail('This Observable should throw.'); },
+        error: error => { expect(error.status).toEqual(500); },
+        complete: () => { fail('This Observable should throw.'); },
+      });
+
+      const req = httpTestingController.expectOne({ method: 'POST' });
+      req.flush(null, { status: 500, statusText: 'There was an internal server error!' });
+    }));
+  });
+
+  describe('The editNote() method:', () => {
+    it('sends a post request to the right endpoint', async(() => {
+      const newNote = {
+        body: 'We sailed on the Sloop John B / My grandfather and me'
+      } as Note;
+
+      const testId = 'testid';
+
+      noteService.editNote(newNote, testId).subscribe(id => {
+        expect(id).toEqual(testId);
+      });
+
+      const req = httpTestingController.expectOne({ method: 'POST' });
+
+      expect(req.request.url).toEqual(`${noteService.noteUrl}/edit/${testId}`);
+      expect(req.request.body).toEqual(newNote);
+
+      req.flush({id: testId});
+    }));
+  });
+
+  describe('The getNoteById() method:', () => {
+    it('sends the right request to the server', async(() => {
+      noteService.getNoteById('first_id').subscribe(note => {
+        expect(note).toEqual(testNotes[0]);
+      });
+
+      const req = httpTestingController.expectOne({ method: 'GET' });
+      expect(req.request.url).toEqual(`${noteService.noteUrl}/first_id`);
+      req.flush(testNotes[0]);
+    }));
+  });
+
+  describe('The filterNotes() method:', () => {
+    it('can give you a list of all the posted notes', () => {
+      const filteredNotes =
+        noteService.filterNotes(testNotes, { posted: true });
+
+      // All of the testNotes are posted.
+      expect(filteredNotes).toEqual(testNotes);
+    });
+
+    it('can give you a list of all the un-posted notes', () => {
+      const filteredNotes =
+        noteService.filterNotes(testNotes, { posted: false });
+
+      // None of the testNotes are un-posted.
+      expect(filteredNotes).toEqual([]);
+    });
+
+    it('doesn\'t break if you give it an empty array of notes', () => {
+      const filteredNotes =
+        noteService.filterNotes([], { posted: false });
+
+      // None of the testNotes are un-posted.
+      expect(filteredNotes).toEqual([]);
+    });
+
+    it('can be used without specifying any filters at all', () => {
+      const filteredNotes =
+        noteService.filterNotes(testNotes, {});
+
+      // None of the testNotes are un-posted.
+      expect(filteredNotes).toEqual(testNotes);
+    });
+  })
+});

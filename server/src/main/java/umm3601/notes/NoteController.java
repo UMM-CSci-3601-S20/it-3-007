@@ -38,9 +38,6 @@ public class NoteController {
   private final TokenVerifier tokenVerifier;
   private final OwnerController ownerController;
 
-  public static final String DELETED_RESPONSE = "deleted";
-  public static final String NOT_DELETED_RESPONSE = "nothing deleted";
-
   public NoteController(MongoDatabase database) {
     jacksonCodecRegistry.addCodecForClass(Note.class);
     noteCollection = database.getCollection("notes").withDocumentClass(Note.class)
@@ -180,13 +177,13 @@ public class NoteController {
     String id = ctx.pathParamMap().get("id");
 
     Note noteToDelete = noteCollection.findOneAndDelete(eq("_id", new ObjectId(id)));
-/*
+
     if (noteToDelete == null) {
       throw new NotFoundResponse("The requested note was not found");
     } else {
       ctx.status(200);
       ctx.json(ImmutableMap.of("id", id));
-    } */
+    }
   }
 
   public void restoreNote(Context ctx) {
