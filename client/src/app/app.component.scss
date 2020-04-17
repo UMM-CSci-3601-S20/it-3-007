@@ -1,18 +1,19 @@
 .mat-toolbar.mat-primary {
   z-index: 1;
+  height: 2em;
   display: flex;
   flex-direction: row;
   justify-content: center;
-  background-color: #606f81;
+  background: rgb(34,149,195);
+  background: linear-gradient(352deg, rgba(34,149,195,1) 0%, rgba(0,10,183,1) 100%);
 }
 
 .app-title {
-  font-size: larger;
+  font-size: large;
 }
 
 .sidenav-container {
   height: 100%;
-  background-image: url(/assets/doorboard.jpg);
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
