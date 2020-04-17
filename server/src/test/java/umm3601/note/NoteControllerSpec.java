@@ -1,11 +1,12 @@
 package umm3601.note;
 
 import static com.mongodb.client.model.Filters.eq;
-import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -58,6 +59,10 @@ public class NoteControllerSpec {
   static ObjectId importantNoteId;
   static BasicDBObject importantNote;
 
+  static ObjectId noteInTheTrashId;
+  static BasicDBObject noteInTheTrash;
+
+
   @BeforeAll
   public static void setupAll() {
     String mongoAddr = System.getenv().getOrDefault("MONGO_ADDR", "localhost");
@@ -82,16 +87,24 @@ public class NoteControllerSpec {
     MongoCollection<Document> noteDocuments = db.getCollection("notes");
     noteDocuments.drop();
     List<Document> testNotes = new ArrayList<>();
-    testNotes.add(Document.parse("{ owner_id: \"owner1ID\", " + "body: \"First body\", " + "posted: \"true\"}"));
-    testNotes.add(Document.parse("{ owner_id: \"owner2ID\", " + "body: \"Second body\", " + "posted: \"true\"}"));
-    testNotes.add(Document.parse("{ owner_id: \"owner3ID\", " + "body: \"Third body\", " + "posted: \"true\"}"));
+    testNotes.add(Document.parse("{ owner_id: \"owner1ID\", " + "body: \"First body\", " + "posted: true}"));
+    testNotes.add(Document.parse("{ owner_id: \"owner2ID\", " + "body: \"Second body\", " + "posted: true}"));
+    testNotes.add(Document.parse("{ owner_id: \"owner3ID\", " + "body: \"Third body\", " + "posted: true}"));
 
     importantNoteId = new ObjectId();
     importantNote = new BasicDBObject("_id", importantNoteId)
-        .append("body", "Frogs are pretty cool");
+        .append("body", "Frogs are pretty cool")
+        .append("posted", true);
+
+    noteInTheTrashId = new ObjectId();
+    noteInTheTrash = new BasicDBObject("_id", noteInTheTrashId)
+        .append("body", "Frogs are pretty cool")
+        .append("posted", false);
+
 
     noteDocuments.insertMany(testNotes);
     noteDocuments.insertOne(Document.parse(importantNote.toJson()));
+    noteDocuments.insertOne(Document.parse(noteInTheTrash.toJson()));
 
     noteController = new NoteController(db);
   }
@@ -225,6 +238,7 @@ public class NoteControllerSpec {
 
   @Test
   public void DeleteNote() throws IOException {
+    assertTrue(importantNote.getBoolean("posted"));
 
     Context ctx = ContextUtil.init(mockReq, mockRes, "api/notes/:id", ImmutableMap.of("id", importantNoteId.toHexString()));
     noteController.deleteNote(ctx);
@@ -237,7 +251,7 @@ public class NoteControllerSpec {
     Document trashNote = db.getCollection("notes").find(eq("_id", importantNoteId)).first();
     assertNotNull(trashNote);
 
-    assertTrue(false == trashNote.getBoolean("posted"));
+    assertFalse(trashNote.getBoolean("posted"));
   }
 
   @Test
@@ -251,6 +265,38 @@ public class NoteControllerSpec {
 
     assertEquals(0, db.getCollection("notes").countDocuments(eq("_id", importantNoteId)));
   }
+
+  @Test
+  public void RestoreNote() throws IOException {
+    assertFalse(noteInTheTrash.getBoolean("posted"));
+
+    Context ctx = ContextUtil.init(
+      mockReq,
+      mockRes,
+      "api/notes/:id",
+      ImmutableMap.of("id", noteInTheTrashId.toHexString()));
+
+    noteController.restoreNote(ctx);
+
+    String result = ctx.resultString();
+    String id = jsonMapper.readValue(result, ObjectNode.class)
+      .get("id")
+      .asText();
+
+    assertEquals(id, noteInTheTrashId.toHexString());
+
+    assertEquals(
+      1,
+      db.getCollection("notes").countDocuments(eq("_id", noteInTheTrashId)));
+
+    Document restoredNote = db.getCollection("notes")
+      .find(eq("_id", noteInTheTrashId))
+      .first();
+    assertNotNull(restoredNote);
+
+    assertTrue(restoredNote.getBoolean("posted"));
+  }
+
 
   @Test
   public void DeletingANonexistentNoteGivesANotFoundResponse() throws IOException {
@@ -273,6 +319,18 @@ public class NoteControllerSpec {
       noteController.permanentlyDeleteNote(ctx);
     });
   }
+
+  @Test
+  public void RestoringANonexistentNoteGivesANotFoundResponse() throws IOException {
+    ObjectId noSuchNoteId = new ObjectId();
+
+    Context ctx = ContextUtil.init(mockReq, mockRes, "api/notes/:id", ImmutableMap.of("id", noSuchNoteId.toHexString()));
+
+    assertThrows(NotFoundResponse.class, () -> {
+      noteController.restoreNote(ctx);
+    });
+  }
+
 
   @Test
   public void EditNote() throws IOException {
