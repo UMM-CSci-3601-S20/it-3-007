@@ -197,7 +197,6 @@ describe('Note service:', () => {
     }));
 
     it('passes other HTTP errors through transparently', async(() => {
-      // We don't want deleteNote to catch *all* HTTP errors, only 404 errors.
       const id = 'Good Evening!';
       noteService.permanentlyDeleteNote(id).subscribe({
         next: () => { fail('This Observable should throw.'); },
@@ -209,6 +208,52 @@ describe('Note service:', () => {
       req.flush(null, { status: 500, statusText: 'There was an internal server error!' });
     }));
   });
+
+  describe('The restoreNote() method:', () => {
+    it('sends a post request', async(() => {
+      const id = 'Hi! I\'m an ID';
+      // For unknown reasons, we need to provide an empty subscribe block.
+      // (Otherwise httpTestingController isn't happy.)
+      noteService.restoreNote(id).subscribe(() => {});
+
+      const req = httpTestingController.expectOne({ method: 'POST' });
+      expect(req.request.url).toEqual(`${noteService.noteUrl}/${encodeURI(id)}`);
+      req.flush({ id });
+    }));
+
+    it('returns true when the note to be deleted exists', async(() => {
+      const id = 'This is totes a legit ID';
+      noteService.restoreNote(id).subscribe(wasAnythingDeleted => {
+        expect(wasAnythingDeleted).toBe(true);
+      });
+
+      const req = httpTestingController.expectOne({ method: 'POST' });
+      req.flush({ id });
+    }));
+
+    it('returns false when the note to be deleted doesn\'t exist', async(() => {
+      const id = 'This ID is bogus, man';
+      noteService.restoreNote(id).subscribe(wasAnythingDeleted => {
+        expect(wasAnythingDeleted).toBe(false);
+      });
+
+      const req = httpTestingController.expectOne({ method: 'POST' });
+      req.flush(null, { status: 404, statusText: 'The requested note was not found' });
+    }));
+
+    it('passes other HTTP errors through transparently', async(() => {
+      const id = 'Good Evening!';
+      noteService.restoreNote(id).subscribe({
+        next: () => { fail('This Observable should throw.'); },
+        error: error => { expect(error.status).toEqual(500); },
+        complete: () => { fail('This Observable should throw.'); },
+      });
+
+      const req = httpTestingController.expectOne({ method: 'POST' });
+      req.flush(null, { status: 500, statusText: 'There was an internal server error!' });
+    }));
+  });
+
 
 
   // describe('The editNote() method:', () => {
