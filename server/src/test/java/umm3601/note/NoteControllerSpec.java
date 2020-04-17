@@ -257,11 +257,10 @@ public class NoteControllerSpec {
     ObjectId noSuchNoteId = new ObjectId();
 
     Context ctx = ContextUtil.init(mockReq, mockRes, "api/notes/:id", ImmutableMap.of("id", noSuchNoteId.toHexString()));
-    noteController.permanentlyDeleteNote(ctx);
 
-    assertEquals(404, mockRes.getStatus());
-
-    assertEquals(0, db.getCollection("notes").countDocuments(eq("_id", noSuchNoteId)));
+    assertThrows(NotFoundResponse.class, () -> {
+      noteController.deleteNote(ctx);
+    });
   }
 
   @Test
@@ -269,11 +268,10 @@ public class NoteControllerSpec {
     ObjectId noSuchNoteId = new ObjectId();
 
     Context ctx = ContextUtil.init(mockReq, mockRes, "api/notes/delete/:id", ImmutableMap.of("id", noSuchNoteId.toHexString()));
-    noteController.permanentlyDeleteNote(ctx);
 
-    assertEquals(404, mockRes.getStatus());
-
-    assertEquals(0, db.getCollection("notes").countDocuments(eq("_id", noSuchNoteId)));
+    assertThrows(NotFoundResponse.class, () -> {
+      noteController.permanentlyDeleteNote(ctx);
+    });
   }
 
   @Test
