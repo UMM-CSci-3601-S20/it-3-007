@@ -254,24 +254,24 @@ describe('Note service:', () => {
     }));
   });
 
+  describe('The editNote() method:', () => {
+    it('sends a POST request to the right endpoint', async(() => {
+      const newNote = {
+        body: 'We sailed on the Sloop John B / My grandfather and me'
+      } as Note;
 
+      const testId = 'testid';
 
-  // describe('The editNote() method:', () => {
-  //   it('calls api/notes/edit/:id', () => {
-  //     const newNote = {
-  //       body: 'We sailed on the Sloop John B / My grandfather and me'
-  //     } as Note;
+      noteService.editNote(newNote, testId).subscribe(id => {
+        expect(id).toEqual(testId);
+      });
 
-  //     noteService.editNote(newNote, 'testid').subscribe(
-  //       id => expect(id).toBe('testid')
-  //     );
+      const req = httpTestingController.expectOne({ method: 'POST' });
 
-  //     const req = httpTestingController.expectOne(noteService.noteUrl + '/edit/testid');
+      expect(req.request.url).toEqual(`${noteService.noteUrl}/edit/${testId}`);
+      expect(req.request.body).toEqual(newNote);
 
-  //     expect(req.request.method).toEqual('POST');
-  //     expect(req.request.body).toEqual(newNote);
-
-  //     req.flush({id: 'testid'});
-  //   });
-  // });
+      req.flush({id: testId});
+    }));
+  });
 });
