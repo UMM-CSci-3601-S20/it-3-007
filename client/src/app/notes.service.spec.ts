@@ -274,4 +274,16 @@ describe('Note service:', () => {
       req.flush({id: testId});
     }));
   });
+
+  describe('The getNoteById() method:', () => {
+    it('sends the right request to the server', async(() => {
+      noteService.getNoteById('first_id').subscribe(note => {
+        expect(note).toEqual(testNotes[0]);
+      });
+
+      const req = httpTestingController.expectOne({ method: 'GET' });
+      expect(req.request.url).toEqual(`${noteService.noteUrl}/first_id`);
+      req.flush(testNotes[0]);
+    }));
+  });
 });
