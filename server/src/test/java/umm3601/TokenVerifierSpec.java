@@ -212,7 +212,7 @@ class TokenVerifierSpec {
 
   @Test
   public void rejectRequestsWithoutTokens() {
-    Context ctx = contextWithBadToken();
+    Context ctx = contextWithoutToken();
     assertFalse(verifier.verifyToken(ctx));
     assertEquals(((MockHttpServletResponse)ctx.res).getStatus(), 400);
   }
