@@ -205,6 +205,25 @@ class TokenVerifierSpec {
     assertTrue(verifier.verifyToken(contextWithGoodToken()));
   }
 
+  // Be careful with this test; it's non-deterministic.
+  //
+  // Its job is to catch a rounding error where issuing a token and checking
+  // it within the same second fails.
+  //
+  // But, in order to test that behavior, the test has to run really really
+  // fast.
+  //
+  // Depending on how fast or slow your computer is (I'm looking at you,
+  // GitHub Actions) you may get false positives. (That is, the test may
+  // succeed spuriously.)
+  //
+  // This is not in any way ideal.
+  //
+  // However, in order to test this behavior in a deterministic way,
+  // we would have to do some heavy-duty mocking of the Date class, probably
+  // by installing a custom class loader.
+  //
+  // Which is more trouble than it's worth.
   @Test
   public void verifyTheTokenIssuedRightThisSecond() {
     assertTrue(verifier.verifyToken(contextWithTokenIssuedRightThisSecond()));
