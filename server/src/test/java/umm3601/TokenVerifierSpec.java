@@ -183,8 +183,9 @@ class TokenVerifierSpec {
     String encodedTestToken = JWT.create()
       .withKeyId(testKid)
       .withSubject(testSub)
-      // Issued right now.
-      .withIssuedAt(new Date())
+      // Fudge it a few hundred milliseconds forward just to account for the
+      // time it takes to run a test.
+      .withIssuedAt(new Date(System.currentTimeMillis() + 500L))
       .withExpiresAt(new Date(testExp * 1000))
       .withIssuer(testIss)
       .sign(algorithm);
