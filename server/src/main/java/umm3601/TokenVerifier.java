@@ -50,7 +50,14 @@ public class TokenVerifier {
 
       Algorithm algorithm = Algorithm.RSA256((RSAPublicKey) jwk.getPublicKey(), null);
 
-      JWTVerifier verifier = JWT.require(algorithm).withIssuer(AUTH0_TENANT).build();
+      JWTVerifier verifier = JWT.require(algorithm)
+        .withIssuer(AUTH0_TENANT)
+        // Allow the issued-at and expiration dates to be off by one
+        // one second in either direction. (This should catch any rounding
+        // errors where we try to validate a token in the same second that
+        // it was made.)
+        .acceptLeeway(1L)
+        .build();
 
       jwt = verifier.verify(token);
 
