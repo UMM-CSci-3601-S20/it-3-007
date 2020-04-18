@@ -43,7 +43,13 @@ public class TokenVerifier {
   // See:
   // https://community.auth0.com/t/verify-jwt-token-received-from-auth0/35581/4
   public boolean verifyToken(Context ctx) {
-    String token = ctx.header("Authorization").replace("Bearer ", "");
+    String authorization = ctx.header("Authorization");
+    if (authorization == null) {
+      ctx.status(400);
+      return false;
+    }
+
+    String token = authorization.replace("Bearer ", "");
     try {
       DecodedJWT jwt = JWT.decode(token);
       Jwk jwk = provider.get(jwt.getKeyId());
