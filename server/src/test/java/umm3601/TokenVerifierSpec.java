@@ -15,6 +15,7 @@ import java.security.interfaces.RSAPublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
+import java.time.Instant;
 import java.util.Base64;
 import java.util.Date;
 
@@ -200,69 +201,32 @@ class TokenVerifierSpec {
 
   @Test
   public void verifyTheGoodToken() {
-    Context ctx = contextWithGoodToken();
-    boolean isTheTokenValid;
-    try {
-      isTheTokenValid = verifier.verifyToken(ctx);
-    } catch (InterruptedException e) {
-      fail("Verification interrupted.");
-      return;
-    }
-    assertTrue(isTheTokenValid);
+    assertTrue(verifier.verifyToken(contextWithGoodToken()));
   }
 
   @Test
   public void verifyTheTokenIssuedRightThisSecond() {
-    Context ctx = contextWithTokenIssuedRightThisSecond();
-    boolean isTheTokenValid;
-    try {
-      isTheTokenValid = verifier.verifyToken(ctx);
-    } catch (InterruptedException e) {
-      fail("Verification interrupted.");
-      return;
-    }
-    assertTrue(isTheTokenValid);
+    assertTrue(verifier.verifyToken(contextWithTokenIssuedRightThisSecond()));
   }
 
   @Test
   public void rejectRequestsWithoutTokens() {
     Context ctx = contextWithBadToken();
-    boolean isTheTokenValid;
-    try {
-      isTheTokenValid = verifier.verifyToken(ctx);
-    } catch (InterruptedException e) {
-      fail("Verification interrupted.");
-      return;
-    }
-    assertFalse(isTheTokenValid);
+    assertFalse(verifier.verifyToken(ctx));
     assertEquals(((MockHttpServletResponse)ctx.res).getStatus(), 400);
   }
 
   @Test
   public void rejectTheBadToken() {
     Context ctx = contextWithBadToken();
-    boolean isTheTokenValid;
-    try {
-      isTheTokenValid = verifier.verifyToken(ctx);
-    } catch (InterruptedException e) {
-      fail("Verification interrupted.");
-      return;
-    }
-    assertFalse(isTheTokenValid);
+    assertFalse(verifier.verifyToken(ctx));
     assertEquals(((MockHttpServletResponse)ctx.res).getStatus(), 400);
   }
 
   @Test
   public void rejectTheExpiredToken() {
     Context ctx = contextWithExpiredToken();
-    boolean isTheTokenValid;
-    try {
-      isTheTokenValid = verifier.verifyToken(ctx);
-    } catch (InterruptedException e) {
-      fail("Verification interrupted.");
-      return;
-    }
-    assertFalse(isTheTokenValid);
+    assertFalse(verifier.verifyToken(ctx));
     assertEquals(((MockHttpServletResponse)ctx.res).getStatus(), 400);
   }
 
