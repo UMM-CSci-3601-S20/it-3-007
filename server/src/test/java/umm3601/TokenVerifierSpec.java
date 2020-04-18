@@ -133,23 +133,23 @@ class TokenVerifierSpec {
       .withIssuer(testIss)
       .sign(algorithm);
 
-      mockRequest.setHeader(
-        "Authorization",
-        String.format("Bearer %s", encodedTestToken));
+    mockRequest.setHeader(
+      "Authorization",
+      String.format("Bearer %s", encodedTestToken));
 
-      return ContextUtil.init(
-        mockRequest,
-        mockResponse,
-        "api/this/is/not/a/real/route");
-    }
+    return ContextUtil.init(
+      mockRequest,
+      mockResponse,
+      "api/this/is/not/a/real/route");
+  }
 
-  private Context contextWithExipredToken() {
+  private Context contextWithExpiredToken() {
     MockHttpServletRequest mockRequest = new MockHttpServletRequest();
     MockHttpServletResponse mockResponse = new MockHttpServletResponse();
 
     Algorithm algorithm = Algorithm.RSA256(
-      publicKeyFromBase64String(wrongPublicKey),
-      privateKeyFromBase64String(wrongPrivateKey));
+      publicKeyFromBase64String(testPublicKey),
+      privateKeyFromBase64String(testPrivateKey));
     String encodedTestToken = JWT.create()
       .withKeyId(testKid)
       .withSubject(testSub)
@@ -159,15 +159,28 @@ class TokenVerifierSpec {
       .withIssuer(testIss)
       .sign(algorithm);
 
-      mockRequest.setHeader(
-        "Authorization",
-        String.format("Bearer %s", encodedTestToken));
+    mockRequest.setHeader(
+      "Authorization",
+      String.format("Bearer %s", encodedTestToken));
 
-      return ContextUtil.init(
-        mockRequest,
-        mockResponse,
-        "api/this/is/not/a/real/route");
-    }
+    return ContextUtil.init(
+      mockRequest,
+      mockResponse,
+      "api/this/is/not/a/real/route");
+  }
+
+
+    Algorithm algorithm = Algorithm.RSA256(
+      publicKeyFromBase64String(testPublicKey),
+      privateKeyFromBase64String(testPrivateKey));
+    String encodedTestToken = JWT.create()
+      .withKeyId(testKid)
+      .withSubject(testSub)
+      // Issued right now.
+      .withIssuedAt(new Date())
+      .withExpiresAt(new Date(testExp * 1000))
+      .withIssuer(testIss)
+      .sign(algorithm);
 
   @Test
   public void verifyTheGoodToken() {
@@ -212,7 +225,7 @@ class TokenVerifierSpec {
 
   @Test
   public void rejectTheExpiredToken() {
-    Context ctx = contextWithBadToken();
+    Context ctx = contextWithExpiredToken();
     boolean isTheTokenValid;
     try {
       isTheTokenValid = verifier.verifyToken(ctx);
