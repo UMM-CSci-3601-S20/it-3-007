@@ -43,6 +43,7 @@ class TokenVerifierSpec {
   // The 'sub' (subject) claim.
   public static String testSub = "1234567890";
   // The 'iat' (issued-at-time) claim. (In seconds since 1970.)
+  // (This date is in late December 2019.)
   public static long testIat = 1577842200L;
   // The 'exp' (expiration) claim. (In seconds since 1970.)
   // (This date is around the year 8000 CE.)
@@ -169,6 +170,11 @@ class TokenVerifierSpec {
       "api/this/is/not/a/real/route");
   }
 
+  // We're going to make a token and validate it as quickly as possible, to
+  // try to catch any rounding errors in the TokenVerifier.
+  private Context contextWithTokenIssuedRightThisSecond() {
+    MockHttpServletRequest mockRequest = new MockHttpServletRequest();
+    MockHttpServletResponse mockResponse = new MockHttpServletResponse();
 
     Algorithm algorithm = Algorithm.RSA256(
       publicKeyFromBase64String(testPublicKey),
@@ -182,9 +188,32 @@ class TokenVerifierSpec {
       .withIssuer(testIss)
       .sign(algorithm);
 
+    mockRequest.setHeader(
+      "Authorization",
+      String.format("Bearer %s", encodedTestToken));
+
+    return ContextUtil.init(
+      mockRequest,
+      mockResponse,
+      "api/this/is/not/a/real/route");
+  }
+
   @Test
   public void verifyTheGoodToken() {
     Context ctx = contextWithGoodToken();
+    boolean isTheTokenValid;
+    try {
+      isTheTokenValid = verifier.verifyToken(ctx);
+    } catch (InterruptedException e) {
+      fail("Verification interrupted.");
+      return;
+    }
+    assertTrue(isTheTokenValid);
+  }
+
+  @Test
+  public void verifyTheTokenIssuedRightThisSecond() {
+    Context ctx = contextWithTokenIssuedRightThisSecond();
     boolean isTheTokenValid;
     try {
       isTheTokenValid = verifier.verifyToken(ctx);
