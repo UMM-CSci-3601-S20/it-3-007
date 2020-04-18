@@ -185,7 +185,7 @@ class TokenVerifierSpec {
       .withSubject(testSub)
       // Fudge it a few hundred milliseconds forward just to account for the
       // time it takes to run a test.
-      .withIssuedAt(new Date(System.currentTimeMillis() + 500L))
+      .withIssuedAt(new Date(System.currentTimeMillis() + 900L))
       .withExpiresAt(new Date(testExp * 1000))
       .withIssuer(testIss)
       .sign(algorithm);
