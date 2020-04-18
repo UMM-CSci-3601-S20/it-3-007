@@ -226,7 +226,10 @@ class TokenVerifierSpec {
   // Which is more trouble than it's worth.
   @Test
   public void verifyTheTokenIssuedRightThisSecond() {
-    assertTrue(verifier.verifyToken(contextWithTokenIssuedRightThisSecond()));
+    for (int i = 0; i < 100; i++) {
+      assertTrue(
+        verifier.verifyToken(contextWithTokenIssuedRightThisSecond()));
+    }
   }
 
   @Test
