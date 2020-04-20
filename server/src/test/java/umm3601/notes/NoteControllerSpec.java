@@ -1,4 +1,4 @@
-package umm3601.note;
+package umm3601.notes;
 
 import static com.mongodb.client.model.Filters.eq;
 import static org.junit.jupiter.api.Assertions.assertEquals;
