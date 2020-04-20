@@ -1,4 +1,4 @@
-package umm3601.owner;
+package umm3601.owners;
 
 import static com.mongodb.client.model.Filters.eq;
 import static org.junit.Assert.assertTrue;
@@ -39,9 +39,6 @@ import io.javalin.http.Context;
 import io.javalin.http.util.ContextUtil;
 import io.javalin.plugin.json.JavalinJson;
 import io.javalin.http.NotFoundResponse;
-
-import umm3601.owners.Owner;
-import umm3601.owners.OwnerController;
 
 public class OwnerControllerSpec {
 
