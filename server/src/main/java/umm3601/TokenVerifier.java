@@ -18,21 +18,40 @@ import io.javalin.http.Context;
 
 public class TokenVerifier {
 
+  private JwkProvider provider;
 
+  public static final String AUTH0_TENANT = "https://doorbboard-dev.auth0.com/";
+
+  /**
+   * This constructor makes a TokenVerifier for production use. (If you don't
+   * need to mock TokenVerifier's dependencies, use this constructor.)
+   */
   public TokenVerifier() {
+    this(new UrlJwkProvider(AUTH0_TENANT));
   }
 
+  /**
+   * This constructor is provided in case you need to inject certain
+   * dependencies into TokenVerifier. (You might use it to mock certain
+   * functionality for testing, for example.)
+   *
+   * @param provider Where to look for the public keys used to validate tokens.
+   */
+  TokenVerifier(JwkProvider provider) {
+    this.provider = provider;
+  }
+
+  // See:
   // https://community.auth0.com/t/verify-jwt-token-received-from-auth0/35581/4
   public boolean verifyToken(Context ctx) throws InterruptedException {
     String token = ctx.header("Authorization").replace("Bearer ", "");
-    JwkProvider provider = new UrlJwkProvider("https://dev-h60mw6th.auth0.com/");
     try {
       DecodedJWT jwt = JWT.decode(token);
       Jwk jwk = provider.get(jwt.getKeyId());
 
       Algorithm algorithm = Algorithm.RSA256((RSAPublicKey) jwk.getPublicKey(), null);
 
-      JWTVerifier verifier = JWT.require(algorithm).withIssuer("https://dev-h60mw6th.auth0.com/").build();
+      JWTVerifier verifier = JWT.require(algorithm).withIssuer(AUTH0_TENANT).build();
 
       TimeUnit.SECONDS.sleep(1);
       jwt = verifier.verify(token);
@@ -53,9 +72,9 @@ public class TokenVerifier {
 
   public String getOwnerx500(Context ctx) {
 
-    String token = ctx.header("Authorization");
+    String authorization = ctx.header("Authorization");
 
-    String userInfo = HttpRequest.get("https://dev-h60mw6th.auth0.com/userinfo").authorization(token).body();
+    String userInfo = HttpRequest.get(AUTH0_TENANT + "userinfo").authorization(authorization).body();
 
     // Pull the x500 out of the body, there's definitely a better way to do this, but idk how
     System.err.println(userInfo);
