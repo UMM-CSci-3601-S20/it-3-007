@@ -408,7 +408,7 @@ public class NoteControllerSpec {
 
     mockReq.setBodyContent(testUpdateNote);
     mockReq.setMethod("POST");
-    Context ctx = ContextUtil.init(mockReq, mockRes, "api/notes/:id", ImmutableMap.of("id", wrongId.toHexString()));
+    Context ctx = ContextUtil.init(mockReq, mockRes, "api/notes/edit/:id", ImmutableMap.of("id", wrongId.toHexString()));
 
     assertThrows(NotFoundResponse.class, () -> {
       noteController.editNote(ctx);
@@ -430,6 +430,7 @@ public class NoteControllerSpec {
     testUpdateNote = testUpdateNote + "\"}";
     String id = importantNoteId.toHexString();
 
+    mockReq.setBodyContent(testUpdateNote);
     mockReq.setMethod("POST");
     Context ctx = ContextUtil.init(mockReq, mockRes, "api/notes/edit/:id", ImmutableMap.of("id", id));
 
@@ -449,6 +450,7 @@ public class NoteControllerSpec {
     testUpdateNote = testUpdateNote + "\"}";
     String id = importantNoteId.toHexString();
 
+    mockReq.setBodyContent(testUpdateNote);
     mockReq.setMethod("POST");
     Context ctx = ContextUtil.init(mockReq, mockRes, "api/notes/edit/:id", ImmutableMap.of("id", id));
 
