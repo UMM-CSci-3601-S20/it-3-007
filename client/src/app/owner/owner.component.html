@@ -14,7 +14,7 @@
 <div *ngIf="notes; else notesError">
 <ul class= "note-container">
   <mat-card class="note-card" *ngFor="let note of this.notes">
-    <p> {{this.note.body}} </p>
+    <p>{{this.note.body}}</p>
     <mat-card-actions>
       <button mat-button class="note-action edit" matTooltip="Edit Note" matTooltipPosition="above" [routerLink]="note._id + '/edit'">
         <mat-icon aria-label="Edit note">create</mat-icon>
