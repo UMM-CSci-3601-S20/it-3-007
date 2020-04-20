@@ -8,8 +8,7 @@
         <mat-card-content fxLayout="column">
           <mat-form-field>
             <mat-label>Body</mat-label>
-              <input matInput id="bodyField" placeholder="Body" formControlName="body"
-                  required>
+            <textarea matInput id="bodyField" #bodyInput placeholder="Body" formControlName="body" required [cdkTextareaAutosize]></textarea>
             <mat-error *ngFor="let validation of editNoteValidationMessages.body">
               <mat-error class="error-message" id="body-error"
                         *ngIf="editNoteForm.get('body').hasError(validation.type) && (editNoteForm.get('body').dirty || editNoteForm.get('body').touched)">
