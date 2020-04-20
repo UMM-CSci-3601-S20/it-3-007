@@ -12,12 +12,11 @@
 }
 
 .note-card {
-  width: 200px;
-  min-height: 200px;
+  width: 20em;
   margin: 10px;
   position: relative;
-  background-color: palegoldenrod;
   word-wrap: break-word;
+  white-space: pre-wrap;
 }
 
 .note-error {
