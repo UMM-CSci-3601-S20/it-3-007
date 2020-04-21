@@ -49,6 +49,10 @@ describe('AddNoteComponent:', () => {
   });
 
   beforeEach(() => {
+    mockNoteService.reset();
+  });
+
+  beforeEach(() => {
     fixture = TestBed.createComponent(AddNoteComponent);
     addNoteComponent = fixture.componentInstance;
     addNoteComponent.ngOnInit();

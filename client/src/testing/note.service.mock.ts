@@ -59,6 +59,17 @@ export class MockNoteService extends NotesService {
   // This field gets set whenever you call addNote.
   public mostRecentlyPostedNote: Note;
 
+  // These fields get set whenever you call editNote.
+  public mostRecentlyEditedNote: { body: string };
+  public mostRecentlyEditedId: string;
+
+  reset() {
+    this.mostRecentlyPostedNote =
+      this.mostRecentlyEditedNote =
+      this.mostRecentlyEditedId =
+      undefined;
+  }
+
   constructor() {
     super(null);
   }
@@ -77,6 +88,8 @@ export class MockNoteService extends NotesService {
   }
 
   editNote(note: Note, id: string) {
+    this.mostRecentlyEditedNote = note;
+    this.mostRecentlyEditedId = id;
     return of(id);
   }
 

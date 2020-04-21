@@ -5,7 +5,7 @@ import { Note, MAXIMUM_BODY_LENGTH, MINIMUM_BODY_LENGTH } from '../note';
 import { NotesService } from '../notes.service';
 import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
-import {Location} from '@angular/common';
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-edit',
