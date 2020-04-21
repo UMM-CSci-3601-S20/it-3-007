@@ -14,7 +14,7 @@ import { NotesService } from '../notes.service';
 import { OwnerService } from '../owner.service';
 import { MockOwnerService } from 'src/testing/owner.service.mock';
 import { AuthService } from '../authentication/auth.service';
-import { MockAuthService, john } from 'src/testing/auth.service.mock';
+import { MockAuthService, professorJohnson } from 'src/testing/auth.service.mock';
 import { MINIMUM_BODY_LENGTH, MAXIMUM_BODY_LENGTH } from '../note';
 
 describe('AddNoteComponent:', () => {
@@ -61,7 +61,7 @@ describe('AddNoteComponent:', () => {
 
   it('should get the x500 of the owner', () => {
     addNoteComponent.x500.subscribe(x500 => {
-      expect(x500).toEqual(john.nickname);
+      expect(x500).toEqual(professorJohnson.nickname);
     })
   })
 

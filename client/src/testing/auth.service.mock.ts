@@ -13,7 +13,7 @@ export class MockAuthService extends AuthService {
     // Initialize userProfile$
     // (Normally, you would go through the whole login spiel in order to
     // initialize userProfile$)
-    this.userProfile$ = of(john);
+    this.userProfile$ = of(professorJohnson);
   }
 }
 
@@ -36,11 +36,11 @@ export class MockAuth0Client extends Auth0Client {
   }
 
   getUser() {
-    return new Promise<any>(() => john);
+    return new Promise<any>(() => professorJohnson);
   }
 
   getIdTokenClaims() {
-    return new Promise<IdToken>(() => johnsIdToken)
+    return new Promise<IdToken>(() => professorJohnsonsIdToken)
   }
 
   loginWithRedirect() {
@@ -69,11 +69,11 @@ export class MockAuth0Client extends Auth0Client {
 }
 
 // See https://auth0.com/docs/api/management/v2#!/Users/get_users
-export const john = {
+export const professorJohnson = {
   user_id: 'auth0|507f1f77bcf86cd799439020',
-  email: 'john.doe@gmail.com',
+  email: 'rmjohns@morris.umn.edu',
   email_verified: false,
-  username: 'johndoe',
+  username: 'rmjohns',
   phone_number: '+199999999999999',
   phone_verified: false,
   created_at: '',
@@ -87,8 +87,8 @@ export const john = {
     }
   ],
   picture: '',
-  name: '',
-  nickname: 'doe00003',
+  name: 'Rachel Johnson',
+  nickname: 'rmjohns',
   multifactor: [
     ''
   ],
@@ -96,23 +96,23 @@ export const john = {
   last_login: '',
   logins_count: 0,
   blocked: false,
-  given_name: '',
-  family_name: ''
+  given_name: 'Rachel',
+  family_name: 'Johnson'
 };
 
 // See https://github.com/auth0/auth0-spa-js/blob/178b65f30c9b7a76ce762a1b4de1bd3ccfca5e5a/src/global.ts#L282
-export const johnsIdToken: IdToken = {
+export const professorJohnsonsIdToken: IdToken = {
   __raw: '',
-  name: john.name,
-  given_name: john.given_name,
-  family_name: john.family_name,
-  nickname: john.nickname,
-  picture: john.picture,
-  email: john.email,
-  email_verified: john.email_verified,
-  phone_number: john.phone_number,
-  phone_number_verified: john.phone_verified,
-  updated_at: john.updated_at,
+  name: professorJohnson.name,
+  given_name: professorJohnson.given_name,
+  family_name: professorJohnson.family_name,
+  nickname: professorJohnson.nickname,
+  picture: professorJohnson.picture,
+  email: professorJohnson.email,
+  email_verified: professorJohnson.email_verified,
+  phone_number: professorJohnson.phone_number,
+  phone_number_verified: professorJohnson.phone_verified,
+  updated_at: professorJohnson.updated_at,
   iss: environment.AUTH_DOMAIN,
   aud: environment.AUTH_API_DOMAIN,
 }
