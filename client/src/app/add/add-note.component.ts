@@ -7,7 +7,8 @@ import { Owner } from '../owner';
 import { NotesService } from '../notes.service';
 import { OwnerService } from '../owner.service';
 import { AuthService } from '../authentication/auth.service';
-import { Subscription } from 'rxjs';
+import {  of, Observable, combineLatest } from 'rxjs';
+import { catchError, map, switchMap, flatMap } from 'rxjs/operators';
 
 
 @Component({
@@ -21,13 +22,11 @@ export class AddNoteComponent implements OnInit {
 
   note: Note;
 
-  owner: Owner;
-  getOwnerSub: Subscription;
-  getx500Sub: Subscription;
-  x500: string;
+  owner: Observable<Owner>;
+  x500: Observable<string>;
 
   constructor(private fb: FormBuilder, private noteService: NotesService, private snackBar: MatSnackBar,
-      private router: Router, private ownerService: OwnerService, private auth: AuthService) {
+              private router: Router, private ownerService: OwnerService, private auth: AuthService) {
   }
 
   addNoteValidationMessages = {
@@ -50,37 +49,48 @@ export class AddNoteComponent implements OnInit {
     });
   }
 
-
-  retrieveOwner(): void {
-    this.getx500Sub = this.auth.userProfile$.subscribe(returned => {
-      this.x500 = returned.nickname;
-    });
-    this.getOwnerSub = this.ownerService.getOwnerByx500(this.x500).subscribe(returnedOwner => {
-      this.owner = returnedOwner;
-    }, err => {
-      console.log(err);
-    });
-  }
-
   ngOnInit() {
+    this.x500 = this.auth.userProfile$.pipe(map(user => user.nickname));
+
+    this.owner = this.x500.pipe(
+      switchMap(x500 => this.ownerService.getOwnerByx500(x500)),
+      catchError(error => {
+        console.log(error);
+        return of(undefined);
+      }),
+      map(owner => { console.log(owner); return owner; }),
+    );
+
     this.createForms();
-    this.retrieveOwner();
   }
 
   submitForm() {
-    let newNote: Note = this.addNoteForm.value;
-    newNote.owner_id = this.owner._id;
-    newNote.posted = true;
-    this.noteService.addNote(newNote).subscribe(newID => {
-      this.snackBar.open('Successfully added note', null, {
-        duration: 2000,
-      });
+    combineLatest([of(this.addNoteForm.value), this.owner]).pipe(
+      map(([newNote, owner]) => ({
+        ...newNote,
+        posted: true,
+        owner_id: owner._id,
+      })),
+      flatMap(newNote => {
+        return this.noteService.addNote(newNote);
+      }),
+    ).subscribe(() => {
+      this.showGoodSnackBar();
       this.router.navigate(['']);
     }, err => {
-      this.snackBar.open('Failed to add the note', null, {
-        duration: 2000,
-      });
+      this.showBadSnackBar();
     });
   }
 
+  showGoodSnackBar(): void {
+    this.snackBar.open('Successfully added note', null, {
+      duration: 2000,
+    });
+  }
+
+  showBadSnackBar(): void {
+    this.snackBar.open('Failed to add the note', null, {
+      duration: 2000,
+    });
+  }
 }
