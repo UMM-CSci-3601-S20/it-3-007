@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
-import { Note } from '../note';
+import { Note, MAXIMUM_BODY_LENGTH, MINIMUM_BODY_LENGTH } from '../note';
 import { Owner } from '../owner';
 import { NotesService } from '../notes.service';
 import { OwnerService } from '../owner.service';
@@ -33,8 +33,8 @@ export class AddNoteComponent implements OnInit {
   addNoteValidationMessages = {
     body: [
       {type: 'required', message: 'Body is required'},
-      {type: 'minlength', message: 'Body must be at least 2 characters long'},
-      {type: 'maxlength', message: 'Body cannot be more than 300 characters long'}
+      {type: 'minlength', message: `Body must be at least ${MINIMUM_BODY_LENGTH} characters long`},
+      {type: 'maxlength', message: `Body cannot be more than ${MAXIMUM_BODY_LENGTH} characters long`},
     ]
   };
 
@@ -44,8 +44,8 @@ export class AddNoteComponent implements OnInit {
     this.addNoteForm = this.fb.group({
       body: new FormControl('', Validators.compose([
         Validators.required,
-        Validators.minLength(2),
-        Validators.maxLength(300),
+        Validators.minLength(MINIMUM_BODY_LENGTH),
+        Validators.maxLength(MAXIMUM_BODY_LENGTH),
       ])),
     });
   }
