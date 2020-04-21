@@ -13,6 +13,7 @@ import { EditComponent } from './edit.component';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ActivatedRouteStub } from 'src/testing/activated-route-stub';
 import { HttpParams } from '@angular/common/http';
+import { MINIMUM_BODY_LENGTH, MAXIMUM_BODY_LENGTH } from '../note';
 
 
 describe('EditComponent', () => {
@@ -66,38 +67,47 @@ describe('EditComponent', () => {
     });
   });
 
-//   describe('The body field:', () => {
-//     let bodyControl: AbstractControl;
+  describe('The body field:', () => {
+    let bodyControl: AbstractControl;
 
-//     beforeEach(() => {
-//       bodyControl = editComponent.editNoteForm.controls[`body`];
-//     });
+    beforeEach(() => {
+      bodyControl = editComponent.editNoteForm.controls[`body`];
+    });
 
-//     it('should auto-populate with the body of the appropriate note', () => {
-//       // This is the value provided by MockNoteService
-//       expect(bodyControl.value).toEqual(MockNoteService.FAKE_BODY);
-//     });
+    it('should auto-populate with the body of the appropriate note', () => {
+      // This is the value provided by MockNoteService
+      expect(bodyControl.value).toEqual(MockNoteService.FAKE_BODY);
+    });
 
-//     it('should not allow empty bodies', () => {
-//       bodyControl.setValue('');
-//       expect(bodyControl.valid).toBeFalsy();
-//     });
+    it('should not allow empty bodies', () => {
+      bodyControl.setValue('');
+      expect(bodyControl.valid).toBeFalsy();
+    });
 
-//     it('should be fine with "late to office hours"', () => {
-//       bodyControl.setValue('late to office hours');
-//       expect(bodyControl.valid).toBeTruthy();
-//     });
+    it('should be fine with "late to office hours"', () => {
+      bodyControl.setValue('late to office hours');
+      expect(bodyControl.valid).toBeTruthy();
+    });
 
-//     it('should fail on single character bodies', () => {
-//       bodyControl.setValue('x');
-//       expect(bodyControl.valid).toBeFalsy();
-//       expect(bodyControl.hasError('minlength')).toBeTruthy();
-//     });
+    it(`should be invalid if the body is less than ${MINIMUM_BODY_LENGTH} characters`, () => {
+      bodyControl.setValue('x'.repeat(MINIMUM_BODY_LENGTH - 1));
+      console.log(bodyControl.value);
+      expect(bodyControl.valid).toBeFalsy();
+    });
 
-//     it('should fail on really long bodies', () => {
-//       bodyControl.setValue('x'.repeat(1000));
-//       expect(bodyControl.valid).toBeFalsy();
-//       expect(bodyControl.hasError('maxlength')).toBeTruthy();
-//     });
-//   });
+    it(`should be invalid if the body is more than ${MAXIMUM_BODY_LENGTH} characters`, () => {
+      bodyControl.setValue('x'.repeat(MAXIMUM_BODY_LENGTH + 1));
+      expect(bodyControl.valid).toBeFalsy();
+    });
+
+    it(`should be fine if the body is exactly ${MINIMUM_BODY_LENGTH} characters`, () => {
+      bodyControl.setValue('x'.repeat(MINIMUM_BODY_LENGTH));
+      expect(bodyControl.valid).toBeTruthy();
+    });
+
+    it(`should be fine if the body is exactly ${MAXIMUM_BODY_LENGTH} characters`, () => {
+      bodyControl.setValue('x'.repeat(MAXIMUM_BODY_LENGTH));
+      expect(bodyControl.valid).toBeTruthy();
+    });
+  });
 });
