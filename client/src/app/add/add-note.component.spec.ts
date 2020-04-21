@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed, inject } from '@angular/core/testing';
 import { FormsModule, NgForm, ReactiveFormsModule, FormGroup, AbstractControl } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -16,6 +16,7 @@ import { MockOwnerService } from 'src/testing/owner.service.mock';
 import { AuthService } from '../authentication/auth.service';
 import { MockAuthService, professorJohnson } from 'src/testing/auth.service.mock';
 import { MINIMUM_BODY_LENGTH, MAXIMUM_BODY_LENGTH } from '../note';
+import { Router } from '@angular/router';
 
 describe('AddNoteComponent:', () => {
   let addNoteComponent: AddNoteComponent;
@@ -120,12 +121,17 @@ describe('AddNoteComponent:', () => {
   describe('The submitForm() method:', () => {
     let bodyControl: AbstractControl;
 
-    beforeEach(async(() => {
+    beforeEach(async(inject([Router], (router: Router) => {
       snackBar.open.calls.reset();
       bodyControl = addNoteComponent.addNoteForm.controls[`body`];
       bodyControl.setValue('late to office hours');
+
+      // Stub out router.navigate so that we don't actually go to a
+      // different page.
+      // (Karma doesn't like it when we navigate places.)
+      spyOn(router, 'navigate');
       addNoteComponent.submitForm();
-    }));
+    })));
 
     it('should open the snack bar', () => {
       expect(snackBar.open).toHaveBeenCalledTimes(1);
