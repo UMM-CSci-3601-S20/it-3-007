@@ -88,6 +88,14 @@ export class OwnerComponent implements OnInit, OnDestroy {
     this.ownerService.getPDF(this.owner.name, this.x500).save('DoorBoard');
   }
 
+  printPDF(): void {
+
+    // get a PDF with the owners name and x500
+    const doc = this.ownerService.getPDF(this.owner.name, this.x500);
+    doc.autoPrint(); // This will give us the print-Dialog when opened
+    doc.output('dataurlnewwindow'); // output doc (the pdf) in a new window.
+  }
+
   addOwner(): void {
     let newOwner: Owner;
 
