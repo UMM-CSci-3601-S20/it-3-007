@@ -38,6 +38,8 @@ public class NoteController {
   private final TokenVerifier tokenVerifier;
   private final OwnerController ownerController;
 
+  private static DeathTimer deathTimer = DeathTimer.getDeathTimerInstance();
+
   public NoteController(MongoDatabase database) {
     jacksonCodecRegistry.addCodecForClass(Note.class);
     noteCollection = database.getCollection("notes").withDocumentClass(Note.class)
@@ -198,4 +200,37 @@ public class NoteController {
       ctx.json(ImmutableMap.of("id", id));
     }
   }
+
+      /**
+     * Silently purge a single notice from the database.
+     *
+     * A helper function which should never be called directly.
+     * This function is not guaranteed to behave well if given an incorrect
+     * or invalid argument.
+     *
+     * @param id the id of the note to be deleted.
+     */
+    protected void singleDelete(String id) {
+      noteCollection.deleteOne(eq("_id", new ObjectId(id)));
+      deathTimer.clearKey(id);
+    }
+
+
+
+    /**
+     * Flags a single notice as deleted.
+     *
+     * A helper function which should never be called directly.
+     * Note that this calls UpdateTimerStatus on said note.
+     * This function is not guaranteed to behave well
+     * if given an incorrect or invalid argument.
+     *
+     * @param id the id of the note to be flagged.
+     */
+    protected void flagOneForDeletion(String id) {
+      noteCollection.updateOne(eq("_id", new ObjectId(id)),
+       new Document("$set", new Document("status", "deleted").append("expireDate", null)));
+      deathTimer.updateTimerStatus(noteCollection.find(eq("_id", new ObjectId(id))).first());
+    }
+
 }
