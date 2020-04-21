@@ -239,7 +239,7 @@ public class NoteControllerSpec {
   @Test
   public void AddNoteWithTooLongBody() throws IOException {
     String testNewNote =
-      newNoteStringWithBodyLength(NoteController.BODY_MAXIMUM_LENGTH + 1);
+      newNoteStringWithBodyLength(NoteController.MAXIMUM_BODY_LENGTH + 1);
 
     mockReq.setBodyContent(testNewNote);
     mockReq.setMethod("POST");
@@ -273,7 +273,7 @@ public class NoteControllerSpec {
   @Test
   public void AddLongestNotePossible() throws IOException {
     String testNewNote =
-      newNoteStringWithBodyLength(NoteController.BODY_MAXIMUM_LENGTH);
+      newNoteStringWithBodyLength(NoteController.MAXIMUM_BODY_LENGTH);
 
     mockReq.setBodyContent(testNewNote);
     mockReq.setMethod("POST");

@@ -41,7 +41,7 @@ public class NoteController {
   /**
    * The length of a note's body must be less than or equal to this value.
    */
-  public static final int BODY_MAXIMUM_LENGTH = 10_000;
+  public static final int MAXIMUM_BODY_LENGTH = 10_000;
 
   /**
    * The length of a note's body must be greater than or equal to this value.
@@ -141,7 +141,7 @@ public class NoteController {
 
     Note newNote = ctx.bodyValidator(Note.class)
       .check(note -> note.body.length() >= BODY_MINIMUM_LENGTH)
-      .check(note -> note.body.length() <= BODY_MAXIMUM_LENGTH)
+      .check(note -> note.body.length() <= MAXIMUM_BODY_LENGTH)
       .get();
 
     noteCollection.insertOne(newNote);
@@ -154,7 +154,7 @@ public class NoteController {
 
     Note newNote = ctx.bodyValidator(Note.class)
       .check(note -> note.body.length() >= BODY_MINIMUM_LENGTH)
-      .check(note -> note.body.length() <= BODY_MAXIMUM_LENGTH)
+      .check(note -> note.body.length() <= MAXIMUM_BODY_LENGTH)
       .get();
 
     String newBody = newNote.body;
