@@ -22,7 +22,6 @@ describe('AddNoteComponent:', () => {
   let addNoteComponent: AddNoteComponent;
   let addNoteForm: FormGroup;
   let fixture: ComponentFixture<AddNoteComponent>;
-  const snackBar = jasmine.createSpyObj('snackBar', ['open']);
   const mockNoteService = new MockNoteService();
 
   beforeEach(() => {
@@ -43,7 +42,6 @@ describe('AddNoteComponent:', () => {
         { provide: NotesService, useValue: mockNoteService },
         { provide: OwnerService, useValue: new MockOwnerService() },
         { provide: AuthService, useValue: new MockAuthService() },
-        { provide: MatSnackBar, useValue: snackBar },
       ],
     }).compileComponents().catch(error => {
       expect(error).toBeNull();
@@ -122,7 +120,6 @@ describe('AddNoteComponent:', () => {
     let bodyControl: AbstractControl;
 
     beforeEach(async(inject([Router], (router: Router) => {
-      snackBar.open.calls.reset();
       bodyControl = addNoteComponent.addNoteForm.controls[`body`];
       bodyControl.setValue('late to office hours');
 
@@ -130,22 +127,30 @@ describe('AddNoteComponent:', () => {
       // different page.
       // (Karma doesn't like it when we navigate places.)
       spyOn(router, 'navigate');
-      addNoteComponent.submitForm();
     })));
 
-    it('should open the snack bar', () => {
-      expect(snackBar.open).toHaveBeenCalledTimes(1);
-    });
+    it('should open the snack bar', async(inject([MatSnackBar], (snackBar: MatSnackBar) => {
+      spyOn(snackBar, 'open');
+      addNoteComponent.submitForm();
+      // Wait for all that to happen.
+      fixture.whenStable().then(() => {
+        expect(snackBar.open).toHaveBeenCalledTimes(1);
+      });
+    })));
 
-    it('should try to add a note', () => {
-      expect(mockNoteService.mostRecentlyPostedNote)
-        .toBeDefined();
-      expect(mockNoteService.mostRecentlyPostedNote.body)
-        .toEqual('late to office hours');
-      expect(mockNoteService.mostRecentlyPostedNote.owner_id)
-        .toEqual('rachel_id');
-      expect(mockNoteService.mostRecentlyPostedNote.posted)
-        .toEqual(true);
-    })
-  })
+    it('should try to add a note', async(() => {
+      addNoteComponent.submitForm();
+      // Wait for all that to happen.
+      fixture.whenStable().then(() => {
+        expect(mockNoteService.mostRecentlyPostedNote)
+          .toBeDefined();
+        expect(mockNoteService.mostRecentlyPostedNote.body)
+          .toEqual('late to office hours');
+        expect(mockNoteService.mostRecentlyPostedNote.owner_id)
+          .toEqual('rachel_id');
+        expect(mockNoteService.mostRecentlyPostedNote.posted)
+          .toEqual(true);
+      });
+    }));
+  });
 });
