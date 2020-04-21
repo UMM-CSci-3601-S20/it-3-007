@@ -49,15 +49,13 @@ describe('EditComponent', () => {
     mockNoteService.reset();
   });
 
-  beforeEach(() => {
+  beforeEach(async(() => {
     fixture = TestBed.createComponent(EditComponent);
     editComponent = fixture.componentInstance;
     editComponent.ngOnInit();
     fixture.detectChanges();
     editNoteForm = editComponent.editNoteForm;
-    expect(editNoteForm).toBeDefined();
-    expect(editNoteForm.controls).toBeDefined();
-  });
+  }));
 
   it('should create', () => {
     expect(editComponent).toBeTruthy();
