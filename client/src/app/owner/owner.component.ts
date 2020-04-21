@@ -19,7 +19,6 @@ export class OwnerComponent implements OnInit, OnDestroy {
   constructor(private route: ActivatedRoute, public auth: AuthService,
               private _location: Location, private notesService: NotesService,
               private ownerService: OwnerService, private snackBar: MatSnackBar) {
-                console.log("Constructing Owner Component");
               }
   notes: Note[];
   owner: Owner;

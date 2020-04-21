@@ -7,7 +7,7 @@ import { Owner } from '../owner';
 import { NotesService } from '../notes.service';
 import { OwnerService } from '../owner.service';
 import { AuthService } from '../authentication/auth.service';
-import {  of, Observable, combineLatest } from 'rxjs';
+import { of, Observable, combineLatest } from 'rxjs';
 import { catchError, map, switchMap, flatMap } from 'rxjs/operators';
 
 
@@ -58,7 +58,6 @@ export class AddNoteComponent implements OnInit {
         console.log(error);
         return of(undefined);
       }),
-      map(owner => { console.log(owner); return owner; }),
     );
 
     this.createForms();
