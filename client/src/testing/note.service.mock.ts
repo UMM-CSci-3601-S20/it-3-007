@@ -56,6 +56,9 @@ export class MockNoteService extends NotesService {
 
   public static FAKE_BODY = 'This is definitely the note you wanted';
 
+  // This field gets set whenever you call addNote.
+  public mostRecentlyPostedNote: Note;
+
   constructor() {
     super(null);
   }
@@ -69,6 +72,7 @@ export class MockNoteService extends NotesService {
   }
 
   addNote(note) {
+    this.mostRecentlyPostedNote = note;
     return of('I just put your note in the database and this is its new ID');
   }
 

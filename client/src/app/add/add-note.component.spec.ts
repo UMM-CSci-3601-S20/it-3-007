@@ -4,7 +4,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
-import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 import { By } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -21,7 +21,8 @@ describe('AddNoteComponent:', () => {
   let addNoteComponent: AddNoteComponent;
   let addNoteForm: FormGroup;
   let fixture: ComponentFixture<AddNoteComponent>;
-  let mockOwnerService = MockOwnerService;
+  const snackBar = jasmine.createSpyObj('snackBar', ['open']);
+  const mockNoteService = new MockNoteService();
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -38,9 +39,10 @@ describe('AddNoteComponent:', () => {
       ],
       declarations: [AddNoteComponent],
       providers: [
-        { provide: NotesService, useValue: new MockNoteService() },
+        { provide: NotesService, useValue: mockNoteService },
         { provide: OwnerService, useValue: new MockOwnerService() },
         { provide: AuthService, useValue: new MockAuthService() },
+        { provide: MatSnackBar, useValue: snackBar },
       ],
     }).compileComponents().catch(error => {
       expect(error).toBeNull();
@@ -115,21 +117,29 @@ describe('AddNoteComponent:', () => {
     });
   });
 
-//     it('should be fine with "late to office hours"', () => {
-//       bodyControl.setValue('late to office hours');
-//       expect(bodyControl.valid).toBeTruthy();
-//     });
+  describe('The submitForm() method:', () => {
+    let bodyControl: AbstractControl;
 
-//     it('should fail on single character bodies', () => {
-//       bodyControl.setValue('x');
-//       expect(bodyControl.valid).toBeFalsy();
-//       expect(bodyControl.hasError('minlength')).toBeTruthy();
-//     });
+    beforeEach(async(() => {
+      snackBar.open.calls.reset();
+      bodyControl = addNoteComponent.addNoteForm.controls[`body`];
+      bodyControl.setValue('late to office hours');
+      addNoteComponent.submitForm();
+    }));
 
-//     it('should fail on really long bodies', () => {
-//       bodyControl.setValue('x'.repeat(1000));
-//       expect(bodyControl.valid).toBeFalsy();
-//       expect(bodyControl.hasError('maxlength')).toBeTruthy();
-//     });
-//   });
+    it('should open the snack bar', () => {
+      expect(snackBar.open).toHaveBeenCalledTimes(1);
+    });
+
+    it('should try to add a note', () => {
+      expect(mockNoteService.mostRecentlyPostedNote)
+        .toBeDefined();
+      expect(mockNoteService.mostRecentlyPostedNote.body)
+        .toEqual('late to office hours');
+      expect(mockNoteService.mostRecentlyPostedNote.owner_id)
+        .toEqual('rachel_id');
+      expect(mockNoteService.mostRecentlyPostedNote.posted)
+        .toEqual(true);
+    })
+  })
 });
