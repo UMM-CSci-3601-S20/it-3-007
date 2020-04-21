@@ -39,7 +39,7 @@ describe('EditComponent', () => {
       declarations: [ EditComponent ],
       providers: [
         { provide: NotesService, useValue: mockNoteService },
-        { provide: ActivatedRoute, useValue: new ActivatedRouteStub(new HttpParams().set('id', 'foo')) },
+        { provide: ActivatedRoute, useValue: new ActivatedRouteStub({ id: 'foo' }) },
       ],
     })
     .compileComponents();
