@@ -14,12 +14,12 @@ import { NotesService } from '../notes.service';
 import { OwnerService } from '../owner.service';
 import { MockOwnerService } from 'src/testing/owner.service.mock';
 import { AuthService } from '../authentication/auth.service';
-import { MockAuthService } from 'src/testing/auth.service.mock';
+import { MockAuthService, john } from 'src/testing/auth.service.mock';
+import { MINIMUM_BODY_LENGTH, MAXIMUM_BODY_LENGTH } from '../note';
 
 describe('AddNoteComponent:', () => {
   let addNoteComponent: AddNoteComponent;
   let addNoteForm: FormGroup;
-  let calledClose: boolean;
   let fixture: ComponentFixture<AddNoteComponent>;
   let mockOwnerService = MockOwnerService;
 
@@ -48,7 +48,6 @@ describe('AddNoteComponent:', () => {
   });
 
   beforeEach(() => {
-    calledClose = false;
     fixture = TestBed.createComponent(AddNoteComponent);
     addNoteComponent = fixture.componentInstance;
     addNoteComponent.ngOnInit();
@@ -59,6 +58,12 @@ describe('AddNoteComponent:', () => {
   it('should create', () => {
     expect(addNoteComponent).toBeTruthy();
   });
+
+  it('should get the x500 of the owner', () => {
+    addNoteComponent.x500.subscribe(x500 => {
+      expect(x500).toEqual(john.nickname);
+    })
+  })
 
   describe('The addNoteForm:', () => {
     it('should create', () => {
@@ -71,17 +76,44 @@ describe('AddNoteComponent:', () => {
     });
   });
 
-//   describe('The body field:', () => {
-//     let bodyControl: AbstractControl;
+  describe('The body field:', () => {
+    let bodyControl: AbstractControl;
 
-//     beforeEach(() => {
-//       bodyControl = addNoteComponent.addNoteForm.controls[`body`];
-//     });
+    beforeEach(() => {
+      bodyControl = addNoteComponent.addNoteForm.controls[`body`];
+    });
 
-//     it('should not allow empty bodies', () => {
-//       bodyControl.setValue('');
-//       expect(bodyControl.valid).toBeFalsy();
-//     });
+    it('should not allow empty bodies', () => {
+      bodyControl.setValue('');
+      expect(bodyControl.valid).toBeFalsy();
+    });
+
+    it('should be fine with "late to office hours"', () => {
+      bodyControl.setValue('late to office hours');
+      expect(bodyControl.valid).toBeTruthy();
+    });
+
+    it(`should be invalid if the body is less than ${MINIMUM_BODY_LENGTH} characters`, () => {
+      bodyControl.setValue('x'.repeat(MINIMUM_BODY_LENGTH - 1));
+      console.log(bodyControl.value);
+      expect(bodyControl.valid).toBeFalsy();
+    });
+
+    it(`should be invalid if the body is more than ${MAXIMUM_BODY_LENGTH} characters`, () => {
+      bodyControl.setValue('x'.repeat(MAXIMUM_BODY_LENGTH + 1));
+      expect(bodyControl.valid).toBeFalsy();
+    });
+
+    it(`should be fine if the body is exactly ${MINIMUM_BODY_LENGTH} characters`, () => {
+      bodyControl.setValue('x'.repeat(MINIMUM_BODY_LENGTH));
+      expect(bodyControl.valid).toBeTruthy();
+    });
+
+    it(`should be fine if the body is exactly ${MAXIMUM_BODY_LENGTH} characters`, () => {
+      bodyControl.setValue('x'.repeat(MAXIMUM_BODY_LENGTH));
+      expect(bodyControl.valid).toBeTruthy();
+    });
+  });
 
 //     it('should be fine with "late to office hours"', () => {
 //       bodyControl.setValue('late to office hours');
