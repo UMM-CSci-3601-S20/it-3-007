@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { Router } from '@angular/router';
 import { Note, MAXIMUM_BODY_LENGTH, MINIMUM_BODY_LENGTH } from '../note';
 import { NotesService } from '../notes.service';
 import { ActivatedRoute } from '@angular/router';
@@ -26,7 +25,6 @@ export class EditComponent implements OnInit {
     private _location: Location,
     private noteService: NotesService,
     private snackBar: MatSnackBar,
-    private router: Router,
     private route: ActivatedRoute) {
   }
 
