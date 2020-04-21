@@ -40,7 +40,7 @@ describe('AddNoteComponent:', () => {
       providers: [
         { provide: NotesService, useValue: new MockNoteService() },
         { provide: OwnerService, useValue: new MockOwnerService() },
-        { provider: AuthService, useValue: new MockAuthService() },
+        { provide: AuthService, useValue: new MockAuthService() },
       ],
     }).compileComponents().catch(error => {
       expect(error).toBeNull();
