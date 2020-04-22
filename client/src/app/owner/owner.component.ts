@@ -33,7 +33,7 @@ export class OwnerComponent implements OnInit, OnDestroy {
 
 
   retrieveOwner(): void {
-    this.getx500Sub = this.auth.userProfile$.subscribe(returned => {
+    this.getx500Sub = this.auth.getUser$().subscribe(returned => {
       this.x500 = returned.nickname;
     });
     this.getOwnerSub = this.ownerService.getOwnerByx500(this.x500).subscribe(returnedOwner => {
@@ -91,7 +91,7 @@ export class OwnerComponent implements OnInit, OnDestroy {
   addOwner(): void {
     let newOwner: Owner;
 
-    this.getx500Sub = this.auth.userProfile$.subscribe(returned => {
+    this.getx500Sub = this.auth.getUser$().subscribe(returned => {
       newOwner = {
         x500: this.x500,
         email: returned.email,

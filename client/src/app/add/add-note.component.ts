@@ -52,7 +52,7 @@ export class AddNoteComponent implements OnInit {
 
 
   retrieveOwner(): void {
-    this.getx500Sub = this.auth.userProfile$.subscribe(returned => {
+    this.getx500Sub = this.auth.getUser$().subscribe(returned => {
       this.x500 = returned.nickname;
     });
     this.getOwnerSub = this.ownerService.getOwnerByx500(this.x500).subscribe(returnedOwner => {
