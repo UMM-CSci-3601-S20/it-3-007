@@ -27,22 +27,22 @@ export class AuthService {
   })).pipe(shareReplay(1), catchError(err => throwError(err)));
 
   isAuthenticated$ = this.auth0Client$.pipe(concatMap((client: Auth0Client) =>
-    from(client.isAuthenticated()),
+    from(client.isAuthenticated())
   ));
 
   handleRedirectCallback$ = this.auth0Client$.pipe(concatMap((client: Auth0Client) =>
-    from(client.handleRedirectCallback()),
+    from(client.handleRedirectCallback())
   ));
 
   getUser$(options?): Observable<any> {
     return this.auth0Client$.pipe(concatMap((client: Auth0Client) =>
-      from(client.getUser(options)),
+      from(client.getUser(options))
     ));
   }
 
   getTokenSilently$(options?): Observable<string> {
     return this.auth0Client$.pipe(concatMap((client: Auth0Client) =>
-      from(client.getTokenSilently(options)),
+      from(client.getTokenSilently(options))
     ));
   }
 
@@ -51,7 +51,7 @@ export class AuthService {
       client.loginWithRedirect({
         redirect_uri: REDIRECT_URL,
         appState: { target: redirectPath },
-      }),
+      })
     ));
   }
 
@@ -68,12 +68,12 @@ export class AuthService {
               targetUrl = '/';
             }
             return { loggedIn, targetUrl };
-          })),
+          }))
         )),
         this.isAuthenticated$.pipe(take(1), map(loggedIn =>
           ({ loggedIn, targetUrl: null }),
         )),
-      ),
+      )
     ));
   }
 

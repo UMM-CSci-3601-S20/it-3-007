@@ -28,7 +28,7 @@ export class InterceptorService implements HttpInterceptor {
         concatMap(token =>
           next.handle(req.clone({
             setHeaders: { Authorization: `Bearer ${token}` }
-          })),
+          }))
         ),
         catchError(err => throwError(err))
       );

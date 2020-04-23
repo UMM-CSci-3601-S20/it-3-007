@@ -23,7 +23,7 @@ export class AuthGuard implements CanActivate {
           () => result.loggedIn,
           of(true),
           this.authService.login(state.url).pipe(map(() => false)),
-        ),
+        )
       ),
     );
   }
