@@ -35,8 +35,9 @@ export class OwnerComponent implements OnInit, AfterViewInit {
 
   retrieveNotes(): void {
     this.notes = this.owner.pipe(
-      switchMap(owner => this.notesService.getOwnerNotes({owner_id: owner._id, posted: true}).pipe(share())),
+      switchMap(owner => this.notesService.getOwnerNotes({owner_id: owner._id, posted: true})),
       map(notes => notes.reverse()),
+      share(),
     );
   }
 
@@ -50,9 +51,10 @@ export class OwnerComponent implements OnInit, AfterViewInit {
     this.x500 = this.auth.getUser$().pipe(map(returned => returned.nickname));
 
     this.owner = this.x500.pipe(
-      switchMap(x500 => this.ownerService.getOwnerByx500(x500).pipe(share())),
+      switchMap(x500 => this.ownerService.getOwnerByx500(x500)),
       handleHttpError(404, () => this.newOwner()),
       tap({ error(err) { console.log(`Oh no! ${err}`); } }),
+      share(),
     );
 
     this.retrieveNotes();
