@@ -2,12 +2,15 @@ import { Component, OnInit, OnDestroy} from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Owner } from '../owner';
 import { OwnerService } from '../owner.service';
-import { Subscription } from 'rxjs';
+import { Subscription, Observable, throwError, concat, OperatorFunction } from 'rxjs';
 import { NotesService } from '../notes.service';
 import { Note } from '../note';
 import {Location} from '@angular/common';
 import { AuthService } from '../authentication/auth.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { map, concatMap, switchMap, catchError, tap, take, flatMap } from 'rxjs/operators';
+import { HttpErrorResponse } from '@angular/common/http';
+import { handleHttpError } from '../utils';
 
 @Component({
   selector: 'app-owner',
@@ -15,102 +18,85 @@ import { MatSnackBar } from '@angular/material/snack-bar';
   styleUrls: ['./owner.component.scss']
 })
 // This class has access to the owner of the doorboard, and all the posts that said owner has made
-export class OwnerComponent implements OnInit, OnDestroy {
-  constructor(private route: ActivatedRoute, public auth: AuthService,
-              private _location: Location, private notesService: NotesService,
-              private ownerService: OwnerService, private snackBar: MatSnackBar) {
-                console.log("Constructing Owner Component");
-              }
-  notes: Note[];
-  owner: Owner;
-  id: string;
-  name: string;
-  getNotesSub: Subscription;
-  getOwnerSub: Subscription;
-  getx500Sub: Subscription;
-  x500: string;
-  logins: number;
+export class OwnerComponent implements OnInit {
+  constructor(
+    private route: ActivatedRoute,
+    public auth: AuthService,
+    private _location: Location,
+    private notesService: NotesService,
+    private ownerService: OwnerService,
+    private snackBar: MatSnackBar
+  ) {}
 
-
-  retrieveOwner(): void {
-    this.getx500Sub = this.auth.getUser$().subscribe(returned => {
-      this.x500 = returned.nickname;
-    });
-    this.getOwnerSub = this.ownerService.getOwnerByx500(this.x500).subscribe(returnedOwner => {
-      this.owner = returnedOwner;
-      this.retrieveNotes();
-    }, err => {
-      let errorTitle = "The requested owner was not found"
-      if (err.status === 404 && err.error.title === errorTitle) {
-        this.addOwner();
-      }
-      console.log(err);
-    });
-  }
+  notes: Observable<Note[]>;
+  owner: Observable<Owner>;
+  id: Observable<string>;
+  name: Observable<string>;
+  x500: Observable<string>;
 
   retrieveNotes(): void {
-    this.getNotesSub = this.notesService.getOwnerNotes({owner_id: this.owner._id, posted: true}).subscribe(returnedNotes => {
-      this.notes = returnedNotes.reverse();
-    }, err => {
-      console.log(err);
-    });
+    this.notes = this.owner.pipe(
+      switchMap(owner => this.notesService.getOwnerNotes({owner_id: owner._id, posted: true})),
+      map(notes => notes.reverse()),
+    );
   }
 
   deleteNote(id: string): void {
-    this.notesService.deleteNote(id).subscribe(result => {
-      // Ignore the result for now.
+    this.notesService.deleteNote(id).subscribe(() => {
       this.retrieveNotes();
-    }, err => {
-      console.log(err);
     });
   }
 
   ngOnInit(): void {
-    this.retrieveOwner();
-  }
+    this.x500 = this.auth.getUser$().pipe(map(returned => returned.nickname));
 
-  ngOnDestroy(): void {
-    this.unsub();
-  }
+    this.owner = this.x500.pipe(
+      switchMap(x500 => this.ownerService.getOwnerByx500(x500)),
+      handleHttpError(404, () => this.newOwner()),
+      tap({ error(err) { console.log(`Oh no! ${err}`); } }),
+    );
 
-  unsub(): void {
-    if (this.getNotesSub) {
-      this.getNotesSub.unsubscribe();
-    }
-    if (this.getOwnerSub) {
-      this.getOwnerSub.unsubscribe();
-    }
+    this.retrieveNotes();
   }
 
   savePDF(): void {
-
-    // get id of owner, and pass is as a parameter in getPDF
-    this.ownerService.getPDF(this.owner.name, this.x500).save('DoorBoard');
+    this.owner.pipe(take(1)).subscribe(owner => {
+      this.ownerService.getPDF(owner.name, owner.x500).save('DoorBoard.pdf');
+    });
   }
 
-  addOwner(): void {
-    let newOwner: Owner;
-
-    this.getx500Sub = this.auth.getUser$().subscribe(returned => {
-      newOwner = {
-        x500: this.x500,
-        email: returned.email,
-        name: returned.name,
+  newOwner(): Observable<Owner> {
+    return this.auth.getUser$().pipe(
+      take(1),
+      map(user => ({
+        x500: user.nickname,
+        email: user.email,
+        name: user.name,
         _id: null,
         officeNumber: null,
         building: null
-      };
-    });
+      })),
+      flatMap(newOwner =>
+        this.ownerService.addOwner(newOwner).pipe(
+          map(newId => ({ ...newOwner, _id: newId })),
+          tap({
+            next: () => this.newUserSucceededSnackBar(),
+            error: () => this.newUserFailedSnackBar(),
+          }),
+        )
+      ),
+    );
+  }
 
-    this.ownerService.addOwner(newOwner).subscribe(newID => {
-      this.snackBar.open('Successfully created a new owner', null, {
-        duration: 2000,
-      });
-      location.reload();
-    }, err => {
-      this.snackBar.open('Failed to create a new owner', null, {
-        duration: 2000,
-      });
+  newUserSucceededSnackBar() {
+    this.snackBar.open('Successfully created a new owner', null, {
+      duration: 2000,
+    });
+  }
+
+  newUserFailedSnackBar() {
+    this.snackBar.open('Failed to create a new owner', null, {
+      duration: 2000,
     });
   }
 }
