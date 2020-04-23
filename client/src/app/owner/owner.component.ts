@@ -1,15 +1,14 @@
-import { Component, OnInit, OnDestroy} from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit} from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Owner } from '../owner';
 import { OwnerService } from '../owner.service';
-import { Subscription, Observable, throwError, concat, OperatorFunction } from 'rxjs';
+import { Observable } from 'rxjs';
 import { NotesService } from '../notes.service';
 import { Note } from '../note';
 import {Location} from '@angular/common';
-import { AuthService } from '../authentication/auth.service';
+import { AuthService, REDIRECT_URL } from '../authentication/auth.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { map, concatMap, switchMap, catchError, tap, take, flatMap } from 'rxjs/operators';
-import { HttpErrorResponse } from '@angular/common/http';
 import { handleHttpError } from '../utils';
 
 @Component({
@@ -18,7 +17,7 @@ import { handleHttpError } from '../utils';
   styleUrls: ['./owner.component.scss']
 })
 // This class has access to the owner of the doorboard, and all the posts that said owner has made
-export class OwnerComponent implements OnInit {
+export class OwnerComponent implements OnInit, AfterViewInit {
   constructor(
     private route: ActivatedRoute,
     public auth: AuthService,
@@ -57,6 +56,10 @@ export class OwnerComponent implements OnInit {
     );
 
     this.retrieveNotes();
+  }
+
+  ngAfterViewInit(): void {
+    this._location.replaceState(REDIRECT_URL);
   }
 
   savePDF(): void {
