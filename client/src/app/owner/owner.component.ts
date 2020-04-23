@@ -83,7 +83,6 @@ export class OwnerComponent implements OnInit, AfterViewInit {
       })),
       flatMap(newOwner =>
         this.ownerService.addOwner(newOwner).pipe(
-          share(),
           map(newId => ({ ...newOwner, _id: newId })),
           tap({
             next: () => this.newUserSucceededSnackBar(),
