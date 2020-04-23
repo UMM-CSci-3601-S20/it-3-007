@@ -59,7 +59,7 @@ export class OwnerComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    this._location.replaceState(REDIRECT_URL);
+    this._location.replaceState(new URL(REDIRECT_URL).pathname);
   }
 
   savePDF(): void {
