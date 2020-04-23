@@ -8,7 +8,7 @@ import { Note } from '../note';
 import {Location} from '@angular/common';
 import { AuthService, REDIRECT_URL } from '../authentication/auth.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { map, concatMap, switchMap, catchError, tap, take, flatMap } from 'rxjs/operators';
+import { map, concatMap, switchMap, catchError, tap, take, flatMap, share } from 'rxjs/operators';
 import { handleHttpError } from '../utils';
 
 @Component({
@@ -35,7 +35,7 @@ export class OwnerComponent implements OnInit, AfterViewInit {
 
   retrieveNotes(): void {
     this.notes = this.owner.pipe(
-      switchMap(owner => this.notesService.getOwnerNotes({owner_id: owner._id, posted: true})),
+      switchMap(owner => this.notesService.getOwnerNotes({owner_id: owner._id, posted: true}).pipe(share())),
       map(notes => notes.reverse()),
     );
   }
@@ -50,7 +50,7 @@ export class OwnerComponent implements OnInit, AfterViewInit {
     this.x500 = this.auth.getUser$().pipe(map(returned => returned.nickname));
 
     this.owner = this.x500.pipe(
-      switchMap(x500 => this.ownerService.getOwnerByx500(x500)),
+      switchMap(x500 => this.ownerService.getOwnerByx500(x500).pipe(share())),
       handleHttpError(404, () => this.newOwner()),
       tap({ error(err) { console.log(`Oh no! ${err}`); } }),
     );
@@ -81,6 +81,7 @@ export class OwnerComponent implements OnInit, AfterViewInit {
       })),
       flatMap(newOwner =>
         this.ownerService.addOwner(newOwner).pipe(
+          share(),
           map(newId => ({ ...newOwner, _id: newId })),
           tap({
             next: () => this.newUserSucceededSnackBar(),
