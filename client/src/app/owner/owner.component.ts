@@ -53,7 +53,6 @@ export class OwnerComponent implements OnInit, AfterViewInit {
     this.owner = this.x500.pipe(
       switchMap(x500 => this.ownerService.getOwnerByx500(x500)),
       handleHttpError(404, () => this.newOwner()),
-      tap({ error(err) { console.log(`Oh no! ${err}`); } }),
       share(),
     );
 
