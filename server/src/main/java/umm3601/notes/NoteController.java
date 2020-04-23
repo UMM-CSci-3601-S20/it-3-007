@@ -58,7 +58,7 @@ public class NoteController {
     tokenVerifier = new TokenVerifier();
   }
 
-  public boolean verifyHttpRequest(Context ctx) throws Exception {
+  public boolean verifyHttpRequest(Context ctx) {
     if (!this.tokenVerifier.verifyToken(ctx)) {
       throw new BadRequestResponse("Invalid header token. The request is not authorized.");
     } else {

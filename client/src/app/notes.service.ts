@@ -4,6 +4,7 @@ import { environment } from '../environments/environment';
 import { Note } from './note';
 import { Observable, throwError, of, OperatorFunction } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
+import { handleHttpError } from './utils';
 
 
 @Injectable({
@@ -56,7 +57,7 @@ export class NotesService {
     // to them.
     return response.pipe(
       map(() => true),
-      this.handleHttpError(404, () => of(false)),
+      handleHttpError(404, () => of(false)),
     );
   }
 
@@ -66,7 +67,7 @@ export class NotesService {
 
     return response.pipe(
       map(() => true),
-      this.handleHttpError(404, () => of(false)),
+      handleHttpError(404, () => of(false)),
     );
   }
 
@@ -76,7 +77,7 @@ export class NotesService {
 
     return response.pipe(
       map(() => true),
-      this.handleHttpError(404, () => of(false)),
+      handleHttpError(404, () => of(false)),
     );
   }
 
@@ -100,23 +101,4 @@ export class NotesService {
   }
   // We could simplify that if statement using a ==, but I've left it
   // in its expanded form for explicitness' sake.
-
-  /**
-   * Return an RxJS operator similar to catchError, except that it only
-   * triggers if the error is an HttpErrorResponse with a given status code.
-   *
-   * (For example, you can use this operator to only handle not-found errors,
-   * while letting other errors pass through.)
-   */
-  private handleHttpError<T, U>(
-    status: number,
-    handler: (err: HttpErrorResponse, caught: Observable<T>) => Observable<U>
-  ): OperatorFunction<T, T | U> {
-    return catchError((error: HttpErrorResponse, caught: Observable<T>) => {
-      if (error.status === status) {
-        return handler(error, caught);
-      }
-      return throwError(error);
-    });
-  }
 }
