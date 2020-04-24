@@ -41,7 +41,7 @@ public class NoteController {
   /**
    * The length of a note's body must be less than or equal to this value.
    */
-  public static final int MAXIMUM_BODY_LENGTH = 10_000;
+  public static final int MAXIMUM_BODY_LENGTH = 1_000;
 
   /**
    * The length of a note's body must be greater than or equal to this value.
