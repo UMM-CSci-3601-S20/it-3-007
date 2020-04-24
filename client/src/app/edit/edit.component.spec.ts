@@ -17,7 +17,7 @@ import { HttpParams } from '@angular/common/http';
 import { MINIMUM_BODY_LENGTH, MAXIMUM_BODY_LENGTH } from '../note';
 
 
-describe('EditComponent', () => {
+describe('EditComponent:', () => {
   let editComponent: EditComponent;
   let editNoteForm: FormGroup;
   let fixture: ComponentFixture<EditComponent>;
@@ -62,7 +62,7 @@ describe('EditComponent', () => {
       expect(editNoteForm).toBeTruthy();
     });
 
-    it('form should auto-populate to a valid state', () => {
+    it('should auto-populate to a valid state', () => {
       expect(editNoteForm.valid).toBeTruthy();
     });
   });
