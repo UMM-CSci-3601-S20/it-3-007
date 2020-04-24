@@ -64,11 +64,11 @@ describe('AddNoteComponent:', () => {
     expect(addNoteComponent).toBeTruthy();
   });
 
-  it('should get the x500 of the owner', () => {
+  it('should get the x500 of the owner', async(() => {
     addNoteComponent.x500.subscribe(x500 => {
       expect(x500).toEqual(professorJohnson.nickname);
-    })
-  })
+    });
+  }));
 
   describe('The addNoteForm:', () => {
     it('should create', () => {

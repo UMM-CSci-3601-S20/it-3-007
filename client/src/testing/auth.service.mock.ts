@@ -9,64 +9,35 @@ import { concatMap } from 'rxjs/operators';
 export class MockAuthService extends AuthService {
   constructor() {
     super(null);
-    this.auth0Client$ = of(new MockAuth0Client());
-
-    this.isAuthenticated$ = of(true);
-
-    this.handleRedirectCallback$ = this.auth0Client$.pipe(concatMap((client: Auth0Client) =>
-      from(client.handleRedirectCallback())
-    ));
   }
-}
 
-export class MockAuth0Client extends Auth0Client {
-  constructor() {
-    super({
-      domain: environment.AUTH_DOMAIN,
-      client_id: environment.AUTH_CLIENT_ID,
-      redirect_uri: environment.BASE_URL,
-      audience: environment.AUTH_API_DOMAIN,
+  auth0Client$ = null;
+
+  isAuthenticated$ = of(true);
+
+  handleRedirectCallback$ = of({
+    appState: {
+      target: '/',
+    },
+  });
+
+  getUser$() {
+    return of(professorJohnson);
+  }
+
+  handleAuthCallback() {
+    return of({
+      loggedIn: true,
+      targetUrl: '/',
     });
-
   }
 
-  // Change the value of this property to control how MockAuth0Client
-  // behaves during testing.
-  mockAccessToken = 'La la la! I\'m a JSON Web Token!';
-  loginWithPopup() {
-    return new Promise<void>(() => {});
+
+  getTokenSilently$() {
+    return of('Hi, I\'m a JWT!');
   }
 
-  getUser() {
-    return new Promise<any>(() => professorJohnson);
-  }
-
-  getIdTokenClaims() {
-    return new Promise<IdToken>(() => professorJohnsonsIdToken)
-  }
-
-  loginWithRedirect() {
-    return new Promise<void>(() => {});
-  }
-
-  handleRedirectCallback() {
-    return new Promise<RedirectLoginResult>(() => ({
-        loggedIn: true,
-        redirect_uri: '/',
-      }));
-  }
-
-  getTokenSilently() {
-    return new Promise<string>(() => this.mockAccessToken);
-  }
-
-  getTokenWithPopup() {
-    return new Promise<string>(() => this.mockAccessToken);
-  }
-
-  isAuthenticated() {
-    return new Promise<boolean>(() => true);
-  }
+  login() { return of(undefined); }
 
   logout() {}
 }

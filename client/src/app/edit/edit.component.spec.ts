@@ -95,7 +95,6 @@ describe('EditComponent', () => {
 
     it(`should be invalid if the body is less than ${MINIMUM_BODY_LENGTH} characters`, () => {
       bodyControl.setValue('x'.repeat(MINIMUM_BODY_LENGTH - 1));
-      console.log(bodyControl.value);
       expect(bodyControl.valid).toBeFalsy();
     });
 
