@@ -56,19 +56,6 @@ export class MockNoteService extends NotesService {
 
   public static FAKE_BODY = 'This is definitely the note you wanted';
 
-  // This field gets set whenever you call addNote.
-  public mostRecentlyPostedNote: Note;
-
-  // These fields get set whenever you call editNote.
-  public mostRecentlyEditedNote: { body: string };
-  public mostRecentlyEditedId: string;
-
-  reset() {
-    this.mostRecentlyPostedNote =
-      this.mostRecentlyEditedNote =
-      this.mostRecentlyEditedId =
-      undefined;
-  }
 
   constructor() {
     super(null);
@@ -83,13 +70,10 @@ export class MockNoteService extends NotesService {
   }
 
   addNote(note) {
-    this.mostRecentlyPostedNote = note;
     return of('I just put your note in the database and this is its new ID');
   }
 
   editNote(note: Note, id: string) {
-    this.mostRecentlyEditedNote = note;
-    this.mostRecentlyEditedId = id;
     return of(id);
   }
 

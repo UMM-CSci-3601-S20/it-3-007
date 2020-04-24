@@ -45,10 +45,6 @@ describe('EditComponent', () => {
     .compileComponents();
   }));
 
-  beforeEach(() => {
-    mockNoteService.reset();
-  });
-
   beforeEach(async(() => {
     fixture = TestBed.createComponent(EditComponent);
     editComponent = fixture.componentInstance;
@@ -137,15 +133,16 @@ describe('EditComponent', () => {
     })));
 
     it('should try to add a note', async(() => {
+      spyOn(mockNoteService, 'editNote').and.callThrough();
       editComponent.submitForm();
       // Wait for all that to happen.
       fixture.whenStable().then(() => {
-        expect(mockNoteService.mostRecentlyEditedNote)
-          .toBeDefined();
-        expect(mockNoteService.mostRecentlyEditedNote.body)
-          .toEqual('late to office hours');
-        expect(mockNoteService.mostRecentlyEditedId)
-          .toEqual('foo');
+        expect(mockNoteService.editNote).toHaveBeenCalledTimes(1);
+
+        const [note, id] =
+          (mockNoteService.editNote as jasmine.Spy).calls.argsFor(0);
+        expect(note.body).toEqual('late to office hours');
+        expect(id).toEqual('foo');
       });
     }));
   });

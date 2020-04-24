@@ -49,10 +49,6 @@ describe('AddNoteComponent:', () => {
   });
 
   beforeEach(() => {
-    mockNoteService.reset();
-  });
-
-  beforeEach(() => {
     fixture = TestBed.createComponent(AddNoteComponent);
     addNoteComponent = fixture.componentInstance;
     addNoteComponent.ngOnInit();
@@ -142,17 +138,17 @@ describe('AddNoteComponent:', () => {
     })));
 
     it('should try to add a note', async(() => {
+      spyOn(mockNoteService, 'addNote').and.callThrough();
       addNoteComponent.submitForm();
       // Wait for all that to happen.
       fixture.whenStable().then(() => {
-        expect(mockNoteService.mostRecentlyPostedNote)
-          .toBeDefined();
-        expect(mockNoteService.mostRecentlyPostedNote.body)
-          .toEqual('late to office hours');
-        expect(mockNoteService.mostRecentlyPostedNote.owner_id)
-          .toEqual('rachel_id');
-        expect(mockNoteService.mostRecentlyPostedNote.posted)
-          .toEqual(true);
+        expect(mockNoteService.addNote).toHaveBeenCalledTimes(1);
+
+        const [note] =
+          (mockNoteService.addNote as jasmine.Spy).calls.argsFor(0);
+        expect(note.body).toEqual('late to office hours');
+        expect(note.owner_id).toEqual('rachel_id');
+        expect(note.posted).toEqual(true);
       });
     }));
   });
