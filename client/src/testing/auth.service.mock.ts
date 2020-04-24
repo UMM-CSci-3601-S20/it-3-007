@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { AuthService } from 'src/app/authentication/auth.service';
-import { Observable, BehaviorSubject, of } from 'rxjs';
+import { Observable, BehaviorSubject, of, from } from 'rxjs';
 import { Auth0Client, IdToken, RedirectLoginResult } from '@auth0/auth0-spa-js';
 import { environment } from 'src/environments/environment';
+import { concatMap } from 'rxjs/operators';
 
 @Injectable()
 export class MockAuthService extends AuthService {
@@ -10,10 +11,11 @@ export class MockAuthService extends AuthService {
     super(null);
     this.auth0Client$ = of(new MockAuth0Client());
 
-    // Initialize userProfile$
-    // (Normally, you would go through the whole login spiel in order to
-    // initialize userProfile$)
-    this.userProfile$ = of(professorJohnson);
+    this.isAuthenticated$ = of(true);
+
+    this.handleRedirectCallback$ = this.auth0Client$.pipe(concatMap((client: Auth0Client) =>
+      from(client.handleRedirectCallback())
+    ));
   }
 }
 
@@ -48,9 +50,10 @@ export class MockAuth0Client extends Auth0Client {
   }
 
   handleRedirectCallback() {
-    return new Promise<RedirectLoginResult>(() => {
-      return {};
-    });
+    return new Promise<RedirectLoginResult>(() => ({
+        loggedIn: true,
+        redirect_uri: '/',
+      }));
   }
 
   getTokenSilently() {

@@ -50,7 +50,7 @@ export class AddNoteComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.x500 = this.auth.userProfile$.pipe(map(user => user.nickname));
+    this.x500 = this.auth.getUser$().pipe(map(user => user.nickname));
 
     this.owner = this.x500.pipe(
       switchMap(x500 => this.ownerService.getOwnerByx500(x500)),
