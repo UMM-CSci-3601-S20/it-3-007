@@ -7,7 +7,7 @@
     GENERATE PDF
   </button>
   <button mat-button class="logoutButton" type="button" color="primary" (click)="this.auth.logout()"> LOGOUT </button>
-  <button mat-button class="viewDoorBoard" type="button" color="primary" [routerLink]="owner.x500"> VIEW DOORBOARD </button>
+  <button mat-button class="viewDoorBoard" type="button" color="primary" [routerLink]="(owner | async)?.x500"> VIEW DOORBOARD </button>
 </div>
 
 
