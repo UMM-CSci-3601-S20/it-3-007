@@ -1,5 +1,5 @@
-<nav class="navbar" *ngIf="owner">
-  <h2>{{this.owner.name}}</h2>
+<nav class="navbar" *ngIf="owner | async">
+  <h2>{{(owner | async)?.name}}</h2>
 </nav>
 
 <div fxLayout="row" id="pdf-div">
@@ -12,10 +12,10 @@
 
 
 
-<div *ngIf="notes; else notesError">
+<div *ngIf="notes | async; else notesError">
 <ul class= "note-container">
-  <mat-card class="note-card" *ngFor="let note of this.notes">
-    <p>{{this.note.body}}</p>
+  <mat-card class="note-card" *ngFor="let note of notes | async">
+    <p>{{note.body}}</p>
     <mat-card-actions>
       <button mat-button class="note-action edit" matTooltip="Edit Note" matTooltipPosition="above" [routerLink]="note._id + '/edit'">
         <mat-icon aria-label="Edit note">create</mat-icon>
