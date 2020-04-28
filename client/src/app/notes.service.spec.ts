@@ -13,7 +13,7 @@ describe('Note service:', () => {
       owner_id: yogiId,
       body: 'You can observe a lot by watching.',
       addDate: new Date(),
-      expireDate: new Date(),
+      expireDate: null,
       status: 'active',
     },
     {
@@ -21,7 +21,7 @@ describe('Note service:', () => {
       owner_id: yogiId,
       body: 'Nobody goes there anymore. It\'s too crowded.',
       addDate: new Date(),
-      expireDate: new Date(),
+      expireDate: null,
       status: 'active',
     },
   ];
@@ -32,7 +32,7 @@ describe('Note service:', () => {
       owner_id: 'rachel_id',
       body: 'This is the first note',
       addDate: new Date(),
-      expireDate: new Date(),
+      expireDate: null,
       status: 'active',
     },
     {
@@ -40,7 +40,7 @@ describe('Note service:', () => {
       owner_id: 'joe_id',
       body: 'This is the second note',
       addDate: new Date(),
-      expireDate: new Date(),
+      expireDate: null,
       status: 'active',
     },
     {
@@ -48,7 +48,7 @@ describe('Note service:', () => {
       owner_id: 'james_id',
       body: 'This is the third note',
       addDate: new Date(),
-      expireDate: new Date(),
+      expireDate: null,
       status: 'active',
     },
     ...yogiNotes,
