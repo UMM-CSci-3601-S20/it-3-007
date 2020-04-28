@@ -2,5 +2,7 @@ export interface Note {
   _id: string;
   owner_id: string;
   body: string;
-  posted: boolean;
+  addDate: Date;
+  expireDate: Date;
+  status: string;
 }
