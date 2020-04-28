@@ -12,19 +12,25 @@ export class MockNoteService extends NotesService {
       _id: 'first_id',
       owner_id: 'rachel_id',
       body: 'This is the first note',
-      posted: true
+      addDate: new Date(),
+      expireDate: new Date(),
+      status: 'active'
     },
     {
       _id: 'second_id',
       owner_id: 'joe_id',
       body: 'This is the second note',
-      posted: true
+      addDate: new Date(),
+      expireDate: new Date(),
+      status: 'active'
     },
     {
       _id: 'third_id',
       owner_id: 'james_id',
       body: 'This is the third note',
-      posted: true
+      addDate: new Date(),
+      expireDate: new Date(),
+      status: 'active'
     },
 
     // Trashed Notes
@@ -32,25 +38,33 @@ export class MockNoteService extends NotesService {
       _id: 'fourth_id',
       owner_id: 'rachel_id',
       body: 'This is the fourth note',
-      posted: false
+      addDate: new Date(),
+      expireDate: new Date(),
+      status: 'deleted'
     },
     {
       _id: 'fifth_id',
       owner_id: 'joe_id',
       body: 'This is the fifth note',
-      posted: false
+      addDate: new Date(),
+      expireDate: new Date(),
+      status: 'deleted'
     },
     {
       _id: 'sixth_id',
       owner_id: 'james_id',
       body: 'This is the 6th note',
-      posted: false
+      addDate: new Date(),
+      expireDate: new Date(),
+      status: 'deleted'
     },
     {
       _id: 'seventh_id',
       owner_id: 'kyle_id',
       body: 'This is the 7th note',
-      posted: false
+      addDate: new Date(),
+      expireDate: new Date(),
+      status: 'deleted'
     }
   ];
 
@@ -81,7 +95,9 @@ export class MockNoteService extends NotesService {
       _id: id,
       owner_id: 'rachel_id',
       body: MockNoteService.FAKE_BODY,
-      posted: true,
+      addDate: new Date(),
+      expireDate: new Date(),
+      status: 'active',
     });
   }
 }
