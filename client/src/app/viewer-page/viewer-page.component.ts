@@ -41,7 +41,7 @@ export class ViewerPageComponent implements OnInit {
   }
 
   retrieveNotes(): void {
-    this.getNotesSub = this.notesService.getOwnerNotes({owner_id: this.owner._id, posted: true}).subscribe(returnedNotes =>{
+    this.getNotesSub = this.notesService.getOwnerNotes({owner_id: this.owner._id, status: 'active'}).subscribe(returnedNotes =>{
       this.notes = returnedNotes.reverse();
     }, err => {
       console.log(err);
