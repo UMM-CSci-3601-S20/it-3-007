@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams, HttpErrorResponse } from '@angular/common/http';
 import { environment } from '../environments/environment';
-import { Note } from './note';
+import { Note, NewNote } from './note';
 import { Observable, throwError, of, OperatorFunction } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 import { handleHttpError } from './utils';
@@ -33,7 +33,7 @@ export class NotesService {
     });
   }
 
-  addNote(newNote: Note): Observable<string> {
+  addNote(newNote: NewNote): Observable<string> {
     return this.httpClient.post<{id: string}>(environment.API_URL + 'new/notes', newNote).pipe(map(res => res.id));
   }
 
