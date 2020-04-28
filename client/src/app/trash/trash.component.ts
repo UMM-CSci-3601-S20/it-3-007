@@ -72,7 +72,7 @@ export class TrashComponent implements OnInit, OnDestroy  {
   }
 
   retrieveNotes(): void {
-    this.getNotesSub = this.noteService.getOwnerNotes({owner_id: this.owner._id, posted: false}).subscribe(returnedNotes => {
+    this.getNotesSub = this.noteService.getOwnerNotes({owner_id: this.owner._id, status: 'deleted'}).subscribe(returnedNotes => {
       this.notes = returnedNotes.reverse();
     }, err => {
       console.log(err);
