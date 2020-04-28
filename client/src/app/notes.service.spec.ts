@@ -12,13 +12,17 @@ describe('Note service:', () => {
       _id: 'y1',
       owner_id: yogiId,
       body: 'You can observe a lot by watching.',
-      posted: true,
+      addDate: new Date(),
+      expireDate: new Date(),
+      status: 'active',
     },
     {
       _id: 'y2',
       owner_id: yogiId,
       body: 'Nobody goes there anymore. It\'s too crowded.',
-      posted: true,
+      addDate: new Date(),
+      expireDate: new Date(),
+      status: 'active',
     },
   ];
 
@@ -27,19 +31,25 @@ describe('Note service:', () => {
       _id: 'first_id',
       owner_id: 'rachel_id',
       body: 'This is the first note',
-      posted: true,
+      addDate: new Date(),
+      expireDate: new Date(),
+      status: 'active',
     },
     {
       _id: 'second_id',
       owner_id: 'joe_id',
       body: 'This is the second note',
-      posted: true,
+      addDate: new Date(),
+      expireDate: new Date(),
+      status: 'active',
     },
     {
       _id: 'third_id',
       owner_id: 'james_id',
       body: 'This is the third note',
-      posted: true,
+      addDate: new Date(),
+      expireDate: new Date(),
+      status: 'active',
     },
     ...yogiNotes,
   ];
@@ -90,14 +100,14 @@ describe('Note service:', () => {
       req.flush(yogiNotes);
     }));
 
-    it('filters by posted status', async(() => {
-      noteService.getOwnerNotes({ posted: false }).subscribe(notes => {
+    it('filters by status', async(() => {
+      noteService.getOwnerNotes({ status: 'deleted' }).subscribe(notes => {
         expect(notes).toEqual([]);
       });
 
       const req = httpTestingController.expectOne({ method: 'GET' });
       expect(req.request.url).toEqual(noteService.noteUrl);
-      expect(req.request.params.get('posted')).toEqual('false');
+      expect(req.request.params.get('status')).toEqual('deleted');
       req.flush([]);
     }));
   });
@@ -288,25 +298,25 @@ describe('Note service:', () => {
   });
 
   describe('The filterNotes() method:', () => {
-    it('can give you a list of all the posted notes', () => {
+    it('can give you a list of all the active notes', () => {
       const filteredNotes =
-        noteService.filterNotes(testNotes, { posted: true });
+        noteService.filterNotes(testNotes, { status: 'active'});
 
-      // All of the testNotes are posted.
+      // All of the testNotes are active.
       expect(filteredNotes).toEqual(testNotes);
     });
 
-    it('can give you a list of all the un-posted notes', () => {
+    it('can give you a list of all the deleted notes', () => {
       const filteredNotes =
-        noteService.filterNotes(testNotes, { posted: false });
+        noteService.filterNotes(testNotes, { status: 'deleted' });
 
-      // None of the testNotes are un-posted.
+      // None of the testNotes are deleted.
       expect(filteredNotes).toEqual([]);
     });
 
     it('doesn\'t break if you give it an empty array of notes', () => {
       const filteredNotes =
-        noteService.filterNotes([], { posted: false });
+        noteService.filterNotes([], { status: 'deleted' });
 
       // None of the testNotes are un-posted.
       expect(filteredNotes).toEqual([]);
