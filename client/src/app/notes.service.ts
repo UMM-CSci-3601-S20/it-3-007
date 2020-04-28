@@ -19,17 +19,14 @@ export class NotesService {
 
   constructor(private httpClient: HttpClient) {}
 
-  // getNotes() {
-  //   return this.httpClient.get<Note[]>(this.noteUrl);
-  // }
 
-  getOwnerNotes(filters: { owner_id?: string, posted?: boolean } = {}): Observable<Note[]> {
+  getOwnerNotes(filters: { owner_id?: string, status?: string } = {}): Observable<Note[]> {
     let httpParams: HttpParams = new HttpParams();
     if (filters.owner_id) {
       httpParams = httpParams.set('owner_id', filters.owner_id);
     }
-    if (filters.posted === true || filters.posted === false) {
-      httpParams = httpParams.set('posted', filters.posted.toString());
+    if (filters.status) {
+      httpParams = httpParams.set('status', filters.status);
     }
     return this.httpClient.get<Note[]>(this.noteUrl, {
       params: httpParams,
@@ -92,10 +89,10 @@ export class NotesService {
   }
 
   filterNotes(notes: Note[], filters: {
-    posted?: boolean
+    status?: string
   }): Note[] {
-    if (filters.posted !== null && filters.posted !== undefined) {
-      notes = notes.filter(note => note.posted === filters.posted);
+    if (filters.status !== null && filters.status !== undefined) {
+      notes = notes.filter(note => note.status === filters.status);
     }
     return notes;
   }
