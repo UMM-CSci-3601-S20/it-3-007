@@ -13,7 +13,7 @@ export class MockNoteService extends NotesService {
       owner_id: 'rachel_id',
       body: 'This is the first note',
       addDate: new Date(),
-      expireDate: new Date(),
+      expireDate: null,
       status: 'active'
     },
     {
@@ -21,7 +21,7 @@ export class MockNoteService extends NotesService {
       owner_id: 'joe_id',
       body: 'This is the second note',
       addDate: new Date(),
-      expireDate: new Date(),
+      expireDate: null,
       status: 'active'
     },
     {
@@ -29,7 +29,7 @@ export class MockNoteService extends NotesService {
       owner_id: 'james_id',
       body: 'This is the third note',
       addDate: new Date(),
-      expireDate: new Date(),
+      expireDate: null,
       status: 'active'
     },
 
@@ -39,7 +39,7 @@ export class MockNoteService extends NotesService {
       owner_id: 'rachel_id',
       body: 'This is the fourth note',
       addDate: new Date(),
-      expireDate: new Date(),
+      expireDate: null,
       status: 'deleted'
     },
     {
@@ -55,7 +55,7 @@ export class MockNoteService extends NotesService {
       owner_id: 'james_id',
       body: 'This is the 6th note',
       addDate: new Date(),
-      expireDate: new Date(),
+      expireDate: null,
       status: 'deleted'
     },
     {
@@ -63,7 +63,7 @@ export class MockNoteService extends NotesService {
       owner_id: 'kyle_id',
       body: 'This is the 7th note',
       addDate: new Date(),
-      expireDate: new Date(),
+      expireDate: null,
       status: 'deleted'
     }
   ];
