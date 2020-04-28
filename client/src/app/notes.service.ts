@@ -91,7 +91,7 @@ export class NotesService {
   filterNotes(notes: Note[], filters: {
     status?: string
   }): Note[] {
-    if (filters.status !== null && filters.status !== undefined) {
+    if (filters.status) {
       notes = notes.filter(note => note.status === filters.status);
     }
     return notes;
