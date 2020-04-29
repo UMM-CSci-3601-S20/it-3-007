@@ -70,11 +70,14 @@ export class OwnerComponent implements OnInit, AfterViewInit {
   }
 
   printPDF(): void {
-
-    const doc = this.ownerService.getPDF(this.owner.name, this.x500);
-    // get a PDF with the owners name and x500
-    doc.autoPrint(); // This will give us the print-Dialog when opened
-    doc.output('dataurlnewwindow'); // output doc (the pdf) in a new window.
+    this.owner.pipe(take(1)).subscribe(owner => {
+      // Get a PDF with the owners name and x500.
+      this.ownerService.getPDF(owner.name, owner.x500)
+        // This will give us the print-Dialog when opened.
+        .autoPrint()
+        // Output doc (the pdf) in a new window.
+        .output('dataurlnewwindow');
+    });
   }
 
   newOwner(): Observable<Owner> {
