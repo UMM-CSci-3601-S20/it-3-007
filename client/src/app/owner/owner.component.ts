@@ -10,6 +10,7 @@ import { AuthService, REDIRECT_URL } from '../authentication/auth.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { map, concatMap, switchMap, catchError, tap, take, flatMap, share } from 'rxjs/operators';
 import { handleHttpError } from '../utils';
+import * as jsPDF from 'jspdf';
 
 @Component({
   selector: 'app-owner',
@@ -63,20 +64,12 @@ export class OwnerComponent implements OnInit, AfterViewInit {
     this._location.replaceState(new URL(REDIRECT_URL).pathname);
   }
 
-  savePDF(): void {
+  openPDF(): void {
     this.owner.pipe(take(1)).subscribe(owner => {
-      this.ownerService.getPDF(owner.name, owner.x500).save('DoorBoard.pdf');
-    });
-  }
-
-  printPDF(): void {
-    this.owner.pipe(take(1)).subscribe(owner => {
-      // Get a PDF with the owners name and x500.
-      this.ownerService.getPDF(owner.name, owner.x500)
-        // This will give us the print-Dialog when opened.
-        .autoPrint()
-        // Output doc (the pdf) in a new window.
-        .output('dataurlnewwindow');
+      const doc: jsPDF = this.ownerService.getPDF(owner.name, owner.x500);
+      // We need to explicitly call window.open or else Chrome isn't happy.
+      // See: https://stackoverflow.com/a/53701145
+      window.open(doc.output('bloburl'), '_blank');
     });
   }
 
