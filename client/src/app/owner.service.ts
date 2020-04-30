@@ -12,7 +12,6 @@ export class OwnerService {
   readonly ownerUrl: string = environment.API_URL + 'owner';
 
   constructor(private httpClient: HttpClient) {
-    console.log('Constructing Owner Service');
   }
 
   getOwnerById(id: string): Observable<Owner> {

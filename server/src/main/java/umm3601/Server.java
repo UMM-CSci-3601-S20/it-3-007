@@ -38,7 +38,17 @@ public class Server {
     NoteController noteController = new NoteController(database);
     OwnerController ownerController = new OwnerController(database);
 
-    Javalin server = Javalin.create().start(4567);
+    Javalin server = Javalin.create(config -> {
+      // Set the maximum request size to thrice the size of the maximum
+      // allowed note, or the old cache size, whichever is larger.
+      //
+      // (NB: config.requestCacheSize is measured in bytes and
+      // NoteController.MAXIMUM_BODY_LENGTH is measured in chars, so we
+      // need the factor of two in there.)
+      config.requestCacheSize = Math.max(
+        config.requestCacheSize,
+        3L * 2L * (long)NoteController.MAXIMUM_BODY_LENGTH);
+    }).start(4567);
 
     // Note endpoints
     // List notes
@@ -76,7 +86,7 @@ public class Server {
 
     // Owner Endpoints
     server.get("api/owner", ownerController::getOwners);
-    
+
     // Add a new owner
     server.before("api/owner/new", ownerController::verifyHttpRequest);
     server.post("api/owner/new", ownerController::addOwner);
