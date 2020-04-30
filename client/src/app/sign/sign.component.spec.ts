@@ -29,7 +29,7 @@ describe('SignComponent:', () => {
     expect(component).toBeTruthy();
   });
 
-  describe('the getUrl() method', () => {
+  describe('The getUrl() method:', () => {
     it('should return the url of the owner\'s DoorBoard page', () => {
       expect(component.getUrl())
         .toEqual(`${environment.BASE_URL}/rmjohns`);
