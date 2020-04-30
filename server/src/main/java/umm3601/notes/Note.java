@@ -29,15 +29,16 @@ public class Note {
   // What they're saying is, "It's totally fine if this property is null,
   // but if it is we shouldn't serialize it into the document."
   @Nullable @JsonInclude(Include.NON_NULL)
-  public String expireDate;
+  public Date expireDate;
 
   // When serializing or deserializing, this will look like a string.  However,
   // internally, its values will be constrained.  This makes comparison faster and safer,
   // but can make using it a little tricky.
-  public enum status {
+  public enum NoteStatus {
     @JsonProperty(value="active") ACTIVE,
     @JsonProperty(value="draft") DRAFT,
     @JsonProperty(value="template") TEMPLATE,
     @JsonProperty(value="deleted") DELETED
   }
+  public NoteStatus status;
 }
