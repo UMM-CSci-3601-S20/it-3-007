@@ -1,118 +1,143 @@
-import {ComponentFixture, TestBed, async} from '@angular/core/testing';
-import {OwnerComponent} from './owner.component';
-import {DebugElement} from '@angular/core';
-import {By} from '@angular/platform-browser';
+import { ComponentFixture, TestBed, async } from '@angular/core/testing';
+import { OwnerComponent } from './owner.component';
+import { DebugElement } from '@angular/core';
+import { By } from '@angular/platform-browser';
 import { MatCardModule } from '@angular/material/card';
 import { MockNoteService } from 'src/testing/note.service.mock';
 import { MockOwnerService } from 'src/testing/owner.service.mock';
 import { NotesService } from '../notes.service';
 import { AuthService } from '../authentication/auth.service';
 import { OwnerService } from '../owner.service';
-import { Note } from '../note';
 import { of } from 'rxjs';
-import { Router, ActivatedRoute, Routes } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { ActivatedRouteStub } from 'src/testing/activated-route-stub';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { MockAuthService } from 'src/testing/auth.service.mock';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MockAuthService, professorJohnson } from 'src/testing/auth.service.mock';
+import * as jsPDF from 'jspdf';
 
 
 
-describe('Component: Owner page:', () => {
+describe('OwnerComponent:', () => {
 
   let component: OwnerComponent;
   let fixture: ComponentFixture<OwnerComponent>;
   let de: DebugElement;
   let el: HTMLElement;
-  let mockNoteService: MockNoteService;
-  let mockOwnerService: MockOwnerService;
-  let authService: MockAuthService;
-  const activatedRoute: ActivatedRouteStub = new ActivatedRouteStub();
+  const mockNoteService = new MockNoteService();
+  const mockOwnerService = new MockOwnerService();
+  const mockAuthService = new MockAuthService();
+  const activatedRoute = new ActivatedRouteStub();
 
-  beforeEach(() => {
-    mockNoteService = new MockNoteService();
-    mockOwnerService = new MockOwnerService();
+  beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [MatCardModule, RouterTestingModule, MatSnackBar, MatSnackBarModule],
+      imports: [MatCardModule, RouterTestingModule, MatSnackBarModule],
       declarations: [OwnerComponent], // declare the test component
       providers: [
-          {provide: NotesService, useValue: mockNoteService},
-          {provide: OwnerService, useValue: mockOwnerService},
-          {provide: ActivatedRoute, useValue: activatedRoute},
-          {provide: AuthService, useValue: authService}
-      ]
+        { provide: NotesService, useValue: mockNoteService },
+        { provide: OwnerService, useValue: mockOwnerService },
+        { provide: ActivatedRoute, useValue: activatedRoute },
+        { provide: AuthService, useValue: mockAuthService },
+      ],
     });
 
     fixture = TestBed.createComponent(OwnerComponent);
 
     component = fixture.componentInstance; // BannerComponent test instance
 
+    component.ngOnInit();
+    component.ngAfterViewInit();
+
     // query for the link (<a> tag) by CSS element selector
     de = fixture.debugElement.query(By.css('#generate-pdf-button'));
     el = de.nativeElement;
-  });
+  }));
 
-  describe('The retrieveOwner() method:', () => {
-    it('gets the owner Kyle Fluto', () => {
-      const spyOnX500 = spyOnProperty(component, 'x500').and.returnValue('fluto006');
-      component.retrieveOwner();
-      expect(spyOnX500).toHaveBeenCalled();
-      expect(component.retrieveOwner).toHaveBeenCalled();
-      expect(component.x500).toBe('fluto006');
-    });
-
-    it('gets the owner Rachel Johnson', () => {
-
-    });
-
-    it('gets the owner Joe Beaver', () => {
-
-    });
-
-    it('gets the owner James Flegel', () => {
-
-    });
-
-    it('does not get the owner Jack Black', () => {
-
-    });
+  describe('The ngOnInit() method:', () => {
+    it('gets the owner', async(() => {
+      component.x500.subscribe(x500 => {
+        expect(x500).toEqual(professorJohnson.nickname);
+      });
+      component.owner.subscribe(owner => {
+        expect(owner._id).toEqual('rachel_id');
+      });
+    }));
   });
 
   describe('The retrieveNotes() method:', () => {
-    it('gets all the notes from the server', () => {
+    it('gets all of the owner\'s posted notes from the server', async(() => {
+      component.notes = undefined;
       component.retrieveNotes();
 
-      expect(component.notes.length).toBe(3);
-    });
+      const notesThatShouldBeDisplayed = MockNoteService.testNotes
+        .filter(note =>  note.owner_id === 'rachel_id' && note.posted);
 
-    it('contains a note with body \'This is the first note\'', () => {
-      component.retrieveNotes();
-
-      expect(component.notes.some((note: Note) => note.body === 'This is the first note')).toBe(true);
-    });
+      component.notes.subscribe(notes => {
+        expect(notes).toEqual(notesThatShouldBeDisplayed);
+      });
+    }));
   });
 
   describe('The deleteNote() method:', () => {
     it('calls notesService.deleteNote', () => {
       const id = 'Hey everyone, I\'m an ID!';
-      spyOn(MockNoteService.prototype, 'deleteNote').and.returnValue(of(true));
+      spyOn(mockNoteService, 'deleteNote').and.returnValue(of(true));
 
       component.deleteNote(id);
-      expect(MockNoteService.prototype.deleteNote).toHaveBeenCalledWith(id);
+      expect(mockNoteService.deleteNote).toHaveBeenCalledWith(id);
     });
   });
 
-  describe('The savePDF() method:', () => {
-    it('gets a pdf document from PDFService and calls .save() on it', () => {
-      component.savePDF();
-      expect(mockPDFService.doc.save).toHaveBeenCalled();
-    });
-  });
+  describe('Making the sign:', () => {
+    let fakeJsPDF: jasmine.SpyObj<jsPDF>;
+    const pretendPdfUrl = 'blob:pretend url';
 
-  describe('The GENERATE PDF button:', () => {
-    it('gets a pdf document from PDFService and calls .save() on it', () => {
-      el.click();
-      expect(mockPDFService.doc.save).toHaveBeenCalled();
+    beforeEach(() => {
+      fakeJsPDF =
+        jasmine.createSpyObj('fakeJsPDF', ['output']);
+
+      spyOn(mockOwnerService, 'getPDF').and.returnValue(fakeJsPDF);
+      fakeJsPDF.output.and.returnValue(pretendPdfUrl);
+
+      spyOn(window, 'open');
+    });
+
+    describe('The openPDF() method:', () => {
+      it('gets a pdf document from OwnerService', async(() => {
+        component.openPDF();
+
+        fixture.whenStable().then(() => {
+          expect(mockOwnerService.getPDF).toHaveBeenCalledTimes(1);
+        });
+      }));
+
+      it('opens that pdf in a new window', async(() => {
+        component.openPDF();
+
+        fixture.whenStable().then(() => {
+          expect(fakeJsPDF.output).toHaveBeenCalledWith('bloburl');
+          expect(window.open).toHaveBeenCalledWith(pretendPdfUrl, '_blank');
+        });
+      }));
+    });
+
+    describe('The GENERATE SIGN button:', () => {
+      it('gets a pdf document from OwnerService', async(() => {
+        el.click();
+
+        fixture.whenStable().then(() => {
+          expect(mockOwnerService.getPDF).toHaveBeenCalledTimes(1);
+        });
+      }));
+
+      it('opens that pdf in a new window', async(() => {
+        el.click();
+
+        fixture.whenStable().then(() => {
+          expect(fakeJsPDF.output).toHaveBeenCalledWith('bloburl');
+          expect(window.open).toHaveBeenCalledWith(pretendPdfUrl, '_blank');
+        });
+      }));
     });
   });
 });
