@@ -25,9 +25,11 @@ import {MatDividerModule} from '@angular/material/divider';
 import {MatRadioModule} from '@angular/material/radio';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
 
-
 import { HttpClientModule } from '@angular/common/http';
 import { LayoutModule } from '@angular/cdk/layout';
+
+import { NgxPrintModule } from 'ngx-print'
+
 import { NotesService } from './notes.service';
 import { ViewerPageComponent } from './viewer-page/viewer-page.component';
 import { AddNoteComponent } from './add/add-note.component';
@@ -37,6 +39,7 @@ import { OwnerComponent } from './owner/owner.component';
 import { TrashComponent } from './trash/trash.component';
 import { OwnerService } from './owner.service';
 import { AuthService } from './authentication/auth.service';
+import { SignComponent } from './sign/sign.component';
 
 const MATERIAL_MODULES: any[] = [
   MatListModule,
@@ -65,6 +68,7 @@ const MATERIAL_MODULES: any[] = [
     EditComponent,
     OwnerComponent,
     TrashComponent,
+    SignComponent,
   ],
   imports: [
     BrowserModule,
@@ -76,6 +80,7 @@ const MATERIAL_MODULES: any[] = [
     HttpClientModule,
     MATERIAL_MODULES,
     LayoutModule,
+    NgxPrintModule,
   ],
   providers: [
     NotesService,

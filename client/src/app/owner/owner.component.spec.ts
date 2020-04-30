@@ -14,7 +14,6 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { ActivatedRouteStub } from 'src/testing/activated-route-stub';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MockAuthService, professorJohnson } from 'src/testing/auth.service.mock';
-import * as jsPDF from 'jspdf';
 
 
 
@@ -49,7 +48,7 @@ describe('OwnerComponent:', () => {
     component.ngAfterViewInit();
 
     // query for the link (<a> tag) by CSS element selector
-    de = fixture.debugElement.query(By.css('#generate-pdf-button'));
+    de = fixture.debugElement.query(By.css('#print-sign-button'));
     el = de.nativeElement;
   }));
 
@@ -85,61 +84,6 @@ describe('OwnerComponent:', () => {
 
       component.deleteNote(id);
       expect(mockNoteService.deleteNote).toHaveBeenCalledWith(id);
-    });
-  });
-
-  describe('Making the sign:', () => {
-    let fakeJsPDF: jasmine.SpyObj<jsPDF>;
-    const pretendPdfUrl = 'blob:pretend url';
-
-    beforeEach(() => {
-      fakeJsPDF =
-        jasmine.createSpyObj('fakeJsPDF', ['output']);
-
-      spyOn(mockOwnerService, 'getPDF').and.returnValue(fakeJsPDF);
-      fakeJsPDF.output.and.returnValue(pretendPdfUrl);
-
-      spyOn(component, 'openExternalLink');
-    });
-
-    describe('The openPDF() method:', () => {
-      it('gets a pdf document from OwnerService', async(() => {
-        component.openPDF();
-
-        fixture.whenStable().then(() => {
-          expect(mockOwnerService.getPDF).toHaveBeenCalledTimes(1);
-        });
-      }));
-
-      it('opens that pdf in a new window', async(() => {
-        component.openPDF();
-
-        fixture.whenStable().then(() => {
-          expect(fakeJsPDF.output).toHaveBeenCalledWith('bloburl');
-          expect(component.openExternalLink)
-            .toHaveBeenCalledWith(pretendPdfUrl);
-        });
-      }));
-    });
-
-    describe('The GENERATE SIGN button:', () => {
-      it('gets a pdf document from OwnerService', async(() => {
-        el.click();
-
-        fixture.whenStable().then(() => {
-          expect(mockOwnerService.getPDF).toHaveBeenCalledTimes(1);
-        });
-      }));
-
-      it('opens that pdf in a new window', async(() => {
-        el.click();
-
-        fixture.whenStable().then(() => {
-          expect(fakeJsPDF.output).toHaveBeenCalledWith('bloburl');
-          expect(component.openExternalLink)
-            .toHaveBeenCalledWith(pretendPdfUrl);
-        });
-      }));
     });
   });
 });

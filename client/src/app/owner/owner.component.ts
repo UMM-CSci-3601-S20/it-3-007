@@ -5,12 +5,21 @@ import { OwnerService } from '../owner.service';
 import { Observable } from 'rxjs';
 import { NotesService } from '../notes.service';
 import { Note } from '../note';
-import { Location, DOCUMENT } from '@angular/common';
+import { Location, } from '@angular/common';
 import { AuthService, REDIRECT_URL } from '../authentication/auth.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { map, concatMap, switchMap, catchError, tap, take, flatMap, share } from 'rxjs/operators';
+import { map, switchMap, tap, take, flatMap, share } from 'rxjs/operators';
 import { handleHttpError } from '../utils';
-import * as jsPDF from 'jspdf';
+
+/**
+ * You can give NgxPrint some CSS to apply to the div to be printed. (But you
+ * actually have to use a JavaScript object shaped like a CSS rule-set.)
+ */
+type NgxPrintStyle = {
+  [selector: string]: {
+    [rule: string]: string
+  }
+};
 
 @Component({
   selector: 'app-owner',
@@ -21,7 +30,6 @@ import * as jsPDF from 'jspdf';
 export class OwnerComponent implements OnInit, AfterViewInit {
   constructor(
     private route: ActivatedRoute,
-    @Inject(DOCUMENT) private document: Document,
     private _location: Location,
     private snackBar: MatSnackBar,
     public auth: AuthService,
@@ -34,6 +42,21 @@ export class OwnerComponent implements OnInit, AfterViewInit {
   id: Observable<string>;
   name: Observable<string>;
   x500: Observable<string>;
+
+  /**
+   * This is some CSS to be applied to the door sign when it's printed out.
+   */
+  readonly printStyle: NgxPrintStyle = {
+    '*': {
+      'text-align': 'center',
+      'font-family': 'sans-serif',
+      'font-weight': 'bold',
+    },
+
+    p: {
+      'font-size': 'xx-large',
+    },
+  }
 
   retrieveNotes(): void {
     this.notes = this.owner.pipe(
@@ -63,23 +86,6 @@ export class OwnerComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit(): void {
     this._location.replaceState(new URL(REDIRECT_URL).pathname);
-  }
-
-  openPDF(): void {
-    this.owner.pipe(take(1)).subscribe(owner => {
-      const doc: jsPDF = this.ownerService.getPDF(owner.name, owner.x500);
-      // We need to open the blob URL explicitly, instead of letting jspdf
-      // handle that for us. (Otherwise, Chrome isn't happy.)
-      // See: https://stackoverflow.com/a/53701145
-      this.openExternalLink(doc.output('bloburl'));
-    });
-  }
-
-  openExternalLink(url: string) {
-    // We can't use window.open(url, '_blank') here, because Safari
-    // doesn't like that.
-    // See:
-    this.document.location.href = url;
   }
 
   newOwner(): Observable<Owner> {

@@ -1,6 +1,14 @@
 @import '../notes.scss';
 
 /**
+ * Don't display the owner sign. (It's only there so that you can print it if
+ * you need to.)
+ */
+#owner-sign {
+  display: none;
+}
+
+/**
  * Modify the note card so it has a little action-bar at the bottom
  */
 .note-card {
@@ -18,14 +26,14 @@
   justify-content: space-between;
 }
 
-// For some reason, Angular gives margins to every button but the first.
+// For some reason, Angular gises margins to every button but the first.
 // So, we have to go back and add these margins manually.
 .note-card .mat-card-actions .mat-button:first-child {
   margin-left: 8px;
   margin-right: 8px;
 }
 
-#pdf-div {
+#buttons {
   display: flex;
   flex-direction: row;
   justify-content: center;

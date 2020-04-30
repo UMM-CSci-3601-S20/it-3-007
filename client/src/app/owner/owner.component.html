@@ -2,15 +2,19 @@
   <h2>{{(owner | async)?.name}}</h2>
 </nav>
 
-<div fxLayout="row" id="pdf-div">
-  <button mat-button id="generate-pdf-button" type="button" color="primary" (click)="openPDF()">
-    GENERATE SIGN
+<div fxLayout="row" id="buttons">
+  <button mat-button type="button" color="primary"
+    id="print-sign-button"
+    ngxPrint printSectionId="owner-sign" [printStyle]="printStyle">
+    PRINT SIGN
   </button>
-  <button mat-button class="logoutButton" type="button" color="primary" (click)="this.auth.logout()"> LOGOUT </button>
-  <button mat-button class="viewDoorBoard" type="button" color="primary" [routerLink]="(owner | async)?.x500"> VIEW DOORBOARD </button>
+  <button mat-button class="logout-button" type="button" color="primary" (click)="this.auth.logout()"> LOGOUT </button>
+  <button mat-button class="view-door-board" type="button" color="primary" [routerLink]="(owner | async)?.x500"> VIEW DOORBOARD </button>
 </div>
 
-
+<!-- The CSS should hide this component. It's the door-sign that -->
+<!-- will be printed out by the PRINT SIGN button. -->
+<app-sign id="owner-sign" [owner]="owner | async"></app-sign>
 
 <div *ngIf="notes | async; else notesError">
 <ul class= "note-container">
