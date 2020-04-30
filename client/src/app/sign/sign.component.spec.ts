@@ -4,7 +4,7 @@ import { SignComponent } from './sign.component';
 import { MockOwnerService } from '../../testing/owner.service.mock';
 import { environment } from 'src/environments/environment';
 
-describe('SignComponent', () => {
+describe('SignComponent:', () => {
   let component: SignComponent;
   let fixture: ComponentFixture<SignComponent>;
 
