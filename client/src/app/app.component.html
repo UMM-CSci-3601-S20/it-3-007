@@ -1,5 +1,6 @@
 <mat-sidenav-container class="sidenav-container">
-  <mat-toolbar color="primary">
+  <mat-toolbar fxLayout="row" color="primary">
+    <!--The container takes up 10% of the row-->
     <div class="menu-button-container">
       <button class="menu-button" mat-button [matMenuTriggerFor]="appMenu">
         <mat-icon>
@@ -13,7 +14,14 @@
       <button mat-menu-item routerLink="/:x500"> Viewer Mode </button>
 
     </mat-menu>
-    <span class="app-title">{{title}}</span>
+    <!--This pushes the title as far right as possible while still remaining centered-->
+    <span class="space"></span>
+    <!--The 1.5% offset is just here to center the title on desktop-->
+    <div fxFlexOffset=1.5 class="app-title-container" fxFlex>
+      <span class="app-title">{{title}}</span>
+    </div>
+    <!--This pushes the print and share buttons as far right as they can go-->
+    <span class="space"></span>
     <div class="print-button-container">
       <button class="print-button">
         <mat-icon>printer</mat-icon>

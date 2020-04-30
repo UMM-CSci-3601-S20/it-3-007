@@ -7,7 +7,6 @@
     GENERATE PDF
   </button>
   <button mat-button class="logoutButton" type="button" color="primary" (click)="this.auth.logout()"> LOGOUT </button>
-  <button mat-button class="viewDoorBoard" type="button" color="primary" [routerLink]="(owner | async)?.x500"> VIEW DOORBOARD </button>
 </div>
 
 
@@ -42,10 +41,6 @@
 
 <button mat-fab class="add-note-fab" matTooltip="Add Note" matTooltipPosition="left" [routerLink] = "'/new'">
   <mat-icon class="md-24" aria-label="Add Note">add</mat-icon>
-</button>
-
-<button mat-fab class="trash-fab" matTooltip="Trash Can" matTooltipPosition="right" [routerLink] = "'/trash'">
-  <mat-icon class="md-24" aria-label="Trash can">delete</mat-icon>
 </button>
 
 

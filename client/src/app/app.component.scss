@@ -1,24 +1,29 @@
 .mat-toolbar {
   z-index: 1;
-  display: flex;
-  flex-direction: row;
 }
 
 .menu-button-container {
-  justify-self: left;
+  display: flex;
+  justify-content: left;
 }
 
-.app-title {
-  font-size: larger;
-  justify-self: center;
+.app-title-container {
+  display: flex;
+  justify-content: center;
+}
+
+.space {
+  flex: 1 1 auto; // https://material.angular.io/components/toolbar/overview
 }
 
 .print-button-container {
-  justify-self: right;
+  display: flex;
+  justify-items: right;
 }
 
 .share-link-container  {
-  justify-self: right;
+  display: flex;
+  justify-content: left;
 }
 
 .sidenav-container {
