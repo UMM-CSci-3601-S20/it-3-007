@@ -7,7 +7,7 @@ import { NotesService } from './notes.service';
 describe('Note service:', () => {
 
   const yogiId = 'yogi_id';
-  const yogiNotes = [
+  const yogiNotes: Note[] = [
     {
       _id: 'y1',
       owner_id: yogiId,
