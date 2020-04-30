@@ -1,11 +1,11 @@
-import { Component, OnInit, OnDestroy, AfterViewInit} from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit, Inject} from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Owner } from '../owner';
 import { OwnerService } from '../owner.service';
 import { Observable } from 'rxjs';
 import { NotesService } from '../notes.service';
 import { Note } from '../note';
-import {Location} from '@angular/common';
+import { Location, DOCUMENT } from '@angular/common';
 import { AuthService, REDIRECT_URL } from '../authentication/auth.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { map, concatMap, switchMap, catchError, tap, take, flatMap, share } from 'rxjs/operators';
@@ -21,11 +21,12 @@ import * as jsPDF from 'jspdf';
 export class OwnerComponent implements OnInit, AfterViewInit {
   constructor(
     private route: ActivatedRoute,
-    public auth: AuthService,
+    @Inject(DOCUMENT) private document: Document,
     private _location: Location,
+    private snackBar: MatSnackBar,
+    public auth: AuthService,
     private notesService: NotesService,
     private ownerService: OwnerService,
-    private snackBar: MatSnackBar
   ) {}
 
   notes: Observable<Note[]>;
@@ -67,10 +68,18 @@ export class OwnerComponent implements OnInit, AfterViewInit {
   openPDF(): void {
     this.owner.pipe(take(1)).subscribe(owner => {
       const doc: jsPDF = this.ownerService.getPDF(owner.name, owner.x500);
-      // We need to explicitly call window.open or else Chrome isn't happy.
+      // We need to open the blob URL explicitly, instead of letting jspdf
+      // handle that for us. (Otherwise, Chrome isn't happy.)
       // See: https://stackoverflow.com/a/53701145
-      window.open(doc.output('bloburl'), '_blank');
+      this.openExternalLink(doc.output('bloburl'));
     });
+  }
+
+  openExternalLink(url: string) {
+    // We can't use window.open(url, '_blank') here, because Safari
+    // doesn't like that.
+    // See:
+    this.document.location.href = url;
   }
 
   newOwner(): Observable<Owner> {

@@ -99,7 +99,7 @@ describe('OwnerComponent:', () => {
       spyOn(mockOwnerService, 'getPDF').and.returnValue(fakeJsPDF);
       fakeJsPDF.output.and.returnValue(pretendPdfUrl);
 
-      spyOn(window, 'open');
+      spyOn(component, 'openExternalLink');
     });
 
     describe('The openPDF() method:', () => {
@@ -116,7 +116,8 @@ describe('OwnerComponent:', () => {
 
         fixture.whenStable().then(() => {
           expect(fakeJsPDF.output).toHaveBeenCalledWith('bloburl');
-          expect(window.open).toHaveBeenCalledWith(pretendPdfUrl, '_blank');
+          expect(component.openExternalLink)
+            .toHaveBeenCalledWith(pretendPdfUrl);
         });
       }));
     });
@@ -135,7 +136,8 @@ describe('OwnerComponent:', () => {
 
         fixture.whenStable().then(() => {
           expect(fakeJsPDF.output).toHaveBeenCalledWith('bloburl');
-          expect(window.open).toHaveBeenCalledWith(pretendPdfUrl, '_blank');
+          expect(component.openExternalLink)
+            .toHaveBeenCalledWith(pretendPdfUrl);
         });
       }));
     });
