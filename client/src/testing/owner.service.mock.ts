@@ -3,6 +3,7 @@ import { Observable, of } from 'rxjs';
 import { Owner } from '../app/owner';
 import { OwnerService } from '../app/owner.service';
 import { AuthService } from 'src/app/authentication/auth.service';
+import { professorJohnson } from './auth.service.mock';
 
 /**
  * A "mock" version of the `OwnerService` that can be used to test components
@@ -13,11 +14,11 @@ export class MockOwnerService extends OwnerService {
   static testOwners: Owner[] = [
     {
       _id: 'rachel_id',
-      name: 'Rachel Johnson',
+      name: professorJohnson.name,
       officeNumber: '1234',
-      email: 'rmjohns@morris.umn.edu',
+      email: professorJohnson.email,
       building: 'Science',
-      x500: 'rmjohns'
+      x500: professorJohnson.nickname,
     },
     {
       _id: 'joe_id',
