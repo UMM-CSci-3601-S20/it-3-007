@@ -8,9 +8,8 @@ import { Note } from '../note';
 import { Location, DOCUMENT } from '@angular/common';
 import { AuthService, REDIRECT_URL } from '../authentication/auth.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { map, concatMap, switchMap, catchError, tap, take, flatMap, share } from 'rxjs/operators';
+import { map, switchMap, tap, take, flatMap, share } from 'rxjs/operators';
 import { handleHttpError } from '../utils';
-import * as jsPDF from 'jspdf';
 
 @Component({
   selector: 'app-owner',
@@ -67,18 +66,14 @@ export class OwnerComponent implements OnInit, AfterViewInit {
 
   openPDF(): void {
     this.owner.pipe(take(1)).subscribe(owner => {
-      const doc: jsPDF = this.ownerService.getPDF(owner.name, owner.x500);
-      // We need to open the blob URL explicitly, instead of letting jspdf
-      // handle that for us. (Otherwise, Chrome isn't happy.)
-      // See: https://stackoverflow.com/a/53701145
-      this.openExternalLink(doc.output('bloburl'));
+      this.openExternalLink(
+        this.ownerService.getPdfUrl(owner.name, owner.x500));
     });
   }
 
   openExternalLink(url: string) {
     // We can't use window.open(url, '_blank') here, because Safari
     // doesn't like that.
-    // See:
     this.document.location.href = url;
   }
 

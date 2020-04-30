@@ -14,7 +14,6 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { ActivatedRouteStub } from 'src/testing/activated-route-stub';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MockAuthService, professorJohnson } from 'src/testing/auth.service.mock';
-import * as jsPDF from 'jspdf';
 
 
 
@@ -89,15 +88,10 @@ describe('OwnerComponent:', () => {
   });
 
   describe('Making the sign:', () => {
-    let fakeJsPDF: jasmine.SpyObj<jsPDF>;
     const pretendPdfUrl = 'blob:pretend url';
 
     beforeEach(() => {
-      fakeJsPDF =
-        jasmine.createSpyObj('fakeJsPDF', ['output']);
-
-      spyOn(mockOwnerService, 'getPDF').and.returnValue(fakeJsPDF);
-      fakeJsPDF.output.and.returnValue(pretendPdfUrl);
+      spyOn(mockOwnerService, 'getPdfUrl').and.returnValue(pretendPdfUrl);
 
       spyOn(component, 'openExternalLink');
     });
@@ -107,15 +101,14 @@ describe('OwnerComponent:', () => {
         component.openPDF();
 
         fixture.whenStable().then(() => {
-          expect(mockOwnerService.getPDF).toHaveBeenCalledTimes(1);
+          expect(mockOwnerService.getPdfUrl).toHaveBeenCalledTimes(1);
         });
       }));
 
-      it('opens that pdf in a new window', async(() => {
+      it('opens that pdf', async(() => {
         component.openPDF();
 
         fixture.whenStable().then(() => {
-          expect(fakeJsPDF.output).toHaveBeenCalledWith('bloburl');
           expect(component.openExternalLink)
             .toHaveBeenCalledWith(pretendPdfUrl);
         });
@@ -127,15 +120,14 @@ describe('OwnerComponent:', () => {
         el.click();
 
         fixture.whenStable().then(() => {
-          expect(mockOwnerService.getPDF).toHaveBeenCalledTimes(1);
+          expect(mockOwnerService.getPdfUrl).toHaveBeenCalledTimes(1);
         });
       }));
 
-      it('opens that pdf in a new window', async(() => {
+      it('opens that pdf', async(() => {
         el.click();
 
         fixture.whenStable().then(() => {
-          expect(fakeJsPDF.output).toHaveBeenCalledWith('bloburl');
           expect(component.openExternalLink)
             .toHaveBeenCalledWith(pretendPdfUrl);
         });

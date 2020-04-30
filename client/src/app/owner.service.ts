@@ -32,7 +32,7 @@ export class OwnerService {
     return this.httpClient.post<{ id: string }>(this.ownerUrl + '/new', newOwner).pipe(map(res => res.id));
   }
 
-  getPDF(name: string, x500: string): jsPDF {
+  getPdfUrl(name: string, x500: string): string {
     const url: string = environment.BASE_URL + '/' + x500;
     const doc = new jsPDF({
       orientation: 'portrait',
@@ -44,6 +44,6 @@ export class OwnerService {
     doc.text(name + '\'s DoorBoard', (8.5 / 2), 4, { align: 'center' });
     doc.text(url, (8.5 / 2), 4.5, { align: 'center' });
 
-    return doc;
+    return doc.output('bloburl');
   }
 }
