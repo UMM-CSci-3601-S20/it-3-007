@@ -185,7 +185,7 @@ public class NoteControllerSpec {
   @Test
   public void AddNote() throws IOException {
 
-    String testNewNote = "{\"body\": \"Test Note\"}";
+    String testNewNote = "{\"body\": \"Test Note\", \"status\": \"active\"}";
 
     mockReq.setBodyContent(testNewNote);
     mockReq.setMethod("POST");

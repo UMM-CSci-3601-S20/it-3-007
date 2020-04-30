@@ -140,6 +140,7 @@ public class NoteController {
     .check((note) -> note.body.length() >= 2 && note.body.length() <= 300).get();
 
     noteCollection.insertOne(newNote);
+    deathTimer.updateTimerStatus(newNote);
     ctx.status(201);
     ctx.json(ImmutableMap.of("id", newNote._id));
   }
@@ -243,7 +244,7 @@ public class NoteController {
       if(inputDoc.containsKey("expireDate")){
         if(inputDoc.get("expireDate") == null) {
           toReturn.append("$unset", new Document("expireDate", "")); //If expireDate is specifically included with a null value, remove the expiration date.
-        } else if (!noteStatus.equals("active")) {
+        } else if (!noteStatus.equals(NoteStatus.ACTIVE)) {
           throw new ConflictResponse("Expiration dates can only be assigned to active notices.");
           //Order of clauses means we don't mind of someone manually zeroes their expireDate when making something inactive.
         } else if (new Date().after((Date)inputDoc.get("expireDate"))){
