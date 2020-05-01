@@ -35,7 +35,7 @@ export class OwnerComponent implements OnInit, AfterViewInit {
 
   retrieveNotes(): void {
     this.notes = this.owner.pipe(
-      switchMap(owner => this.notesService.getOwnerNotes({owner_id: owner._id, posted: true})),
+      switchMap(owner => this.notesService.getOwnerNotes({owner_id: owner._id, status: 'active'})),
       map(notes => notes.reverse()),
       share(),
     );
