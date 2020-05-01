@@ -73,7 +73,7 @@ public class NoteControllerSpec {
    */
   public String newNoteStringWithBodyLength(int length) {
     String newNote = String.format(
-      "{ \"body\": \"%s\" }",
+      "{ \"body\": \"%s\", \"status\": \"active\" }",
       Strings.repeat("x", length));
 
     return newNote;
