@@ -69,7 +69,7 @@ describe('OwnerComponent:', () => {
       component.retrieveNotes();
 
       const notesThatShouldBeDisplayed = MockNoteService.testNotes
-        .filter(note =>  note.owner_id === 'rachel_id' && note.posted);
+        .filter(note =>  note.owner_id === 'rachel_id' && note.status);
 
       component.notes.subscribe(notes => {
         expect(notes).toEqual(notesThatShouldBeDisplayed);
