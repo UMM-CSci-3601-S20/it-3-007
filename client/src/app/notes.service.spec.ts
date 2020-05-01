@@ -272,8 +272,8 @@ describe('Note service:', () => {
 
       const testId = 'testid';
 
-      noteService.editNote(newNote, testId).subscribe(id => {
-        expect(id).toEqual(testId);
+      noteService.editNote(newNote, testId).subscribe(resp => {
+        expect(resp.status).toEqual(204);
       });
 
       const req = httpTestingController.expectOne({ method: 'POST' });

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpParams, HttpErrorResponse, HttpResponse } from '@angular/common/http';
 import { environment } from '../environments/environment';
 import { Note, NewNote } from './note';
 import { Observable, throwError, of, OperatorFunction } from 'rxjs';
@@ -81,8 +81,8 @@ export class NotesService {
 
 
 
-  editNote(editNote: Note, id: string): Observable<string> {
-    return this.httpClient.post<{id: string}>(this.noteUrl + '/edit/' + id, editNote).pipe(map(res => res.id));
+  editNote(toEdit: Note, id: string): Observable<HttpResponse<object>> {
+    return this.httpClient.post(this.noteUrl + '/edit/' + id, toEdit, {observe: 'response'});
   }
 
   getNoteById(id: string): Observable<Note> {

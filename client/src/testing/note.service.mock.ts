@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { NotesService } from '../app/notes.service';
 import { Note } from '../app/note';
 import { of, Observable } from 'rxjs';
+import { HttpResponse } from '@angular/common/http';
 
 @Injectable()
 export class MockNoteService extends NotesService {
@@ -88,7 +89,7 @@ export class MockNoteService extends NotesService {
   }
 
   editNote(note: Note, id: string) {
-    return of(id);
+    return of(new HttpResponse<object>({status: 204}));
   }
 
   getNoteById(id: string) {
