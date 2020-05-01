@@ -62,7 +62,6 @@ export class TrashComponent implements OnInit, OnDestroy  {
     this.getx500Sub = this.auth.getUser$().subscribe(returned => {
       this.x500 = returned.nickname;
     });
-    console.log(this.x500);
     this.getOwnerSub = this.ownerService.getOwnerByx500(this.x500).subscribe(returnedOwner => {
       this.owner = returnedOwner;
       this.retrieveNotes();

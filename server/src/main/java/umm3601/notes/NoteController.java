@@ -46,6 +46,17 @@ public class NoteController {
   private final OwnerController ownerController;
   private final DeathTimer deathTimer = DeathTimer.getDeathTimerInstance();
 
+  /**
+   * The length of a note's body must be less than or equal to this value.
+   */
+  public static final int MAXIMUM_BODY_LENGTH = 1_000;
+
+  /**
+   * The length of a note's body must be greater than or equal to this value.
+   */
+  public static final int BODY_MINIMUM_LENGTH = 1;
+
+
   public NoteController(MongoDatabase database) {
     jacksonCodecRegistry.addCodecForClass(Note.class);
     noteCollection = database.getCollection("notes").withDocumentClass(Note.class)
@@ -137,7 +148,9 @@ public class NoteController {
   public void addNote(Context ctx) {
 
     Note newNote = ctx.bodyValidator(Note.class)
-    .check((note) -> note.body.length() >= 2 && note.body.length() <= 300).get();
+      .check(note -> note.body.length() >= BODY_MINIMUM_LENGTH)
+      .check(note -> note.body.length() <= MAXIMUM_BODY_LENGTH)
+      .get();
 
     noteCollection.insertOne(newNote);
     deathTimer.updateTimerStatus(newNote);
@@ -151,8 +164,11 @@ public class NoteController {
   public void editNote(Context ctx) {
     String id = ctx.pathParamMap().get("id");
 
-    Note newNote= ctx.bodyValidator(Note.class)
-    .check((note) -> note.body.length() >= 2 && note.body.length() <= 300).get();
+    Note newNote = ctx.bodyValidator(Note.class)
+      .check(note -> note.body.length() >= BODY_MINIMUM_LENGTH)
+      .check(note -> note.body.length() <= MAXIMUM_BODY_LENGTH)
+      .get();
+
     String newBody = newNote.body;
 
     Note oldNote = noteCollection.findOneAndUpdate(eq("_id", new ObjectId(id)), set("body", newBody));

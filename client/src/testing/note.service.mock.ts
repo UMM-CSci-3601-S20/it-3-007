@@ -70,6 +70,7 @@ export class MockNoteService extends NotesService {
 
   public static FAKE_BODY = 'This is definitely the note you wanted';
 
+
   constructor() {
     super(null);
   }

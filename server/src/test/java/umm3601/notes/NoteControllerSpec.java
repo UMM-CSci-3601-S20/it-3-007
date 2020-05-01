@@ -16,6 +16,7 @@ import java.util.List;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.base.Strings;
 import com.mockrunner.mock.web.MockHttpServletRequest;
 import com.mockrunner.mock.web.MockHttpServletResponse;
 import com.mongodb.client.MongoClient;
@@ -62,6 +63,21 @@ public class NoteControllerSpec {
   static ObjectId noteInTheTrashId;
   static BasicDBObject noteInTheTrash;
 
+  /**
+   * Return a JSON string representing a newly-created Note (that is,
+   * a note that doesn't have an ID yet) suitable for sending as a
+   * POST request to api/notes/new.
+   *
+   * @param length The length, in characters, of the body field of the new
+   * note.
+   */
+  public String newNoteStringWithBodyLength(int length) {
+    String newNote = String.format(
+      "{ \"body\": \"%s\" }",
+      Strings.repeat("x", length));
+
+    return newNote;
+  }
 
   @BeforeAll
   public static void setupAll() {
@@ -209,8 +225,9 @@ public class NoteControllerSpec {
 
   @Test
   public void AddNoteWithTooShortBody() throws IOException {
-    String testNewNote = "{\"body\":\"x\"}";
-    mockReq.setBodyContent(testNewNote);
+    String testNewNote =
+      newNoteStringWithBodyLength(NoteController.BODY_MINIMUM_LENGTH - 1);
+
     mockReq.setMethod("POST");
     Context ctx = ContextUtil.init(mockReq, mockRes, "api/notes/new");
 
@@ -221,11 +238,8 @@ public class NoteControllerSpec {
 
   @Test
   public void AddNoteWithTooLongBody() throws IOException {
-    String testNewNote = "{\"body\":\"";
-    for(int i = 0; i < 1000; i++) {
-      testNewNote = testNewNote + "x";
-    }
-    testNewNote = testNewNote + "\"}";
+    String testNewNote =
+      newNoteStringWithBodyLength(NoteController.MAXIMUM_BODY_LENGTH + 1);
 
     mockReq.setBodyContent(testNewNote);
     mockReq.setMethod("POST");
@@ -235,6 +249,47 @@ public class NoteControllerSpec {
       noteController.addNote(ctx);
     });
   }
+
+  @Test
+  public void AddShortestNotePossible() throws IOException {
+    String testNewNote =
+      newNoteStringWithBodyLength(NoteController.BODY_MINIMUM_LENGTH);
+
+    mockReq.setBodyContent(testNewNote);
+    mockReq.setMethod("POST");
+    Context ctx = ContextUtil.init(mockReq, mockRes, "api/notes/new");
+
+    noteController.addNote(ctx);
+
+    assertEquals(201, mockRes.getStatus());
+
+    String result = ctx.resultString();
+    String id = jsonMapper.readValue(result, ObjectNode.class).get("id").asText();
+    assertNotEquals("", id);
+
+    assertEquals(1, db.getCollection("notes").countDocuments(eq("_id", new ObjectId(id))));
+  }
+
+  @Test
+  public void AddLongestNotePossible() throws IOException {
+    String testNewNote =
+      newNoteStringWithBodyLength(NoteController.MAXIMUM_BODY_LENGTH);
+
+    mockReq.setBodyContent(testNewNote);
+    mockReq.setMethod("POST");
+    Context ctx = ContextUtil.init(mockReq, mockRes, "api/notes/new");
+
+    noteController.addNote(ctx);
+
+    assertEquals(201, mockRes.getStatus());
+
+    String result = ctx.resultString();
+    String id = jsonMapper.readValue(result, ObjectNode.class).get("id").asText();
+    assertNotEquals("", id);
+
+    assertEquals(1, db.getCollection("notes").countDocuments(eq("_id", new ObjectId(id))));
+  }
+
 
   @Test
   public void DeleteNote() throws IOException {
@@ -356,7 +411,7 @@ public class NoteControllerSpec {
 
     mockReq.setBodyContent(testUpdateNote);
     mockReq.setMethod("POST");
-    Context ctx = ContextUtil.init(mockReq, mockRes, "api/notes/:id", ImmutableMap.of("id", wrongId.toHexString()));
+    Context ctx = ContextUtil.init(mockReq, mockRes, "api/notes/edit/:id", ImmutableMap.of("id", wrongId.toHexString()));
 
     assertThrows(NotFoundResponse.class, () -> {
       noteController.editNote(ctx);
@@ -365,4 +420,73 @@ public class NoteControllerSpec {
     assertEquals(0, db.getCollection("notes").countDocuments(eq("_id", wrongId)));
 
   }
+
+  @Test
+  public void EditNoteWithTooShortBody() throws IOException {
+    String testUpdateNote =
+      newNoteStringWithBodyLength(NoteController.BODY_MINIMUM_LENGTH - 1);
+    String id = importantNoteId.toHexString();
+
+    mockReq.setBodyContent(testUpdateNote);
+    mockReq.setMethod("POST");
+    Context ctx = ContextUtil.init(mockReq, mockRes, "api/notes/edit/:id", ImmutableMap.of("id", id));
+
+    assertThrows(BadRequestResponse.class, () -> {
+      noteController.editNote(ctx);
+    });
+  }
+
+  @Test
+  public void EditNoteWithTooLongBody() throws IOException {
+    String testUpdateNote =
+      newNoteStringWithBodyLength(NoteController.MAXIMUM_BODY_LENGTH + 1);
+    String id = importantNoteId.toHexString();
+
+    mockReq.setBodyContent(testUpdateNote);
+    mockReq.setMethod("POST");
+    Context ctx = ContextUtil.init(mockReq, mockRes, "api/notes/edit/:id", ImmutableMap.of("id", id));
+
+    assertThrows(BadRequestResponse.class, () -> {
+      noteController.editNote(ctx);
+    });
+  }
+
+  @Test
+  public void EditShortestNotePossible() throws IOException {
+    String testUpdateNote =
+      newNoteStringWithBodyLength(NoteController.BODY_MINIMUM_LENGTH);
+    String id = importantNoteId.toHexString();
+
+    mockReq.setBodyContent(testUpdateNote);
+    mockReq.setMethod("POST");
+    Context ctx = ContextUtil.init(mockReq, mockRes, "api/notes/edit/:id", ImmutableMap.of("id", id));
+
+    noteController.addNote(ctx);
+
+    assertEquals(201, mockRes.getStatus());
+
+    String result = ctx.resultString();
+    String resultId = jsonMapper.readValue(result, ObjectNode.class).get("id").asText();
+    assertNotEquals("", resultId);
+  }
+
+  @Test
+  public void EditLongestNotePossible() throws IOException {
+    String testUpdateNote =
+      newNoteStringWithBodyLength(NoteController.BODY_MINIMUM_LENGTH);
+    String id = importantNoteId.toHexString();
+
+    mockReq.setBodyContent(testUpdateNote);
+    mockReq.setMethod("POST");
+    Context ctx = ContextUtil.init(mockReq, mockRes, "api/notes/edit/:id", ImmutableMap.of("id", id));
+
+    noteController.addNote(ctx);
+
+    assertEquals(201, mockRes.getStatus());
+
+    String result = ctx.resultString();
+    String resultId = jsonMapper.readValue(result, ObjectNode.class).get("id").asText();
+    assertNotEquals("", resultId);
+  }
+
 }

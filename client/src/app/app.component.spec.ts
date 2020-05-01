@@ -8,6 +8,7 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatCardModule } from '@angular/material/card';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatListModule } from '@angular/material/list';
+import { MatMenuModule } from '@angular/material/menu';
 
 describe('AppComponent:', () => {
   beforeEach(async(() => {
@@ -19,7 +20,8 @@ describe('AppComponent:', () => {
         MatIconModule,
         MatSidenavModule,
         MatCardModule,
-        MatListModule
+        MatListModule,
+        MatMenuModule,
       ],
       declarations: [
         AppComponent
