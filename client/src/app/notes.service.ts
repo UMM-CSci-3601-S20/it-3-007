@@ -13,9 +13,9 @@ import { handleHttpError } from './utils';
 
 export class NotesService {
 
-  readonly noteUrl: string = environment.API_URL + 'notes';
-  readonly addNoteUrl: string = environment.API_URL + 'new/notes'
-  readonly deleteNoteUrl: string = environment.API_URL + 'notes/delete'
+  readonly noteUrl: string = environment.API_URL + '/notes';
+  readonly addNoteUrl: string = environment.API_URL + '/new/notes'
+  readonly deleteNoteUrl: string = environment.API_URL + '/notes/delete'
 
   constructor(private httpClient: HttpClient) {}
 
@@ -32,6 +32,7 @@ export class NotesService {
       params: httpParams,
     });
   }
+
 
   addNote(newNote: NewNote): Observable<string> {
     return this.httpClient.post<{id: string}>(environment.API_URL + 'new/notes', newNote).pipe(map(res => res.id));
