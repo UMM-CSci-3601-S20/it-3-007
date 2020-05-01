@@ -1,40 +1,23 @@
-<mat-sidenav-container class="sidenav-container">
-  <mat-toolbar fxLayout="row" color="primary">
-    <!--The container takes up 10% of the row-->
-    <div class="menu-button-container">
-      <button class="menu-button" mat-button [matMenuTriggerFor]="appMenu">
-        <mat-icon>
-          menu
-        </mat-icon>
-      </button>
-    </div>
-    <mat-menu #appMenu="matMenu">
-      <button mat-menu-item routerLink="/"> Your DoorBoard </button>
-      <button mat-menu-item routerLink="/trash"> Discarded Notes </button>
-      <button mat-menu-item routerLink="/:x500"> Viewer Mode </button>
+<mat-toolbar color="primary">
+  <button mat-button class="menu-button" [matMenuTriggerFor]="appMenu">
+    <mat-icon>
+      menu
+    </mat-icon>
+  </button>
 
-    </mat-menu>
-    <!--This pushes the title as far right as possible while still remaining centered-->
-    <span class="space"></span>
-    <!--The 1.5% offset is just here to center the title on desktop-->
-    <div fxFlexOffset=1.5 class="app-title-container" fxFlex>
-      <span class="app-title">{{title}}</span>
-    </div>
-    <!--This pushes the print and share buttons as far right as they can go-->
-    <span class="space"></span>
-    <div class="print-button-container">
-      <button class="print-button">
-        <mat-icon>printer</mat-icon>
-      </button>
-    </div>
-    <div class="share-link-container">
-      <button class="share-link">
-        <mat-icon>share</mat-icon>
-      </button>
-    </div>
-  </mat-toolbar>
+  <span class="app-title">{{title}}</span>
 
-  <div class="main-content mat-typography">
-    <router-outlet></router-outlet>
-  </div>
-</mat-sidenav-container>
+  <button mat-button class="share-button">
+    <mat-icon>share</mat-icon>
+  </button>
+</mat-toolbar>
+
+<div class="main-content mat-typography">
+  <router-outlet></router-outlet>
+</div>
+
+<mat-menu #appMenu="matMenu">
+  <button mat-menu-item routerLink="/"> Your DoorBoard </button>
+  <button mat-menu-item routerLink="/trash"> Discarded Notes </button>
+  <button mat-menu-item routerLink="/:x500"> Viewer Mode </button>
+</mat-menu>

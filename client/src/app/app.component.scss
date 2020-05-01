@@ -1,42 +1,5 @@
 .mat-toolbar {
   z-index: 1;
-}
-
-.menu-button-container {
   display: flex;
-  justify-content: left;
+  justify-content: space-between;
 }
-
-.app-title-container {
-  display: flex;
-  justify-content: center;
-}
-
-.space {
-  flex: 1 1 auto; // https://material.angular.io/components/toolbar/overview
-}
-
-.print-button-container {
-  display: flex;
-  justify-items: right;
-}
-
-.share-link-container  {
-  display: flex;
-  justify-content: left;
-}
-
-.sidenav-container {
-  height: 100%;
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: cover;
-  background-attachment: fixed;
-}
-
-
-
-
-
-
-
