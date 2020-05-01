@@ -70,7 +70,7 @@ export class AddNoteComponent implements OnInit {
     combineLatest([of(this.addNoteForm.value), this.owner]).pipe(
       map(([newNote, owner]) => ({
         ...newNote,
-        status: active,
+        status: 'active',
         owner_id: owner._id,
       })),
       flatMap(newNote => {
