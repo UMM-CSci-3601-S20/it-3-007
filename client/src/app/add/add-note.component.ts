@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
-import { Note } from '../note';
+import { NewNote, Note} from '../note';
 import { Owner } from '../owner';
 import { NotesService } from '../notes.service';
 import { OwnerService } from '../owner.service';
@@ -27,7 +27,7 @@ export class AddNoteComponent implements OnInit {
   x500: string;
 
   constructor(private fb: FormBuilder, private noteService: NotesService, private snackBar: MatSnackBar,
-      private router: Router, private ownerService: OwnerService, private auth: AuthService) {
+              private router: Router, private ownerService: OwnerService, private auth: AuthService) {
   }
 
   addNoteValidationMessages = {
@@ -68,7 +68,7 @@ export class AddNoteComponent implements OnInit {
   }
 
   submitForm() {
-    let newNote: Note = this.addNoteForm.value;
+    const newNote: NewNote = this.addNoteForm.value;
     newNote.owner_id = this.owner._id;
     newNote.status = 'active';
     this.noteService.addNote(newNote).subscribe(newID => {
