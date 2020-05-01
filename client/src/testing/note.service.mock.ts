@@ -92,19 +92,19 @@ export class MockNoteService extends NotesService {
   }
 
   getNoteById(id: string) {
-    return of({
+    return of ({
       _id: id,
       owner_id: 'rachel_id',
       body: MockNoteService.FAKE_BODY,
       addDate: new Date(),
-      expireDate: new Date(),
+      expireDate: null,
       status: 'active',
-    });
+    } as Note);
   }
 
   getOwnerNotes(filters: {
     owner_id?: string,
-    posted?: boolean,
+    status?: string;
   } = {}) {
     let notesToReturn = MockNoteService.testNotes;
 
@@ -113,9 +113,9 @@ export class MockNoteService extends NotesService {
         .filter(note => note.owner_id === filters.owner_id);
     }
 
-    if (filters.posted !== null && filters.posted !== undefined) {
+    if (filters.status !== null && filters.status !== undefined) {
       notesToReturn = notesToReturn
-        .filter(note => note.posted === filters.posted);
+        .filter(note => note.status === filters.status);
     }
 
     return of(notesToReturn);
