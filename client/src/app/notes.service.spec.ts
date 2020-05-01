@@ -281,7 +281,7 @@ describe('Note service:', () => {
       expect(req.request.url).toEqual(`${noteService.noteUrl}/edit/${testId}`);
       expect(req.request.body).toEqual(newNote);
 
-      req.flush({id: testId});
+      req.flush(null, { status: 204, statusText: 'No Content' });
     }));
   });
 
