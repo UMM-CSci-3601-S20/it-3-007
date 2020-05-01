@@ -69,7 +69,7 @@ describe('OwnerComponent:', () => {
       component.retrieveNotes();
 
       const notesThatShouldBeDisplayed = MockNoteService.testNotes
-        .filter(note =>  note.owner_id === 'rachel_id' && note.status);
+        .filter(note => note.owner_id === 'rachel_id' && note.status === 'active');
 
       component.notes.subscribe(notes => {
         expect(notes).toEqual(notesThatShouldBeDisplayed);
@@ -88,7 +88,7 @@ describe('OwnerComponent:', () => {
   });
 
   describe('Making the sign:', () => {
-    const pretendPdfUrl = 'blob:pretend url';
+    const pretendPdfUrl = 'pretend url';
 
     beforeEach(() => {
       spyOn(mockOwnerService, 'getSignUrl').and.returnValue(pretendPdfUrl);
