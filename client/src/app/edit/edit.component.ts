@@ -62,13 +62,13 @@ export class EditComponent implements OnInit {
   }
 
   submitForm() {
-    this.noteService.editNote(this.editNoteForm.value, this.id).subscribe(newID => {
+    this.noteService.editNote(this.editNoteForm.value, this.id).subscribe(() => {
       this.snackBar.open('Successfully edited note', null, {
         duration: 2000,
       });
       this._location.back();
     }, err => {
-      this.snackBar.open('Failed to edit the note', null, {
+      this.snackBar.open('Failed to edit the note: ' + err.statusText, null, {
         duration: 2000,
       });
     });
