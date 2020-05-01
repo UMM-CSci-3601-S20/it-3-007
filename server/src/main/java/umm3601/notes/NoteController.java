@@ -54,7 +54,7 @@ public class NoteController {
   /**
    * The length of a note's body must be greater than or equal to this value.
    */
-  public static final int BODY_MINIMUM_LENGTH = 1;
+  public static final int MINIMUM_BODY_LENGTH = 1;
 
 
   public NoteController(MongoDatabase database) {
@@ -148,7 +148,7 @@ public class NoteController {
   public void addNote(Context ctx) {
 
     Note newNote = ctx.bodyValidator(Note.class)
-      .check(note -> note.body.length() >= BODY_MINIMUM_LENGTH)
+      .check(note -> note.body.length() >= MINIMUM_BODY_LENGTH)
       .check(note -> note.body.length() <= MAXIMUM_BODY_LENGTH)
       .get();
 
@@ -157,31 +157,6 @@ public class NoteController {
     ctx.status(201);
     ctx.json(ImmutableMap.of("id", newNote._id));
   }
-
-  /**
-   * Old version; does not adequately handle updating fields other than the body.
-
-  public void editNote(Context ctx) {
-    String id = ctx.pathParamMap().get("id");
-
-    Note newNote = ctx.bodyValidator(Note.class)
-      .check(note -> note.body.length() >= BODY_MINIMUM_LENGTH)
-      .check(note -> note.body.length() <= MAXIMUM_BODY_LENGTH)
-      .get();
-
-    String newBody = newNote.body;
-
-    Note oldNote = noteCollection.findOneAndUpdate(eq("_id", new ObjectId(id)), set("body", newBody));
-
-    if (oldNote == null) {
-      ctx.status(400);
-      throw new NotFoundResponse("The requested note was not found");
-    } else {
-      ctx.status(200);
-      ctx.json(ImmutableMap.of("id", id));
-    }
-  }
-  */
 
   /**
    * Edit an existing note
@@ -193,8 +168,12 @@ public class NoteController {
     Document toReturn = new Document();
 
     String id = ctx.pathParam("id");
-    if(inputDoc.isEmpty()) {
+    if (inputDoc.isEmpty()) {
       throw new BadRequestResponse("PATCH request must contain a body.");
+    } else if (inputDoc.getString("body").length() < MINIMUM_BODY_LENGTH) {
+      throw new BadRequestResponse("The body of the received note was too short.");
+    } else if (inputDoc.getString("body").length() > MAXIMUM_BODY_LENGTH) {
+      throw new BadRequestResponse("The body of the received note was too long.");
     }
 
 

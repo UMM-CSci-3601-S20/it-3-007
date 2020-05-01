@@ -226,7 +226,7 @@ public class NoteControllerSpec {
   @Test
   public void AddNoteWithTooShortBody() throws IOException {
     String testNewNote =
-      newNoteStringWithBodyLength(NoteController.BODY_MINIMUM_LENGTH - 1);
+      newNoteStringWithBodyLength(NoteController.MINIMUM_BODY_LENGTH - 1);
 
     mockReq.setMethod("POST");
     Context ctx = ContextUtil.init(mockReq, mockRes, "api/notes/new");
@@ -253,7 +253,7 @@ public class NoteControllerSpec {
   @Test
   public void AddShortestNotePossible() throws IOException {
     String testNewNote =
-      newNoteStringWithBodyLength(NoteController.BODY_MINIMUM_LENGTH);
+      newNoteStringWithBodyLength(NoteController.MINIMUM_BODY_LENGTH);
 
     mockReq.setBodyContent(testNewNote);
     mockReq.setMethod("POST");
@@ -424,7 +424,7 @@ public class NoteControllerSpec {
   @Test
   public void EditNoteWithTooShortBody() throws IOException {
     String testUpdateNote =
-      newNoteStringWithBodyLength(NoteController.BODY_MINIMUM_LENGTH - 1);
+      newNoteStringWithBodyLength(NoteController.MINIMUM_BODY_LENGTH - 1);
     String id = importantNoteId.toHexString();
 
     mockReq.setBodyContent(testUpdateNote);
@@ -454,7 +454,7 @@ public class NoteControllerSpec {
   @Test
   public void EditShortestNotePossible() throws IOException {
     String testUpdateNote =
-      newNoteStringWithBodyLength(NoteController.BODY_MINIMUM_LENGTH);
+      newNoteStringWithBodyLength(NoteController.MINIMUM_BODY_LENGTH);
     String id = importantNoteId.toHexString();
 
     mockReq.setBodyContent(testUpdateNote);
@@ -473,7 +473,7 @@ public class NoteControllerSpec {
   @Test
   public void EditLongestNotePossible() throws IOException {
     String testUpdateNote =
-      newNoteStringWithBodyLength(NoteController.BODY_MINIMUM_LENGTH);
+      newNoteStringWithBodyLength(NoteController.MINIMUM_BODY_LENGTH);
     String id = importantNoteId.toHexString();
 
     mockReq.setBodyContent(testUpdateNote);
