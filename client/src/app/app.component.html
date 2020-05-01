@@ -1,9 +1,23 @@
-<mat-sidenav-container class="sidenav-container">
 <mat-toolbar color="primary">
+  <button mat-button class="menu-button" [matMenuTriggerFor]="appMenu">
+    <mat-icon>
+      menu
+    </mat-icon>
+  </button>
+
   <span class="app-title">{{title}}</span>
+
+  <button mat-button class="share-button">
+    <mat-icon>share</mat-icon>
+  </button>
 </mat-toolbar>
 
 <div class="main-content mat-typography">
   <router-outlet></router-outlet>
 </div>
-</mat-sidenav-container>
+
+<mat-menu #appMenu="matMenu">
+  <button mat-menu-item routerLink="/"> Your DoorBoard </button>
+  <button mat-menu-item routerLink="/trash"> Discarded Notes </button>
+  <button mat-menu-item routerLink="/:x500"> Viewer Mode </button>
+</mat-menu>
