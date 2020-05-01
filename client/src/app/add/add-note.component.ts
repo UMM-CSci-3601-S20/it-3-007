@@ -2,7 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
-import { Note, MAXIMUM_BODY_LENGTH, MINIMUM_BODY_LENGTH } from '../note';
+
+import { NewNote, Note, MAXIMUM_BODY_LENGTH, MINIMUM_BODY_LENGTH } from '../note';
+
 import { Owner } from '../owner';
 import { NotesService } from '../notes.service';
 import { OwnerService } from '../owner.service';
@@ -64,10 +66,11 @@ export class AddNoteComponent implements OnInit {
   }
 
   submitForm() {
+
     combineLatest([of(this.addNoteForm.value), this.owner]).pipe(
       map(([newNote, owner]) => ({
         ...newNote,
-        posted: true,
+        status: 'active',
         owner_id: owner._id,
       })),
       flatMap(newNote => {

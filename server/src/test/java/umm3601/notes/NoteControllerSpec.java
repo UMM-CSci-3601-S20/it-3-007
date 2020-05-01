@@ -103,19 +103,19 @@ public class NoteControllerSpec {
     MongoCollection<Document> noteDocuments = db.getCollection("notes");
     noteDocuments.drop();
     List<Document> testNotes = new ArrayList<>();
-    testNotes.add(Document.parse("{ owner_id: \"owner1ID\", " + "body: \"First body\", " + "posted: true}"));
-    testNotes.add(Document.parse("{ owner_id: \"owner2ID\", " + "body: \"Second body\", " + "posted: true}"));
-    testNotes.add(Document.parse("{ owner_id: \"owner3ID\", " + "body: \"Third body\", " + "posted: true}"));
+    testNotes.add(Document.parse("{ owner_id: \"owner1ID\", " + "body: \"First body\", " + "status: \"active\"}"));
+    testNotes.add(Document.parse("{ owner_id: \"owner2ID\", " + "body: \"Second body\", " + "status: \"active\"}"));
+    testNotes.add(Document.parse("{ owner_id: \"owner3ID\", " + "body: \"Third body\", " + "status: \"active\"}"));
 
     importantNoteId = new ObjectId();
     importantNote = new BasicDBObject("_id", importantNoteId)
         .append("body", "Frogs are pretty cool")
-        .append("posted", true);
+        .append("status", "active");
 
     noteInTheTrashId = new ObjectId();
     noteInTheTrash = new BasicDBObject("_id", noteInTheTrashId)
         .append("body", "Frogs are pretty cool")
-        .append("posted", false);
+        .append("status", "active");
 
 
     noteDocuments.insertMany(testNotes);
@@ -201,7 +201,7 @@ public class NoteControllerSpec {
   @Test
   public void AddNote() throws IOException {
 
-    String testNewNote = "{\"body\": \"Test Note\"}";
+    String testNewNote = "{\"body\": \"Test Note\", \"status\": \"active\"}";
 
     mockReq.setBodyContent(testNewNote);
     mockReq.setMethod("POST");
@@ -293,7 +293,7 @@ public class NoteControllerSpec {
 
   @Test
   public void DeleteNote() throws IOException {
-    assertTrue(importantNote.getBoolean("posted"));
+    assertEquals(importantNote.getString("status"), "active");
 
     Context ctx = ContextUtil.init(mockReq, mockRes, "api/notes/:id", ImmutableMap.of("id", importantNoteId.toHexString()));
     noteController.deleteNote(ctx);
@@ -306,7 +306,7 @@ public class NoteControllerSpec {
     Document trashNote = db.getCollection("notes").find(eq("_id", importantNoteId)).first();
     assertNotNull(trashNote);
 
-    assertFalse(trashNote.getBoolean("posted"));
+    assertEquals(trashNote.getString("status"), "deleted");
   }
 
   @Test
@@ -398,7 +398,7 @@ public class NoteControllerSpec {
 
     noteController.editNote(ctx);
 
-    assertEquals(200, mockRes.getStatus());
+    assertEquals(204, mockRes.getStatus());
 
     String updatedBody = db.getCollection("notes").find(eq("_id", importantNoteId)).first().get("body").toString();
     assertEquals("This is the new body", updatedBody);
@@ -416,7 +416,6 @@ public class NoteControllerSpec {
     assertThrows(NotFoundResponse.class, () -> {
       noteController.editNote(ctx);
     });
-    assertEquals(400, mockRes.getStatus());
 
     assertEquals(0, db.getCollection("notes").countDocuments(eq("_id", wrongId)));
 
