@@ -91,7 +91,7 @@ describe('OwnerComponent:', () => {
     const pretendPdfUrl = 'blob:pretend url';
 
     beforeEach(() => {
-      spyOn(mockOwnerService, 'getPdfUrl').and.returnValue(pretendPdfUrl);
+      spyOn(mockOwnerService, 'getSignUrl').and.returnValue(pretendPdfUrl);
 
       spyOn(component, 'openExternalLink');
     });
@@ -101,7 +101,7 @@ describe('OwnerComponent:', () => {
         component.openPDF();
 
         fixture.whenStable().then(() => {
-          expect(mockOwnerService.getPdfUrl).toHaveBeenCalledTimes(1);
+          expect(mockOwnerService.getSignUrl).toHaveBeenCalledTimes(1);
         });
       }));
 
@@ -120,7 +120,7 @@ describe('OwnerComponent:', () => {
         el.click();
 
         fixture.whenStable().then(() => {
-          expect(mockOwnerService.getPdfUrl).toHaveBeenCalledTimes(1);
+          expect(mockOwnerService.getSignUrl).toHaveBeenCalledTimes(1);
         });
       }));
 

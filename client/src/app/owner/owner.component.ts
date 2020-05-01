@@ -67,7 +67,7 @@ export class OwnerComponent implements OnInit, AfterViewInit {
   openPDF(): void {
     this.owner.pipe(take(1)).subscribe(owner => {
       this.openExternalLink(
-        this.ownerService.getPdfUrl(owner.name, owner.x500));
+        this.ownerService.getSignUrl(owner.name, owner.x500));
     });
   }
 
