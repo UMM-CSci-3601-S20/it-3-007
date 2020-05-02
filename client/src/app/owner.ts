@@ -1,9 +1,9 @@
 export interface Owner {
   _id: string;
   name: string;
-  officeNumber: string;
+  officeNumber?: string;
   email: string;
-  building: string;
+  building?: string;
   x500: string;
 }
 

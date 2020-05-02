@@ -148,7 +148,7 @@ describe('AddNoteComponent:', () => {
           (mockNoteService.addNote as jasmine.Spy).calls.argsFor(0);
         expect(note.body).toEqual('late to office hours');
         expect(note.owner_id).toEqual('rachel_id');
-        expect(note.posted).toEqual(true);
+        expect(note.status).toEqual('active');
       });
     }));
   });

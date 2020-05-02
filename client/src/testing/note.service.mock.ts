@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { NotesService } from '../app/notes.service';
 import { Note } from '../app/note';
-import { of } from 'rxjs';
+import { of, Observable } from 'rxjs';
+import { HttpResponse } from '@angular/common/http';
 
 @Injectable()
 export class MockNoteService extends NotesService {
@@ -88,17 +89,36 @@ export class MockNoteService extends NotesService {
   }
 
   editNote(note: Note, id: string) {
-    return of(id);
+    return of(new HttpResponse<object>({status: 204}));
   }
 
   getNoteById(id: string) {
-    return of({
+    return of ({
       _id: id,
       owner_id: 'rachel_id',
       body: MockNoteService.FAKE_BODY,
       addDate: new Date(),
-      expireDate: new Date(),
+      expireDate: null,
       status: 'active',
-    });
+    } as Note);
+  }
+
+  getOwnerNotes(filters: {
+    owner_id?: string,
+    status?: string;
+  } = {}) {
+    let notesToReturn = MockNoteService.testNotes;
+
+    if (filters.owner_id !== null && filters.owner_id !== undefined) {
+      notesToReturn = notesToReturn
+        .filter(note => note.owner_id === filters.owner_id);
+    }
+
+    if (filters.status !== null && filters.status !== undefined) {
+      notesToReturn = notesToReturn
+        .filter(note => note.status === filters.status);
+    }
+
+    return of(notesToReturn);
   }
 }

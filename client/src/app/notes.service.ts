@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpParams, HttpErrorResponse, HttpResponse } from '@angular/common/http';
 import { environment } from '../environments/environment';
 import { Note, NewNote } from './note';
 import { Observable, throwError, of, OperatorFunction } from 'rxjs';
@@ -13,9 +13,9 @@ import { handleHttpError } from './utils';
 
 export class NotesService {
 
-  readonly noteUrl: string = environment.API_URL + 'notes';
-  readonly addNoteUrl: string = environment.API_URL + 'new/notes'
-  readonly deleteNoteUrl: string = environment.API_URL + 'notes/delete'
+  readonly noteUrl: string = environment.API_URL + '/notes';
+  readonly addNoteUrl: string = environment.API_URL + '/new/notes';
+  readonly deleteNoteUrl: string = environment.API_URL + '/notes/delete';
 
   constructor(private httpClient: HttpClient) {}
 
@@ -33,8 +33,9 @@ export class NotesService {
     });
   }
 
+
   addNote(newNote: NewNote): Observable<string> {
-    return this.httpClient.post<{id: string}>(environment.API_URL + 'new/notes', newNote).pipe(map(res => res.id));
+    return this.httpClient.post<{id: string}>(environment.API_URL + '/new/notes', newNote).pipe(map(res => res.id));
   }
 
   /**
@@ -80,8 +81,8 @@ export class NotesService {
 
 
 
-  editNote(editNote: Note, id: string): Observable<string> {
-    return this.httpClient.post<{id: string}>(this.noteUrl + '/edit/' + id, editNote).pipe(map(res => res.id));
+  editNote(toEdit: Note, id: string): Observable<HttpResponse<object>> {
+    return this.httpClient.post(this.noteUrl + '/edit/' + id, toEdit, {observe: 'response'});
   }
 
   getNoteById(id: string): Observable<Note> {
