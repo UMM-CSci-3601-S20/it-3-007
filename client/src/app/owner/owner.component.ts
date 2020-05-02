@@ -64,28 +64,6 @@ export class OwnerComponent implements OnInit, AfterViewInit {
     this._location.replaceState(new URL(REDIRECT_URL).pathname);
   }
 
-  openPDF(): void {
-    this.owner.pipe(take(1)).subscribe(owner => {
-      this.openExternalLink(
-        this.ownerService.getSignUrl(owner.name, owner.x500));
-    });
-  }
-
-  copyURL(): void {
-    const val = window.location.href  + this.x500;
-    const selBox = document.createElement('textarea');
-    selBox.style.position = 'fixed';
-    selBox.style.left = '0';
-    selBox.style.top = '0';
-    selBox.style.opacity = '0';
-    selBox.value = val;
-    document.body.appendChild(selBox);
-    selBox.focus();
-    selBox.select();
-    document.execCommand('copy');
-    document.body.removeChild(selBox);
-  }
-
   openExternalLink(url: string) {
     // We can't use window.open(url, '_blank') here, because Safari
     // doesn't like that.
