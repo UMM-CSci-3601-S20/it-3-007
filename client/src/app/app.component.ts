@@ -26,15 +26,13 @@ export class AppComponent implements OnInit {
     return '/' + this.x500;
   }
 
-  // openPDF(): void {
-  //   this.owner.pipe(take(1)).subscribe(owner => {
-  //     this.openExternalLink(
-  //       this.ownerService.getSignUrl(owner.name, owner.x500));
-  //   });
-  // }
+  openPDF(): void {
+    this.openExternalLink(
+      this.ownerService.getSignUrl(this.name, this.x500));
+  }
 
   copyURL(): void {
-    const val = window.location.href  + this.x500;
+    const val = window.location.href + this.x500;
     const selBox = document.createElement('textarea');
     selBox.style.position = 'fixed';
     selBox.style.left = '0';
