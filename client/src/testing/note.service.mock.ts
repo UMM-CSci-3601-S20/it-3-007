@@ -1,21 +1,25 @@
 import { Injectable } from '@angular/core';
 import { NotesService } from '../app/notes.service';
 import { Note } from '../app/note';
-import { of, Observable } from 'rxjs';
+import { of } from 'rxjs';
 import { HttpResponse } from '@angular/common/http';
 
 export const professorJohnsonsNote: Note = {
   _id: 'first_id',
   owner_id: 'rachel_id',
   body: 'This is the first note',
-  posted: true,
+  addDate: new Date(),
+  expireDate: null,
+  status: "active",
 };
 
 export const professorJohnsonsDeletedNote: Note = {
   _id: 'fourth_id',
   owner_id: 'rachel_id',
   body: 'This is the fourth note',
-  posted: false,
+  addDate: new Date(),
+  expireDate: null,
+  status: "deleted",
 };
 
 @Injectable()
@@ -72,24 +76,6 @@ export class MockNoteService extends NotesService {
 
   constructor() {
     super(null);
-  }
-
-  getOwnerNotes(filters: {
-    owner_id?: string,
-    posted?: boolean,
-  } = {}): Observable<Note[]> {
-    let notesToReturn = MockNoteService.testNotes.slice();
-    if (filters.owner_id) {
-      notesToReturn = notesToReturn.filter(
-        (note => note.owner_id === filters.owner_id),
-      );
-    }
-    if (filters.posted === true || filters.posted === false) {
-      notesToReturn = notesToReturn.filter(
-        (note => note.posted === filters.posted),
-      );
-    }
-    return of(notesToReturn);
   }
 
   getNotes() {

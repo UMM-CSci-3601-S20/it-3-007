@@ -21,7 +21,6 @@ export class TrashComponent implements OnInit, OnDestroy  {
   public trash: boolean;
   owner: Owner;
   getNotesSub: Subscription;
-  posted: boolean;
   notes: Note[];
   id: string;
   name: string;
