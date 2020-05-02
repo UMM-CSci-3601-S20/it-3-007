@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  API_URL: '/api/',
+  API_URL: '/api',
   BASE_URL: 'http://localhost:4200',
 
   // Authentication variables, please change if you're using this code base for a different iteration

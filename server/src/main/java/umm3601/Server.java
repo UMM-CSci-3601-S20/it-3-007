@@ -11,11 +11,20 @@ import com.mongodb.client.MongoDatabase;
 import io.javalin.Javalin;
 import umm3601.notes.NoteController;
 import umm3601.owners.OwnerController;
+import umm3601.signs.SignController;
 
 
 public class Server {
 
   private static MongoDatabase database;
+
+  /**
+   * This is the absolute URL of the root of our website (including the
+   * protocol, without a trailing slash).
+   *
+   * If we get a new domain name, we'll need to change this value.
+   */
+  public static final String BASE_URL = "https://droptables.csci.app";
 
   public static void main(String[] args) {
 
@@ -37,6 +46,7 @@ public class Server {
     // Initialize dependencies here ...
     NoteController noteController = new NoteController(database);
     OwnerController ownerController = new OwnerController(database);
+    SignController signController = new SignController();
 
     Javalin server = Javalin.create(config -> {
       // Set the maximum request size to thrice the size of the maximum
@@ -99,6 +109,8 @@ public class Server {
     // server.before("api/owner/x500/:x500", ownerController::verifyHttpRequest);
     server.get("api/owner/x500/:x500", ownerController::getOwnerByx500);
 
+    // Sign Endpoints
+    server.get("api/sign", signController::getSign);
 
     server.exception(Exception.class, (e, ctx) -> {
       ctx.status(500);

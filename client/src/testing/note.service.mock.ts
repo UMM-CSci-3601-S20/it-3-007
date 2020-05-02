@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { NotesService } from '../app/notes.service';
 import { Note } from '../app/note';
 import { of, Observable } from 'rxjs';
+import { HttpResponse } from '@angular/common/http';
 
 export const professorJohnsonsNote: Note = {
   _id: 'first_id',
@@ -26,13 +27,17 @@ export class MockNoteService extends NotesService {
       _id: 'second_id',
       owner_id: 'joe_id',
       body: 'This is the second note',
-      posted: true
+      addDate: new Date(),
+      expireDate: null,
+      status: 'active'
     },
     {
       _id: 'third_id',
       owner_id: 'james_id',
       body: 'This is the third note',
-      posted: true
+      addDate: new Date(),
+      expireDate: null,
+      status: 'active'
     },
 
     // Trashed Notes
@@ -41,19 +46,25 @@ export class MockNoteService extends NotesService {
       _id: 'fifth_id',
       owner_id: 'joe_id',
       body: 'This is the fifth note',
-      posted: false
+      addDate: new Date(),
+      expireDate: new Date(),
+      status: 'deleted'
     },
     {
       _id: 'sixth_id',
       owner_id: 'james_id',
       body: 'This is the 6th note',
-      posted: false
+      addDate: new Date(),
+      expireDate: null,
+      status: 'deleted'
     },
     {
       _id: 'seventh_id',
       owner_id: 'kyle_id',
       body: 'This is the 7th note',
-      posted: false
+      addDate: new Date(),
+      expireDate: null,
+      status: 'deleted'
     }
   ];
 
@@ -102,15 +113,36 @@ export class MockNoteService extends NotesService {
   }
 
   editNote(note: Note, id: string) {
-    return of(id);
+    return of(new HttpResponse<object>({status: 204}));
   }
 
   getNoteById(id: string) {
-    return of({
+    return of ({
       _id: id,
       owner_id: 'rachel_id',
       body: MockNoteService.FAKE_BODY,
-      posted: true,
-    });
+      addDate: new Date(),
+      expireDate: null,
+      status: 'active',
+    } as Note);
+  }
+
+  getOwnerNotes(filters: {
+    owner_id?: string,
+    status?: string;
+  } = {}) {
+    let notesToReturn = MockNoteService.testNotes;
+
+    if (filters.owner_id !== null && filters.owner_id !== undefined) {
+      notesToReturn = notesToReturn
+        .filter(note => note.owner_id === filters.owner_id);
+    }
+
+    if (filters.status !== null && filters.status !== undefined) {
+      notesToReturn = notesToReturn
+        .filter(note => note.status === filters.status);
+    }
+
+    return of(notesToReturn);
   }
 }

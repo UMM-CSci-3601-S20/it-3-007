@@ -89,4 +89,4 @@ export const professorJohnsonsIdToken: IdToken = {
   updated_at: professorJohnson.updated_at,
   iss: environment.AUTH_DOMAIN,
   aud: environment.AUTH_API_DOMAIN,
-}
+};
