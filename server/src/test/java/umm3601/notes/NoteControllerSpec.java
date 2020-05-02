@@ -115,7 +115,7 @@ public class NoteControllerSpec {
     noteInTheTrashId = new ObjectId();
     noteInTheTrash = new BasicDBObject("_id", noteInTheTrashId)
         .append("body", "Frogs are pretty cool")
-        .append("status", "active");
+        .append("status", "deleted");
 
 
     noteDocuments.insertMany(testNotes);
@@ -323,7 +323,7 @@ public class NoteControllerSpec {
 
   @Test
   public void RestoreNote() throws IOException {
-    assertFalse(noteInTheTrash.getBoolean("posted"));
+    assertEquals("deleted", noteInTheTrash.getString("status"));
 
     Context ctx = ContextUtil.init(
       mockReq,
@@ -349,7 +349,7 @@ public class NoteControllerSpec {
       .first();
     assertNotNull(restoredNote);
 
-    assertTrue(restoredNote.getBoolean("posted"));
+    assertEquals("active", restoredNote.getString("status"));
   }
 
 

@@ -1,22 +1,32 @@
 import { Injectable } from '@angular/core';
 import { NotesService } from '../app/notes.service';
 import { Note } from '../app/note';
-import { of, Observable } from 'rxjs';
+import { of } from 'rxjs';
 import { HttpResponse } from '@angular/common/http';
+
+export const professorJohnsonsNote: Note = {
+  _id: 'first_id',
+  owner_id: 'rachel_id',
+  body: 'This is the first note',
+  addDate: new Date(),
+  expireDate: null,
+  status: "active",
+};
+
+export const professorJohnsonsDeletedNote: Note = {
+  _id: 'fourth_id',
+  owner_id: 'rachel_id',
+  body: 'This is the fourth note',
+  addDate: new Date(),
+  expireDate: null,
+  status: "deleted",
+};
 
 @Injectable()
 export class MockNoteService extends NotesService {
-
   static testNotes: Note[] = [
     // Posted Notes
-    {
-      _id: 'first_id',
-      owner_id: 'rachel_id',
-      body: 'This is the first note',
-      addDate: new Date(),
-      expireDate: null,
-      status: 'active'
-    },
+    professorJohnsonsNote,
     {
       _id: 'second_id',
       owner_id: 'joe_id',
@@ -35,14 +45,7 @@ export class MockNoteService extends NotesService {
     },
 
     // Trashed Notes
-    {
-      _id: 'fourth_id',
-      owner_id: 'rachel_id',
-      body: 'This is the fourth note',
-      addDate: new Date(),
-      expireDate: null,
-      status: 'deleted'
-    },
+    professorJohnsonsDeletedNote,
     {
       _id: 'fifth_id',
       owner_id: 'joe_id',
@@ -71,7 +74,6 @@ export class MockNoteService extends NotesService {
 
   public static FAKE_BODY = 'This is definitely the note you wanted';
 
-
   constructor() {
     super(null);
   }
@@ -81,6 +83,14 @@ export class MockNoteService extends NotesService {
   }
 
   deleteNote(id: string) {
+    return of(true);
+  }
+
+  permanentlyDeleteNote(id: string) {
+    return of(true);
+  }
+
+  restoreNote(id: string) {
     return of(true);
   }
 
