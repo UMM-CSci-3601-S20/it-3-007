@@ -1,7 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { AuthService } from './authentication/auth.service';
+import { DOCUMENT } from '@angular/common';
+import { OwnerService } from './owner.service';
 
 @Component({
   selector: 'app-root',
