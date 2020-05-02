@@ -13,12 +13,17 @@ import { OwnerService } from './owner.service';
 export class AppComponent implements OnInit {
   title = 'DoorBoard';
   x500: string;
+  name: string;
 
-  constructor(public auth: AuthService) {}
+  constructor(
+    public auth: AuthService,
+    @Inject(DOCUMENT) private document: Document,
+    private ownerService: OwnerService) { }
 
   ngOnInit() {
     this.auth.getUser$().subscribe(user => {
       this.x500 = user.nickname;
+      this.name = user.name;
     });
   }
 
