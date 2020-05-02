@@ -23,6 +23,14 @@ export class AppComponent implements OnInit {
   getViewerLink() {
     return '/' + this.x500;
   }
+
+  // openPDF(): void {
+  //   this.owner.pipe(take(1)).subscribe(owner => {
+  //     this.openExternalLink(
+  //       this.ownerService.getSignUrl(owner.name, owner.x500));
+  //   });
+  // }
+
   copyURL(): void {
     const val = window.location.href  + this.x500;
     const selBox = document.createElement('textarea');
