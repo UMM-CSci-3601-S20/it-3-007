@@ -61,48 +61,53 @@ public class Server {
     }).start(4567);
 
     // Note endpoints
+    // List notes
+    server.get("api/notes", noteController::getOwnerNotes);
 
     // Add new note
     server.before("api/new/notes/", noteController::verifyHttpRequest);
     server.before("api/new/notes/", noteController::checkOwnerForNewNote);
     server.post("api/new/notes/", noteController::addNote);
 
-    server.before("api/notes", noteController::verifyHttpRequest);
-    server.before("api/notes", noteController::checkOwnerForGivenNote);
-
     // Get a single note
+    server.before("api/notes/:id", noteController::verifyHttpRequest);
+    server.before("api/notes/:id", noteController::checkOwnerForGivenNote);
     server.get("api/notes/:id", noteController::getNoteByID);
 
     // Edit an existing note
+    server.before("api/notes/edit/:id", noteController::verifyHttpRequest);
+    server.before("api/notes/edit/:id", noteController::checkOwnerForGivenNote);
     server.post("api/notes/edit/:id", noteController::editNote);
 
     // Trash a note
+    server.before("api/notes/:id", noteController::verifyHttpRequest);
+    server.before("api/notes/:id", noteController::checkOwnerForGivenNote);
     server.delete("api/notes/:id", noteController::deleteNote);
 
     // Restore a note
+    server.before("api/notes/:id", noteController::verifyHttpRequest);
+    server.before("api/notes/:id", noteController::checkOwnerForGivenNote);
     server.post("api/notes/:id", noteController::restoreNote);
 
     // Delete a note
+    server.before("api/notes/delete/:id", noteController::verifyHttpRequest);
+    server.before("api/notes/delete/:id", noteController::checkOwnerForGivenNote);
     server.delete("api/notes/delete/:id", noteController::permanentlyDeleteNote);
 
-    // List notes
-    server.get("api/notes", noteController::getOwnerNotes);
-
-
     // Owner Endpoints
-    server.before("api/owner", ownerController::verifyHttpRequest);
+    server.get("api/owner", ownerController::getOwners);
 
     // Add a new owner
+    server.before("api/owner/new", ownerController::verifyHttpRequest);
     server.post("api/owner/new", ownerController::addOwner);
+
+    // Get owner by id
+    server.before("api/owner/:id", ownerController::verifyHttpRequest);
+    server.get("api/owner/:id", ownerController::getOwnerByID);
 
     // Get owner by x500
     // server.before("api/owner/x500/:x500", ownerController::verifyHttpRequest);
     server.get("api/owner/x500/:x500", ownerController::getOwnerByx500);
-
-    // Get owner by id
-    server.get("api/owner/:id", ownerController::getOwnerByID);
-
-    server.get("api/owner", ownerController::getOwners);
 
     // Sign Endpoints
     server.get("api/sign", signController::getSign);
