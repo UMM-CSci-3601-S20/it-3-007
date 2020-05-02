@@ -3,25 +3,6 @@
 </nav>
 
 <div fxLayout="row" id="share-div">
-  <button mat-button id="generate-pdf-button" type="button" color="primary" (click)="openPDF()">
-    GENERATE SIGN
-  </button>
-
-  <!-- Here is the start of the mat-menu to be used for sharing. -->
-  <button mat-button mat-menu type="button" [matMenuTriggerFor]="menu" color="primary" aria-label="Share">
-    <mat-icon>share</mat-icon>
-  </button>
-  <mat-menu #menu="matMenu">
-    <button mat-menu-item id="copy-link" color="primary" type="button" (click)="copyURL()">
-      <mat-icon>link</mat-icon>
-      <span>Copy link</span>
-    </button>
-    <button mat-menu-item id="generate-pdf-button" type="button" color="primary" (click)="openPDF()">
-      <mat-icon>create</mat-icon>
-      <span>Generate PDF</span>
-    </button>
-  </mat-menu>
-
   <button mat-button class="logoutButton" type="button" color="primary" (click)="this.auth.logout()"> LOGOUT </button>
 </div>
 
