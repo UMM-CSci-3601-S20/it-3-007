@@ -9,8 +9,13 @@ import { MatCardModule } from '@angular/material/card';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatListModule } from '@angular/material/list';
 import { MatMenuModule } from '@angular/material/menu';
+import { AuthService } from './authentication/auth.service';
+import { MockAuthService, professorJohnson } from 'src/testing/auth.service.mock';
 
 describe('AppComponent:', () => {
+  let fixture;
+  let app;
+
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [
@@ -26,18 +31,29 @@ describe('AppComponent:', () => {
       declarations: [
         AppComponent
       ],
+      providers: [
+        { provide: AuthService, useValue: new MockAuthService() },
+      ],
     }).compileComponents();
   }));
 
+  beforeEach(async(() => {
+    fixture = TestBed.createComponent(AppComponent);
+    app = fixture.componentInstance;
+    app.ngOnInit();
+  }));
+
   it('creates the app', () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    const app = fixture.componentInstance;
     expect(app).toBeTruthy();
   });
 
   it('has "DoorBoard" as its title', () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    const app = fixture.componentInstance;
     expect(app.title).toEqual('DoorBoard');
   });
+
+  describe('The getViewerLink() method:', () =>{
+    it('gives the right url for the viewer page', () => {
+      expect(app.getViewerLink()).toEqual(`/${professorJohnson.nickname}`);
+    });
+  })
 });
