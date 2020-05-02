@@ -47,4 +47,10 @@ export class AppComponent implements OnInit {
     document.execCommand('copy');
     document.body.removeChild(selBox);
   }
+
+  openExternalLink(url: string) {
+    // We can't use window.open(url, '_blank') here, because Safari
+    // doesn't like that.
+    this.document.location.href = url;
+  }
 }
