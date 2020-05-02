@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpParams, HttpErrorResponse, HttpResponse } from '@angular/common/http';
 import { environment } from '../environments/environment';
-import { Note } from './note';
+import { Note, NewNote } from './note';
 import { Observable, throwError, of, OperatorFunction } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
+import { handleHttpError } from './utils';
 
 
 @Injectable({
@@ -12,31 +13,29 @@ import { map, catchError } from 'rxjs/operators';
 
 export class NotesService {
 
-  readonly noteUrl: string = environment.API_URL + 'notes';
-  readonly addNoteUrl: string = environment.API_URL + 'new/notes'
-  readonly deleteNoteUrl: string = environment.API_URL + 'notes/delete'
+  readonly noteUrl: string = environment.API_URL + '/notes';
+  readonly addNoteUrl: string = environment.API_URL + '/new/notes';
+  readonly deleteNoteUrl: string = environment.API_URL + '/notes/delete';
 
   constructor(private httpClient: HttpClient) {}
 
-  // getNotes() {
-  //   return this.httpClient.get<Note[]>(this.noteUrl);
-  // }
 
-  getOwnerNotes(filters: { owner_id?: string, posted?: boolean } = {}): Observable<Note[]> {
+  getOwnerNotes(filters: { owner_id?: string, status?: string } = {}): Observable<Note[]> {
     let httpParams: HttpParams = new HttpParams();
     if (filters.owner_id) {
       httpParams = httpParams.set('owner_id', filters.owner_id);
     }
-    if (filters.posted === true || filters.posted === false) {
-      httpParams = httpParams.set('posted', filters.posted.toString());
+    if (filters.status) {
+      httpParams = httpParams.set('status', filters.status);
     }
     return this.httpClient.get<Note[]>(this.noteUrl, {
       params: httpParams,
     });
   }
 
-  addNote(newNote: Note): Observable<string> {
-    return this.httpClient.post<{id: string}>(environment.API_URL + 'new/notes', newNote).pipe(map(res => res.id));
+
+  addNote(newNote: NewNote): Observable<string> {
+    return this.httpClient.post<{id: string}>(environment.API_URL + '/new/notes', newNote).pipe(map(res => res.id));
   }
 
   /**
@@ -56,7 +55,7 @@ export class NotesService {
     // to them.
     return response.pipe(
       map(() => true),
-      this.handleHttpError(404, () => of(false)),
+      handleHttpError(404, () => of(false)),
     );
   }
 
@@ -66,7 +65,7 @@ export class NotesService {
 
     return response.pipe(
       map(() => true),
-      this.handleHttpError(404, () => of(false)),
+      handleHttpError(404, () => of(false)),
     );
   }
 
@@ -76,14 +75,14 @@ export class NotesService {
 
     return response.pipe(
       map(() => true),
-      this.handleHttpError(404, () => of(false)),
+      handleHttpError(404, () => of(false)),
     );
   }
 
 
 
-  editNote(editNote: Note, id: string): Observable<string> {
-    return this.httpClient.post<{id: string}>(this.noteUrl + '/edit/' + id, editNote).pipe(map(res => res.id));
+  editNote(toEdit: Note, id: string): Observable<HttpResponse<object>> {
+    return this.httpClient.post(this.noteUrl + '/edit/' + id, toEdit, {observe: 'response'});
   }
 
   getNoteById(id: string): Observable<Note> {
@@ -91,32 +90,13 @@ export class NotesService {
   }
 
   filterNotes(notes: Note[], filters: {
-    posted?: boolean
+    status?: string
   }): Note[] {
-    if (filters.posted !== null && filters.posted !== undefined) {
-      notes = notes.filter(note => note.posted === filters.posted);
+    if (filters.status) {
+      notes = notes.filter(note => note.status === filters.status);
     }
     return notes;
   }
   // We could simplify that if statement using a ==, but I've left it
   // in its expanded form for explicitness' sake.
-
-  /**
-   * Return an RxJS operator similar to catchError, except that it only
-   * triggers if the error is an HttpErrorResponse with a given status code.
-   *
-   * (For example, you can use this operator to only handle not-found errors,
-   * while letting other errors pass through.)
-   */
-  private handleHttpError<T, U>(
-    status: number,
-    handler: (err: HttpErrorResponse, caught: Observable<T>) => Observable<U>
-  ): OperatorFunction<T, T | U> {
-    return catchError((error: HttpErrorResponse, caught: Observable<T>) => {
-      if (error.status === status) {
-        return handler(error, caught);
-      }
-      return throwError(error);
-    });
-  }
 }

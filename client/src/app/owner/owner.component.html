@@ -1,20 +1,20 @@
-<nav class="navbar" *ngIf="owner">
-  <h2>{{this.owner.name}}</h2>
+<nav class="navbar" *ngIf="owner | async">
+  <h2>{{(owner | async)?.name}}</h2>
 </nav>
 
 <div fxLayout="row" id="pdf-div">
-  <button mat-button id="generate-pdf-button" type="button" color="primary" (click)="savePDF()">
-    GENERATE PDF
+  <button mat-button id="generate-pdf-button" type="button" color="primary" (click)="openPDF()">
+    GENERATE SIGN
   </button>
   <button mat-button class="logoutButton" type="button" color="primary" (click)="this.auth.logout()"> LOGOUT </button>
 </div>
 
 
 
-<div *ngIf="notes; else notesError">
+<div *ngIf="notes | async; else notesError">
 <ul class= "note-container">
-  <mat-card class="note-card" *ngFor="let note of this.notes">
-    <p> {{this.note.body}} </p>
+  <mat-card class="note-card" *ngFor="let note of notes | async">
+    <p>{{note.body}}</p>
     <mat-card-actions>
       <button mat-button class="note-action edit" matTooltip="Edit Note" matTooltipPosition="above" [routerLink]="note._id + '/edit'">
         <mat-icon aria-label="Edit note">create</mat-icon>
@@ -41,10 +41,6 @@
 
 <button mat-fab class="add-note-fab" matTooltip="Add Note" matTooltipPosition="left" [routerLink] = "'/new'">
   <mat-icon class="md-24" aria-label="Add Note">add</mat-icon>
-</button>
-
-<button mat-fab class="trash-fab" matTooltip="Trash Can" matTooltipPosition="right" [routerLink] = "'/trash'">
-  <mat-icon class="md-24" aria-label="Trash can">delete</mat-icon>
 </button>
 
 

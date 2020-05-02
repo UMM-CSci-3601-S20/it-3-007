@@ -1,7 +1,6 @@
 package umm3601;
 
 import java.security.interfaces.RSAPublicKey;
-import java.util.concurrent.TimeUnit;
 
 import com.auth0.jwk.Jwk;
 import com.auth0.jwk.JwkException;
@@ -43,17 +42,29 @@ public class TokenVerifier {
 
   // See:
   // https://community.auth0.com/t/verify-jwt-token-received-from-auth0/35581/4
-  public boolean verifyToken(Context ctx) throws InterruptedException {
-    String token = ctx.header("Authorization").replace("Bearer ", "");
+  public boolean verifyToken(Context ctx) {
+    String authorization = ctx.header("Authorization");
+    if (authorization == null) {
+      ctx.status(400);
+      return false;
+    }
+
+    String token = authorization.replace("Bearer ", "");
     try {
       DecodedJWT jwt = JWT.decode(token);
       Jwk jwk = provider.get(jwt.getKeyId());
 
       Algorithm algorithm = Algorithm.RSA256((RSAPublicKey) jwk.getPublicKey(), null);
 
-      JWTVerifier verifier = JWT.require(algorithm).withIssuer(AUTH0_TENANT).build();
+      JWTVerifier verifier = JWT.require(algorithm)
+        .withIssuer(AUTH0_TENANT)
+        // Allow the issued-at and expiration dates to be off by one
+        // one second in either direction. (This should catch any rounding
+        // errors where we try to validate a token in the same second that
+        // it was made.)
+        .acceptLeeway(1L)
+        .build();
 
-      TimeUnit.SECONDS.sleep(1);
       jwt = verifier.verify(token);
 
       return true;
