@@ -299,7 +299,7 @@ public class NoteController {
   public void restoreNote(Context ctx) {
     String id = ctx.pathParamMap().get("id");
     // check if owner id of a note, matches logged in user's id
-    Note oldNote = noteCollection.findOneAndUpdate(eq("_id", new ObjectId(id)), set("posted", true));
+    Note oldNote = noteCollection.findOneAndUpdate(eq("_id", new ObjectId(id)), set("status", "active"));
 
     if (oldNote == null) {
       throw new NotFoundResponse("The requested note was not found");
