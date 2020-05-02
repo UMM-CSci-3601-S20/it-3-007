@@ -2,13 +2,14 @@
   <h2>{{(owner | async)?.name}}</h2>
 </nav>
 
-<div fxLayout="row" id="pdf-div">
+<div fxLayout="row" id="share-div">
   <button mat-button id="generate-pdf-button" type="button" color="primary" (click)="openPDF()">
     GENERATE SIGN
   </button>
+
   <!-- Here is the start of the mat-menu to be used for sharing. -->
-  <button mat-menu id="share-menu" [matMenuTriggerFor]="menu" color="primary" aria-label="Share">
-    Share
+  <button mat-button mat-menu type="button" [matMenuTriggerFor]="menu" color="primary" aria-label="Share">
+    <mat-icon>share</mat-icon>
   </button>
   <mat-menu #menu="matMenu">
     <button mat-menu-item id="copy-link" color="primary" type="button" (click)="copyURL()">
