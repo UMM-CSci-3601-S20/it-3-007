@@ -44,7 +44,7 @@ export class OwnerComponent implements OnInit, AfterViewInit {
 
   deleteNote(id: string): void {
     this.notesService.deleteNote(id).subscribe(() => {
-      this.retrieveNotes();
+     this.retrieveNotes();
     });
   }
 
@@ -86,7 +86,8 @@ export class OwnerComponent implements OnInit, AfterViewInit {
         name: user.name,
         _id: null,
         officeNumber: null,
-        building: null
+        building: null,
+        sub: user.sub
       })),
       flatMap(newOwner =>
         this.ownerService.addOwner(newOwner).pipe(
