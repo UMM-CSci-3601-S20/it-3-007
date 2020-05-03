@@ -60,6 +60,9 @@ public class Server {
         3L * 2L * (long)NoteController.MAXIMUM_BODY_LENGTH);
     }).start(4567);
 
+    // Trying to remove extraneous calls to TokenVerifier... I feel like the get a single note API route will be used before
+    // edit, trash, restore, and delete, so we shouldn't need to verify them again when the route is updated
+
     // Note endpoints
     // List notes
     server.get("api/notes", noteController::getOwnerNotes);
@@ -75,18 +78,18 @@ public class Server {
     server.get("api/notes/:id", noteController::getNoteByID);
 
     // Edit an existing note
-    server.before("api/notes/edit/:id", noteController::verifyHttpRequest);
-    server.before("api/notes/edit/:id", noteController::checkOwnerForGivenNote);
+    // server.before("api/notes/edit/:id", noteController::verifyHttpRequest);
+    // server.before("api/notes/edit/:id", noteController::checkOwnerForGivenNote);
     server.post("api/notes/edit/:id", noteController::editNote);
 
     // Trash a note
-    server.before("api/notes/:id", noteController::verifyHttpRequest);
-    server.before("api/notes/:id", noteController::checkOwnerForGivenNote);
+    // server.before("api/notes/:id", noteController::verifyHttpRequest);
+    // server.before("api/notes/:id", noteController::checkOwnerForGivenNote);
     server.delete("api/notes/:id", noteController::deleteNote);
 
     // Restore a note
-    server.before("api/notes/:id", noteController::verifyHttpRequest);
-    server.before("api/notes/:id", noteController::checkOwnerForGivenNote);
+    // server.before("api/notes/:id", noteController::verifyHttpRequest);
+    // server.before("api/notes/:id", noteController::checkOwnerForGivenNote);
     server.post("api/notes/:id", noteController::restoreNote);
 
     // Delete a note
