@@ -54,6 +54,7 @@ public class OwnerControllerSpec {
 
   static ObjectId importantOwnerId;
   static String myx500;
+  static String mySubject;
   static BasicDBObject importantOwner;
 
 @BeforeAll
@@ -109,17 +110,19 @@ public class OwnerControllerSpec {
 
   } */
 
-  @Test
-  public void GetOwners() throws IOException {
-    // Create our fake Javalin context
-    Context ctx = ContextUtil.init(mockReq, mockRes, "api/owner");
-    ownerController.getOwners(ctx);
+  // Why do we still have this method even?
 
-    assertEquals(200, mockRes.getStatus());
+  // @Test
+  // public void GetOwners() throws IOException {
+  //   // Create our fake Javalin context
+  //   Context ctx = ContextUtil.init(mockReq, mockRes, "api/owner");
+  //   ownerController.getOwners(ctx);
 
-    String result = ctx.resultString();
-    assertEquals(db.getCollection("owners").countDocuments(), JavalinJson.fromJson(result, Owner[].class).length);
-  }
+  //   assertEquals(200, mockRes.getStatus());
+
+  //   String result = ctx.resultString();
+  //   assertEquals(db.getCollection("owners").countDocuments(), JavalinJson.fromJson(result, Owner[].class).length);
+  // }
 
   @Test
   public void GetOwnerById() throws IOException {

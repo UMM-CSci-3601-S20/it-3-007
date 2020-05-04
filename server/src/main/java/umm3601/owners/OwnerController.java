@@ -59,7 +59,25 @@ public class OwnerController {
       throw new BadRequestResponse("The requested owner id wasn't a legal Mongo Object ID.");
     }
     if (owner == null) {
-      throw new NotFoundResponse("The requested owner was not found");
+      throw new NotFoundResponse("The requested owner was not found and getOwnerByID is breaking things");
+    } else {
+      ctx.json(owner);
+    }
+  }
+
+  public void getOwnerBySubject(Context ctx) {
+    String subject = tokenVerifier.getSubjectFromToken(ctx);
+    Owner owner;
+
+    try {
+      owner = ownerCollection.find(eq("subject", subject)).first();
+      System.err.println("getOwnerBySubject has been run");
+    } catch(IllegalArgumentException e) {
+      throw new BadRequestResponse("The requested owner subject wasn't a legal Mongo Object.");
+    }
+    if (owner == null) {
+      System.out.println("getOwnerBySubject is breaking things");
+      throw new NotFoundResponse("The requested owner was not found and getOwnerBySubject is breaking things");
     } else {
       ctx.json(owner);
     }
@@ -75,7 +93,7 @@ public class OwnerController {
       throw new BadRequestResponse("The requested owner x500 wasn't a legal Mongo Object.");
     }
     if (owner == null) {
-      throw new NotFoundResponse("The requested owner was not found");
+      throw new NotFoundResponse("The requested owner was not found and getOwnerByx500 is breaking things");
     } else {
       ctx.json(owner);
     }
@@ -107,7 +125,23 @@ public class OwnerController {
     }
 
     if(owner== null) {
-      throw new NotFoundResponse("The requested owner was not found");
+      throw new NotFoundResponse("The requested ownerID was not found");
+    } else {
+      return owner._id;
+    }
+  }
+
+  public String getOwnerIDBySubject(String subject) {
+    Owner owner;
+
+    try {
+      owner = ownerCollection.find(eq("sub", subject)).first();
+    } catch(IllegalArgumentException e) {
+      throw new BadRequestResponse("The requested owner subject wasn't a legal Mongo Object.");
+    }
+
+    if(owner== null) {
+      throw new NotFoundResponse("The requested owner ID was not found and getOwnerIDBySubject is breaking things");
     } else {
       return owner._id;
     }

@@ -75,8 +75,8 @@ public class NoteController {
   }
 
   public void checkOwnerForNewNote(Context ctx) {
-    String x500 = tokenVerifier.getOwnerx500(ctx);
-    String ownerID = ownerController.getOwnerIDByx500(x500);
+    String ownerSub = tokenVerifier.getSubjectFromToken(ctx);
+    String ownerID = ownerController.getOwnerIDBySubject(ownerSub);
 
     Note newNote = ctx.bodyAsClass(Note.class);
 
@@ -87,8 +87,8 @@ public class NoteController {
   }
 
   public void checkOwnerForGivenNote(Context ctx) {
-    String x500 = tokenVerifier.getOwnerx500(ctx);
-    String ownerID = ownerController.getOwnerIDByx500(x500);
+    String ownerSub = tokenVerifier.getSubjectFromToken(ctx);
+    String ownerID = ownerController.getOwnerIDBySubject(ownerSub);
 
     String noteID = ctx.pathParam("id");
     Note note;
