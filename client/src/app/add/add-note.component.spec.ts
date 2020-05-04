@@ -117,10 +117,20 @@ describe('AddNoteComponent:', () => {
 
   describe('The submitForm() method:', () => {
     let bodyControl: AbstractControl;
+    let expireDatePickerControl: AbstractControl;
+    let expireTimePickerControl: AbstractControl;
 
     beforeEach(async(inject([Router], (router: Router) => {
       bodyControl = addNoteComponent.addNoteForm.controls[`body`];
       bodyControl.setValue('late to office hours');
+
+
+      expireDatePickerControl = addNoteComponent.addNoteForm.controls[`expireDatePicker`];
+      expireTimePickerControl = addNoteComponent.addNoteForm.controls[`expireTimePicker`];
+
+      expireDatePickerControl.setValue('');
+      expireTimePickerControl.setValue('');
+
 
       // Stub out router.navigate so that we don't actually go to a
       // different page.
@@ -137,7 +147,7 @@ describe('AddNoteComponent:', () => {
       });
     })));
 
-    it('should try to add a note', async(() => {
+    it('should try to add a note without an expiration date', async(() => {
       spyOn(mockNoteService, 'addNote').and.callThrough();
       addNoteComponent.submitForm();
       // Wait for all that to happen.
@@ -151,5 +161,24 @@ describe('AddNoteComponent:', () => {
         expect(note.status).toEqual('active');
       });
     }));
-  });
+
+    it('should try to add a note with an expiration date', async(() => {
+      expireDatePickerControl.setValue('Aug 13 2030');
+      expireTimePickerControl.setValue('10:58 AM');
+
+      spyOn(mockNoteService, 'addNote').and.callThrough();
+      addNoteComponent.submitForm();
+      // Wait for all that to happen.
+      fixture.whenStable().then(() => {
+        expect(mockNoteService.addNote).toHaveBeenCalledTimes(1);
+
+        const [note] =
+          (mockNoteService.addNote as jasmine.Spy).calls.argsFor(0);
+        expect(note.body).toEqual('late to office hours');
+        expect(note.owner_id).toEqual('rachel_id');
+        expect(note.status).toEqual('active');
+        expect(note.expireDate).toEqual(new Date(2030, 8, 13, 10, 58));
+      });
+  }));
+});
 });

@@ -16,6 +16,12 @@
               </mat-error>
             </mat-error>
           </mat-form-field>
+          <label for="expireDateCombined">Expiration Date</label>
+          <div fxLayout="row" id="expireDateCombinedPicker">
+            <label for="expireDatePicker">Date:</label> <input type="date" formControlName="expireOnlyDate" id="expireDatePicker">
+            <label for="expireTimePicker">Time:</label> <input type="time" formControlName="expireOnlyTime" id="expireTimePicker">
+            <button mat-stroked-button name="No expiration" id="clearExpireDate" (click)="clearExpiration()">No expiration</button>
+          </div>
 
         </mat-card-content>
         <mat-card-actions align="end">

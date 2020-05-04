@@ -21,6 +21,8 @@ import { catchError, map, switchMap, flatMap } from 'rxjs/operators';
 export class AddNoteComponent implements OnInit {
 
   addNoteForm: FormGroup;
+  expireOnlyDate: string;
+  expireOnlyTime: string;
 
   note: Note;
 
@@ -48,6 +50,8 @@ export class AddNoteComponent implements OnInit {
         Validators.minLength(MINIMUM_BODY_LENGTH),
         Validators.maxLength(MAXIMUM_BODY_LENGTH),
       ])),
+      expireOnlyDate: new FormControl(),
+      expireOnlyTime: new FormControl(),
     });
   }
 
@@ -65,14 +69,22 @@ export class AddNoteComponent implements OnInit {
     this.createForms();
   }
 
+  clearExpiration() {
+    this.expireOnlyDate = null;
+    this.expireOnlyTime = null;
+  }
+
   submitForm() {
 
     combineLatest([of(this.addNoteForm.value), this.owner]).pipe(
       map(([newNote, owner]) => ({
-        ...newNote,
+        body: this.addNoteForm.get('body').value,
         status: 'active',
         owner_id: owner._id,
-      })),
+        // Empty strings and nulls are both falsy, so if either portion of the expiration date is empty,
+        // the note won't expire.
+        expireDate: this.expireOnlyDate && this.expireOnlyTime ? new Date(this.expireOnlyDate + 'T' + this.expireOnlyTime) : null,
+      } as NewNote)),
       flatMap(newNote => {
         return this.noteService.addNote(newNote);
       }),
