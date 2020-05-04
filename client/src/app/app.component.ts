@@ -4,6 +4,7 @@ import { map } from 'rxjs/operators';
 import { AuthService } from './authentication/auth.service';
 import { DOCUMENT } from '@angular/common';
 import { OwnerService } from './owner.service';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-root',
@@ -37,7 +38,7 @@ export class AppComponent implements OnInit {
   }
 
   copyURL(): void {
-    const val = window.location.href + this.x500;
+    const val = environment.BASE_URL + '/' + this.x500;
     const selBox = document.createElement('textarea');
     selBox.style.position = 'fixed';
     selBox.style.left = '0';
