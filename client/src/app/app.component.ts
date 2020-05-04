@@ -31,7 +31,7 @@ export class AppComponent implements OnInit {
     return '/' + this.x500;
   }
 
-  openPDF(): void {
+  openSign(): void {
     this.openExternalLink(
       this.ownerService.getSignUrl(this.name, this.x500));
   }

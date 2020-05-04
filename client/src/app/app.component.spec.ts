@@ -60,7 +60,7 @@ describe('AppComponent:', () => {
 
     fixture.detectChanges();
     generateSignButton = fixture.debugElement
-      .query(By.css('#generate-pdf-button'))
+      .query(By.css('#generate-sign-button'))
       .nativeElement;
   }));
 
@@ -79,35 +79,35 @@ describe('AppComponent:', () => {
   });
 
   describe('Making the sign:', () => {
-    const pretendPdfUrl = 'pretend url';
+    const pretendSignUrl = 'pretend url';
 
     beforeEach(() => {
-      spyOn(mockOwnerService, 'getSignUrl').and.returnValue(pretendPdfUrl);
+      spyOn(mockOwnerService, 'getSignUrl').and.returnValue(pretendSignUrl);
 
       spyOn(app, 'openExternalLink');
     });
 
-    describe('The openPDF() method:', () => {
-      it('gets a pdf document from OwnerService', async(() => {
-        app.openPDF();
+    describe('The openSign() method:', () => {
+      it('gets the sign\'s url from OwnerService', async(() => {
+        app.openSign();
 
         fixture.whenStable().then(() => {
           expect(mockOwnerService.getSignUrl).toHaveBeenCalledTimes(1);
         });
       }));
 
-      it('opens that pdf', async(() => {
-        app.openPDF();
+      it('opens that url', async(() => {
+        app.openSign();
 
         fixture.whenStable().then(() => {
           expect(app.openExternalLink)
-            .toHaveBeenCalledWith(pretendPdfUrl);
+            .toHaveBeenCalledWith(pretendSignUrl);
         });
       }));
     });
 
     describe('The GENERATE SIGN button:', () => {
-      it('gets a pdf document from OwnerService', async(() => {
+      it('gets the sign\'s url from OwnerService', async(() => {
         generateSignButton.click();
 
         fixture.whenStable().then(() => {
@@ -115,12 +115,12 @@ describe('AppComponent:', () => {
         });
       }));
 
-      it('opens that pdf', async(() => {
+      it('opens that url', async(() => {
         generateSignButton.click();
 
         fixture.whenStable().then(() => {
           expect(app.openExternalLink)
-            .toHaveBeenCalledWith(pretendPdfUrl);
+            .toHaveBeenCalledWith(pretendSignUrl);
         });
       }));
     });
