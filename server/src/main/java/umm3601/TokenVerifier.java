@@ -72,10 +72,8 @@ public class TokenVerifier {
     } catch (JWTVerificationException e) {
       // Invalid signature/claims
       ctx.status(400);
-      e.printStackTrace();
     } catch (JwkException e) {
       ctx.status(400);
-      e.printStackTrace();
     }
 
     return false;
@@ -88,13 +86,9 @@ public class TokenVerifier {
     String userInfo = HttpRequest.get(AUTH0_TENANT + "userinfo").authorization(authorization).body();
 
     // Pull the x500 out of the body, there's definitely a better way to do this, but idk how
-    System.err.println(userInfo);
     int startIndex = userInfo.indexOf("\"nickname\":\"");
-    System.err.println(startIndex);
     String temp = userInfo.substring(startIndex + 12);
-    System.err.println(temp);
     int endIndex = temp.indexOf('"');
-    System.err.println(endIndex);
     String x500 = temp.substring(0, endIndex);
 
     return x500;
