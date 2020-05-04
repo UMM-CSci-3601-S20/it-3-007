@@ -71,12 +71,10 @@ public class OwnerController {
 
     try {
       owner = ownerCollection.find(eq("subject", subject)).first();
-      System.err.println("getOwnerBySubject has been run");
     } catch(IllegalArgumentException e) {
       throw new BadRequestResponse("The requested owner subject wasn't a legal Mongo Object.");
     }
     if (owner == null) {
-      System.out.println("getOwnerBySubject is breaking things");
       throw new NotFoundResponse("The requested owner was not found and getOwnerBySubject is breaking things");
     } else {
       ctx.json(owner);
