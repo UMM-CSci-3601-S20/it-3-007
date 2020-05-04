@@ -18,7 +18,6 @@ import { By } from '@angular/platform-browser';
 describe('AppComponent:', () => {
   let fixture: ComponentFixture<AppComponent>;
   let app: AppComponent;
-  let generateSignButton: HTMLElement;
   const mockOwnerService = new MockOwnerService();
   const mockAuthService = new MockAuthService();
 
@@ -48,20 +47,6 @@ describe('AppComponent:', () => {
     fixture = TestBed.createComponent(AppComponent);
     app = fixture.componentInstance;
     app.ngOnInit();
-  }));
-
-  beforeEach(async(() => {
-    // Open the share menu.
-    fixture.detectChanges();
-    generateSignButton = fixture.debugElement
-      .query(By.css('.share-button'))
-      .nativeElement
-      .click();
-
-    fixture.detectChanges();
-    generateSignButton = fixture.debugElement
-      .query(By.css('#generate-sign-button'))
-      .nativeElement;
   }));
 
   it('creates the app', () => {
@@ -107,6 +92,22 @@ describe('AppComponent:', () => {
     });
 
     describe('The GENERATE SIGN button:', () => {
+      let generateSignButton: HTMLElement;
+
+      beforeEach(async(() => {
+        // Open the share menu.
+        fixture.detectChanges();
+        generateSignButton = fixture.debugElement
+          .query(By.css('.share-button'))
+          .nativeElement
+          .click();
+
+        fixture.detectChanges();
+        generateSignButton = fixture.debugElement
+          .query(By.css('#generate-sign-button'))
+          .nativeElement;
+      }));
+
       it('gets the sign\'s url from OwnerService', async(() => {
         generateSignButton.click();
 
