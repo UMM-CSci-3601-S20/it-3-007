@@ -1,14 +1,14 @@
-import { Component, OnInit, OnDestroy, AfterViewInit} from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit, Inject} from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Owner } from '../owner';
 import { OwnerService } from '../owner.service';
 import { Observable } from 'rxjs';
 import { NotesService } from '../notes.service';
 import { Note } from '../note';
-import {Location} from '@angular/common';
+import { Location, DOCUMENT } from '@angular/common';
 import { AuthService, REDIRECT_URL } from '../authentication/auth.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { map, concatMap, switchMap, catchError, tap, take, flatMap, share } from 'rxjs/operators';
+import { map, switchMap, tap, take, flatMap, share } from 'rxjs/operators';
 import { handleHttpError } from '../utils';
 
 @Component({
@@ -20,11 +20,12 @@ import { handleHttpError } from '../utils';
 export class OwnerComponent implements OnInit, AfterViewInit {
   constructor(
     private route: ActivatedRoute,
-    public auth: AuthService,
+    @Inject(DOCUMENT) private document: Document,
     private _location: Location,
+    private snackBar: MatSnackBar,
+    public auth: AuthService,
     private notesService: NotesService,
     private ownerService: OwnerService,
-    private snackBar: MatSnackBar
   ) {}
 
   notes: Observable<Note[]>;
@@ -35,7 +36,7 @@ export class OwnerComponent implements OnInit, AfterViewInit {
 
   retrieveNotes(): void {
     this.notes = this.owner.pipe(
-      switchMap(owner => this.notesService.getOwnerNotes({owner_id: owner._id, posted: true})),
+      switchMap(owner => this.notesService.getOwnerNotes({owner_id: owner._id, status: 'active'})),
       map(notes => notes.reverse()),
       share(),
     );
@@ -63,10 +64,10 @@ export class OwnerComponent implements OnInit, AfterViewInit {
     this._location.replaceState(new URL(REDIRECT_URL).pathname);
   }
 
-  savePDF(): void {
-    this.owner.pipe(take(1)).subscribe(owner => {
-      this.ownerService.getPDF(owner.name, owner.x500).save('DoorBoard.pdf');
-    });
+  openExternalLink(url: string) {
+    // We can't use window.open(url, '_blank') here, because Safari
+    // doesn't like that.
+    this.document.location.href = url;
   }
 
   newOwner(): Observable<Owner> {

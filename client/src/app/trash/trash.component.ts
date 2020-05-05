@@ -21,7 +21,6 @@ export class TrashComponent implements OnInit, OnDestroy  {
   public trash: boolean;
   owner: Owner;
   getNotesSub: Subscription;
-  posted: boolean;
   notes: Note[];
   id: string;
   name: string;
@@ -58,11 +57,10 @@ export class TrashComponent implements OnInit, OnDestroy  {
     });
   }
 
-  retrieveOwner(): void {
-    this.getx500Sub = this.auth.getUser$().subscribe(returned => {
+  async retrieveOwner(): Promise<void> {
+    this.getx500Sub = await this.auth.getUser$().subscribe(returned => {
       this.x500 = returned.nickname;
     });
-    console.log(this.x500);
     this.getOwnerSub = this.ownerService.getOwnerByx500(this.x500).subscribe(returnedOwner => {
       this.owner = returnedOwner;
       this.retrieveNotes();
@@ -72,7 +70,7 @@ export class TrashComponent implements OnInit, OnDestroy  {
   }
 
   retrieveNotes(): void {
-    this.getNotesSub = this.noteService.getOwnerNotes({owner_id: this.owner._id, posted: false}).subscribe(returnedNotes => {
+    this.getNotesSub = this.noteService.getOwnerNotes({owner_id: this.owner._id, status: 'deleted'}).subscribe(returnedNotes => {
       this.notes = returnedNotes.reverse();
     }, err => {
       console.log(err);

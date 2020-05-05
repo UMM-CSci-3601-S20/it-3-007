@@ -5,7 +5,7 @@
 <div *ngIf="notes; else notesError">
   <ul class= "note-container">
     <mat-card class="note-card" *ngFor="let note of this.notes">
-      <p> {{this.note.body}} </p>
+      <p>{{this.note.body}}</p>
     </mat-card>
   </ul>
 </div>

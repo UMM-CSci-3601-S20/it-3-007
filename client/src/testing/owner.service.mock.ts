@@ -3,6 +3,16 @@ import { Observable, of } from 'rxjs';
 import { Owner } from '../app/owner';
 import { OwnerService } from '../app/owner.service';
 import { AuthService } from 'src/app/authentication/auth.service';
+import { professorJohnson } from './auth.service.mock';
+
+export const professorJohnsonOwnerInfo: Owner = {
+  _id: 'rachel_id',
+  name: professorJohnson.name,
+  officeNumber: '1234',
+  email: professorJohnson.email,
+  building: 'Science',
+  x500: professorJohnson.nickname,
+};
 
 /**
  * A "mock" version of the `OwnerService` that can be used to test components
@@ -11,14 +21,7 @@ import { AuthService } from 'src/app/authentication/auth.service';
 @Injectable()
 export class MockOwnerService extends OwnerService {
   static testOwners: Owner[] = [
-    {
-      _id: 'rachel_id',
-      name: 'Rachel Johnson',
-      officeNumber: '1234',
-      email: 'rmjohns@morris.umn.edu',
-      building: 'Science',
-      x500: 'rmjohns'
-    },
+    professorJohnsonOwnerInfo,
     {
       _id: 'joe_id',
       name: 'Joe Beaver',
