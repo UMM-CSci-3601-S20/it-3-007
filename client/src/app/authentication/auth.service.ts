@@ -1,138 +1,116 @@
 import { Injectable } from '@angular/core';
 import createAuth0Client from '@auth0/auth0-spa-js';
 import Auth0Client from '@auth0/auth0-spa-js/dist/typings/Auth0Client';
-import { from, of, Observable, BehaviorSubject, combineLatest, throwError } from 'rxjs';
-import { tap, catchError, concatMap, shareReplay } from 'rxjs/operators';
+import { from, Observable, throwError, iif, ReplaySubject, Subject } from 'rxjs';
+import { catchError, concatMap, shareReplay, take, map, flatMap } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { environment } from '../../environments/environment';
 
+// We should really have a better log-out url.
+// But that's a problem for another day.
+export const REDIRECT_URL = environment.BASE_URL;
+export const LOGOUT_URL = environment.BASE_URL;
+
+// Based on https://community.auth0.com/t/angular-8-isauthenticated-race-condition/37474/3
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  // Create an observable of Auth0 instance of client
-  auth0Client$ = (from(
-    createAuth0Client({
-      //This is all specific to our Auth0 application
-      domain: environment.AUTH_DOMAIN,
-      client_id: environment.AUTH_CLIENT_ID,
-      redirect_uri: environment.BASE_URL,
-      // redirect_uri: `${window.location.origin}`
-      audience: environment.AUTH_API_DOMAIN
-    })
-  ) as Observable<Auth0Client>).pipe(
-    shareReplay(1), // Every subscription receives the same shared value
-    catchError(err => throwError(err))
-  );
-  // Define observables for SDK methods that return promises by default
-  // For each Auth0 SDK method, first ensure the client instance is ready
-  // concatMap: Using the client instance, call SDK method; SDK returns a promise
-  // from: Convert that resulting promise into an observable
-  isAuthenticated$ = this.auth0Client$.pipe(
-    concatMap((client: Auth0Client) => from(client.isAuthenticated())),
-    tap(res => this.loggedIn = res)
-  );
-  handleRedirectCallback$ = this.auth0Client$.pipe(
-    concatMap((client: Auth0Client) => from(client.handleRedirectCallback()))
-  );
-  // Create subject and public observable of user profile data
-  private userProfileSubject$ = new BehaviorSubject<any>(null);
-  userProfile$ = this.userProfileSubject$.asObservable();
-  // Create a local property for login status
-  loggedIn: boolean = null;
+  auth0Client$: Observable<Auth0Client> = from(createAuth0Client({
+    domain: environment.AUTH_DOMAIN,
+    client_id: environment.AUTH_CLIENT_ID,
+    redirect_uri: REDIRECT_URL,
+    audience: environment.AUTH_API_DOMAIN
+  })).pipe(shareReplay(1), catchError(err => throwError(err)));
 
-  constructor(private router: Router) {
-    // On initial load, check authentication state with authorization server
-    // Set up local auth streams if user is already authenticated
-    this.localAuthSetup();
-    // Handle redirect from Auth0 login
-    this.handleAuthCallback();
+  handleRedirectCallback$ = this.auth0Client$.pipe(concatMap((client: Auth0Client) =>
+    from(client.handleRedirectCallback())
+  ));
+
+  // When anyone asks for a value from isAuthenicated$, give back the last
+  // value pushed to it.
+  // (Aside: we're not using a BehaviorSubject because when you construct a
+  // BehaviorSubject, you need to provide an initial value to it immediately.
+  // By contrast, if you make a ReplaySubject with buffer size 1, you can hold
+  // off giving it an initial value until you're ready.)
+  private _isAuthenticated$: Subject<boolean> = new ReplaySubject(1);
+
+  // Only expose the "reading" methods of isAuthenticated$ to the world at
+  // large, not the "writing" methods.
+  public isAuthenticated$ = this._isAuthenticated$.asObservable();
+
+  constructor(public router: Router) {
+    // Get the first value of isAuthenticated$ by calling down to the
+    // underlying Auth0Client. (There shouldn't be any worry of race
+    // conditions; everyone we care about waits for a value from
+    // isAuthenticated$ before proceeding.)
+    this.updateIsAuthenticated().subscribe();
   }
 
-  // When calling, options can be passed if desired
-  // https://auth0.github.io/auth0-spa-js/classes/auth0client.html#getuser
   getUser$(options?): Observable<any> {
-    return this.auth0Client$.pipe(
-      concatMap((client: Auth0Client) => from(client.getUser(options))),
-      tap(user => this.userProfileSubject$.next(user))
-    );
+    return this.auth0Client$.pipe(concatMap((client: Auth0Client) =>
+      from(client.getUser(options))
+    ));
   }
 
   getTokenSilently$(options?): Observable<string> {
-    return this.auth0Client$.pipe(
-      concatMap((client: Auth0Client) => from(client.getTokenSilently(options)))
-    );
+    return this.auth0Client$.pipe(concatMap((client: Auth0Client) =>
+      from(client.getTokenSilently(options))
+    ));
   }
 
-  private localAuthSetup() {
-    // This should only be called on app initialization
-    // Set up local authentication streams
-    const checkAuth$ = this.isAuthenticated$.pipe(
-      concatMap((loggedIn: boolean) => {
-        if (loggedIn) {
-          // If authenticated, get user and set in app
-          // NOTE: you could pass options here if needed
-          return this.getUser$();
-        }
-        // If not authenticated, return stream that emits 'false'
-        return of(loggedIn);
-      })
-    );
-    checkAuth$.subscribe();
-  }
-
-  login(redirectPath: string = '/') {
-    // A desired redirect path can be passed to login method
-    // (e.g., from a route guard)
-    // Ensure Auth0 client instance exists
-    this.auth0Client$.subscribe((client: Auth0Client) => {
-      // Call method to log in
+  login(redirectPath: string = '/home/dashboard'): Observable<void> {
+    return this.auth0Client$.pipe(concatMap((client: Auth0Client) =>
       client.loginWithRedirect({
-        redirect_uri: environment.BASE_URL,
-        // redirect_uri: `${window.location.origin}`,
-        appState: { target: redirectPath }
-      });
-    });
+        redirect_uri: REDIRECT_URL,
+        appState: { target: redirectPath },
+      })
+    ));
   }
 
-  private handleAuthCallback() {
-    // Call when app reloads after user logs in with Auth0
-    const params = window.location.search;
-    if (params.includes('code=') && params.includes('state=')) {
-      let targetRoute: string; // Path to redirect to after login processsed
-      const authComplete$ = this.handleRedirectCallback$.pipe(
-        // Have client, now call method to handle auth callback redirect
-        tap(cbRes => {
-          // Get and set target redirect route from callback results
-          targetRoute = cbRes.appState && cbRes.appState.target ? cbRes.appState.target : '/';
-        }),
-        concatMap(() => {
-          // Redirect callback complete; get user and login status
-          return combineLatest([
-            this.getUser$(),
-            this.isAuthenticated$
-          ]);
-        })
-      );
-      // Subscribe to authentication completion observable
-      // Response will be an array of user and login status
-      authComplete$.subscribe(([user, loggedIn]) => {
-        // Redirect to target route after callback processing
-        this.router.navigate([targetRoute]);
-      });
-    }
+  handleAuthCallback(): Observable<{ loggedIn: boolean; targetUrl: string }> {
+    return this.updateIsAuthenticated().pipe(concatMap(() =>
+      iif(
+        () => this.areCallbackQueryParamsPresent(),
+        this.handleRedirectCallback$.pipe(concatMap(redirectResult =>
+          this.isAuthenticated$.pipe(take(1), map(loggedIn => {
+            let targetUrl;
+            if (redirectResult.appState && redirectResult.appState.target) {
+              targetUrl = redirectResult.appState.target;
+            } else {
+              targetUrl = '/';
+            }
+            return { loggedIn, targetUrl };
+          }))
+        )),
+        this.isAuthenticated$.pipe(take(1), map(loggedIn =>
+          ({ loggedIn, targetUrl: null }),
+        )),
+      )
+    ));
+  }
+
+  areCallbackQueryParamsPresent(): boolean {
+    return window.location.search.includes('code=')
+      && window.location.search.includes('state=');
   }
 
   logout() {
-    // Ensure Auth0 client instance exists
     this.auth0Client$.subscribe((client: Auth0Client) => {
-      // Call method to log out
       client.logout({
         client_id: environment.AUTH_CLIENT_ID,
-        returnTo: environment.BASE_URL
-        // returnTo: `${window.location.origin}`
+        returnTo: LOGOUT_URL,
       });
+      this.updateIsAuthenticated().subscribe();
     });
   }
 
+  private updateIsAuthenticated(): Observable<void> {
+    return this.auth0Client$.pipe(flatMap(client =>
+      // of(this._isAuthenticated$.next(false))
+      from(client.isAuthenticated()).pipe(map(loggedIn =>
+        this._isAuthenticated$.next(loggedIn)
+      ))
+    ));
+  }
 }

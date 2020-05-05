@@ -1,12 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { Router } from '@angular/router';
-import { Note } from '../note';
+import { Note, MAXIMUM_BODY_LENGTH, MINIMUM_BODY_LENGTH } from '../note';
 import { NotesService } from '../notes.service';
 import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
-import {Location} from '@angular/common';
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-edit',
@@ -21,14 +20,19 @@ export class EditComponent implements OnInit {
   id: string;
   getNoteSub: Subscription;
 
-  constructor(private fb: FormBuilder, private _location: Location, private noteService: NotesService, private snackBar: MatSnackBar, private router: Router, private route: ActivatedRoute) {
+  constructor(
+    private fb: FormBuilder,
+    private _location: Location,
+    private noteService: NotesService,
+    private snackBar: MatSnackBar,
+    private route: ActivatedRoute) {
   }
 
   editNoteValidationMessages = {
     body: [
       {type: 'required', message: 'Body is required'},
-      {type: 'minlength', message: 'Body must be at least 2 characters long'},
-      {type: 'maxlength', message: 'Body cannot be more than 300 characters long'}
+      {type: 'minlength', message: `Body must be at least ${MINIMUM_BODY_LENGTH} characters long`},
+      {type: 'maxlength', message: `Body cannot be more than ${MAXIMUM_BODY_LENGTH} characters long`}
     ]
   };
 
@@ -38,8 +42,8 @@ export class EditComponent implements OnInit {
     this.editNoteForm = this.fb.group({
       body: new FormControl('', Validators.compose([
         Validators.required,
-        Validators.minLength(2),
-        Validators.maxLength(300),
+        Validators.minLength(MINIMUM_BODY_LENGTH),
+        Validators.maxLength(MAXIMUM_BODY_LENGTH),
       ])),
     });
 
@@ -58,13 +62,13 @@ export class EditComponent implements OnInit {
   }
 
   submitForm() {
-    this.noteService.editNote(this.editNoteForm.value, this.id).subscribe(newID => {
+    this.noteService.editNote(this.editNoteForm.value, this.id).subscribe(() => {
       this.snackBar.open('Successfully edited note', null, {
         duration: 2000,
       });
       this._location.back();
     }, err => {
-      this.snackBar.open('Failed to edit the note', null, {
+      this.snackBar.open('Failed to edit the note: ' + err.statusText, null, {
         duration: 2000,
       });
     });

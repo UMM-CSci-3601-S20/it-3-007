@@ -15,6 +15,7 @@ import java.security.interfaces.RSAPublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
+import java.time.Instant;
 import java.util.Base64;
 import java.util.Date;
 
@@ -23,6 +24,7 @@ import com.auth0.jwk.JwkException;
 import com.auth0.jwk.JwkProvider;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.mockrunner.mock.web.MockHttpServletRequest;
 import com.mockrunner.mock.web.MockHttpServletResponse;
 
@@ -43,6 +45,7 @@ class TokenVerifierSpec {
   // The 'sub' (subject) claim.
   public static String testSub = "1234567890";
   // The 'iat' (issued-at-time) claim. (In seconds since 1970.)
+  // (This date is in late December 2019.)
   public static long testIat = 1577842200L;
   // The 'exp' (expiration) claim. (In seconds since 1970.)
   // (This date is around the year 8000 CE.)
@@ -133,23 +136,23 @@ class TokenVerifierSpec {
       .withIssuer(testIss)
       .sign(algorithm);
 
-      mockRequest.setHeader(
-        "Authorization",
-        String.format("Bearer %s", encodedTestToken));
+    mockRequest.setHeader(
+      "Authorization",
+      String.format("Bearer %s", encodedTestToken));
 
-      return ContextUtil.init(
-        mockRequest,
-        mockResponse,
-        "api/this/is/not/a/real/route");
-    }
+    return ContextUtil.init(
+      mockRequest,
+      mockResponse,
+      "api/this/is/not/a/real/route");
+  }
 
-  private Context contextWithExipredToken() {
+  private Context contextWithExpiredToken() {
     MockHttpServletRequest mockRequest = new MockHttpServletRequest();
     MockHttpServletResponse mockResponse = new MockHttpServletResponse();
 
     Algorithm algorithm = Algorithm.RSA256(
-      publicKeyFromBase64String(wrongPublicKey),
-      privateKeyFromBase64String(wrongPrivateKey));
+      publicKeyFromBase64String(testPublicKey),
+      privateKeyFromBase64String(testPrivateKey));
     String encodedTestToken = JWT.create()
       .withKeyId(testKid)
       .withSubject(testSub)
@@ -159,68 +162,121 @@ class TokenVerifierSpec {
       .withIssuer(testIss)
       .sign(algorithm);
 
-      mockRequest.setHeader(
-        "Authorization",
-        String.format("Bearer %s", encodedTestToken));
+    mockRequest.setHeader(
+      "Authorization",
+      String.format("Bearer %s", encodedTestToken));
 
-      return ContextUtil.init(
-        mockRequest,
-        mockResponse,
-        "api/this/is/not/a/real/route");
-    }
+    return ContextUtil.init(
+      mockRequest,
+      mockResponse,
+      "api/this/is/not/a/real/route");
+  }
+
+  // We're going to make a token and validate it as quickly as possible, to
+  // try to catch any rounding errors in the TokenVerifier.
+  private Context contextWithTokenIssuedRightThisSecond() {
+    MockHttpServletRequest mockRequest = new MockHttpServletRequest();
+    MockHttpServletResponse mockResponse = new MockHttpServletResponse();
+
+    Algorithm algorithm = Algorithm.RSA256(
+      publicKeyFromBase64String(testPublicKey),
+      privateKeyFromBase64String(testPrivateKey));
+    String encodedTestToken = JWT.create()
+      .withKeyId(testKid)
+      .withSubject(testSub)
+      // Fudge it a few hundred milliseconds forward just to account for the
+      // time it takes to run a test.
+      .withIssuedAt(new Date(System.currentTimeMillis() + 900L))
+      .withExpiresAt(new Date(testExp * 1000))
+      .withIssuer(testIss)
+      .sign(algorithm);
+
+    mockRequest.setHeader(
+      "Authorization",
+      String.format("Bearer %s", encodedTestToken));
+
+    return ContextUtil.init(
+      mockRequest,
+      mockResponse,
+      "api/this/is/not/a/real/route");
+  }
+
+  private Context contextWithTokenWithInvalidSyntax() {
+    MockHttpServletRequest mockRequest = new MockHttpServletRequest();
+    MockHttpServletResponse mockResponse = new MockHttpServletResponse();
+
+    Algorithm algorithm = Algorithm.RSA256(
+      publicKeyFromBase64String(testPublicKey),
+      privateKeyFromBase64String(testPrivateKey));
+    String encodedTestToken = JWT.create()
+      .withKeyId(testKid)
+      .withSubject(testSub)
+      // Remember to convert to milliseconds!
+      .withIssuedAt(new Date(testIat * 1000))
+      .withExpiresAt(new Date(testExp * 1000))
+      .withIssuer(testIss)
+      .sign(algorithm);
+
+    mockRequest.setHeader(
+      "Authorization",
+      String.format("Bearer", encodedTestToken)); // dropped the space after bearer
+
+    return ContextUtil.init(
+      mockRequest,
+      mockResponse,
+      "api/this/is/not/a/real/route");
+  }
 
   @Test
   public void verifyTheGoodToken() {
-    Context ctx = contextWithGoodToken();
-    boolean isTheTokenValid;
-    try {
-      isTheTokenValid = verifier.verifyToken(ctx);
-    } catch (InterruptedException e) {
-      fail("Verification interrupted.");
-      return;
+    assertTrue(verifier.verifyToken(contextWithGoodToken()));
+  }
+
+  // Be careful with this test; it's non-deterministic.
+  //
+  // Its job is to catch a rounding error where issuing a token and checking
+  // it within the same second fails.
+  //
+  // But, in order to test that behavior, the test has to run really really
+  // fast.
+  //
+  // Depending on how fast or slow your computer is (I'm looking at you,
+  // GitHub Actions) you may get false positives. (That is, the test may
+  // succeed spuriously.)
+  //
+  // This is not in any way ideal.
+  //
+  // However, in order to test this behavior in a deterministic way,
+  // we would have to do some heavy-duty mocking of the Date class, probably
+  // by installing a custom class loader.
+  //
+  // Which is more trouble than it's worth.
+  @Test
+  public void verifyTheTokenIssuedRightThisSecond() {
+    for (int i = 0; i < 100; i++) {
+      assertTrue(
+        verifier.verifyToken(contextWithTokenIssuedRightThisSecond()));
     }
-    assertTrue(isTheTokenValid);
   }
 
   @Test
   public void rejectRequestsWithoutTokens() {
-    Context ctx = contextWithBadToken();
-    boolean isTheTokenValid;
-    try {
-      isTheTokenValid = verifier.verifyToken(ctx);
-    } catch (InterruptedException e) {
-      fail("Verification interrupted.");
-      return;
-    }
-    assertFalse(isTheTokenValid);
+    Context ctx = contextWithoutToken();
+    assertFalse(verifier.verifyToken(ctx));
     assertEquals(((MockHttpServletResponse)ctx.res).getStatus(), 400);
   }
 
   @Test
   public void rejectTheBadToken() {
     Context ctx = contextWithBadToken();
-    boolean isTheTokenValid;
-    try {
-      isTheTokenValid = verifier.verifyToken(ctx);
-    } catch (InterruptedException e) {
-      fail("Verification interrupted.");
-      return;
-    }
-    assertFalse(isTheTokenValid);
+    assertFalse(verifier.verifyToken(ctx));
     assertEquals(((MockHttpServletResponse)ctx.res).getStatus(), 400);
   }
 
   @Test
   public void rejectTheExpiredToken() {
-    Context ctx = contextWithBadToken();
-    boolean isTheTokenValid;
-    try {
-      isTheTokenValid = verifier.verifyToken(ctx);
-    } catch (InterruptedException e) {
-      fail("Verification interrupted.");
-      return;
-    }
-    assertFalse(isTheTokenValid);
+    Context ctx = contextWithExpiredToken();
+    assertFalse(verifier.verifyToken(ctx));
     assertEquals(((MockHttpServletResponse)ctx.res).getStatus(), 400);
   }
 
@@ -266,4 +322,19 @@ class TokenVerifierSpec {
     }
     return (RSAPrivateKey)privateKey;
   }
+
+  @Test
+  public void subjectIsGottenFromGoodToken() {
+    Context ctx = contextWithGoodToken();
+
+    assertEquals("1234567890", verifier.getSubjectFromToken(ctx));
+  }
+
+  // While this test is currently passing in the spec file, it is failing in the gradle testing
+  // @Test
+  // public void errorIsThrownWhenDecodingFails() {
+  //   Context ctx = contextWithTokenWithInvalidSyntax();
+  //   verifier.getSubjectFromToken(ctx);
+  //   assertEquals(412 , ctx.status()); // should throw 412 if token cannot be decoded
+  // }
 }

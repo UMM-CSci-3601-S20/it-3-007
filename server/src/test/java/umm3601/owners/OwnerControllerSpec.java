@@ -1,4 +1,4 @@
-package umm3601.owner;
+package umm3601.owners;
 
 import static com.mongodb.client.model.Filters.eq;
 import static org.junit.Assert.assertTrue;
@@ -40,11 +40,9 @@ import io.javalin.http.util.ContextUtil;
 import io.javalin.plugin.json.JavalinJson;
 import io.javalin.http.NotFoundResponse;
 
-import umm3601.owners.Owner;
-import umm3601.owners.OwnerController;
-
 public class OwnerControllerSpec {
 
+  private static final Class NotFoundResponse = null;
   MockHttpServletRequest mockReq = new MockHttpServletRequest();
   MockHttpServletResponse mockRes = new MockHttpServletResponse();
 
@@ -57,6 +55,7 @@ public class OwnerControllerSpec {
 
   static ObjectId importantOwnerId;
   static String myx500;
+  static String mySub;
   static BasicDBObject importantOwner;
 
 @BeforeAll
@@ -84,16 +83,18 @@ public class OwnerControllerSpec {
     noteDocuments.drop();
     List<Document> testNotes = new ArrayList<>();
     testNotes.add(Document.parse("{ name: \"person1\", " + "officeNumber: \"111\", " + "email: \"test@email1\", "+
-  "building: \"Science\", " + "x500: \"x500_1\"}"));
+  "building: \"Science\", " + "x500: \"x500_1\", " + "sub: \"sub1\"}"));
   testNotes.add(Document.parse("{ name: \"person2\", " + "officeNumber: \"222\", " + "email: \"test@email2\", "+
-  "building: \"HFA\", " + "x500: \"x500_2\"}"));
+  "building: \"HFA\", " + "x500: \"x500_2\", "+ "sub: \"sub2\"}"));
   testNotes.add(Document.parse("{ name: \"person3\", " + "officeNumber: \"333\", " + "email: \"test@email3\", "+
-  "building: \"Imholte\", " + "x500: \"x500_3\"}"));
+  "building: \"Imholte\", " + "x500: \"x500_3\", "+ "sub: \"sub3\"}"));
 
     importantOwnerId = new ObjectId();
     importantOwner = new BasicDBObject("_id", importantOwnerId);
     myx500 = "smallOwner";
+    mySub = "smallSub";
     importantOwner.append("x500", myx500);
+    importantOwner.append("sub", mySub);
 
     noteDocuments.insertMany(testNotes);
     noteDocuments.insertOne(Document.parse(importantOwner.toJson()));
@@ -111,18 +112,6 @@ public class OwnerControllerSpec {
   public void VerifyHttpRequests() throws IOException {
 
   } */
-
-  @Test
-  public void GetOwners() throws IOException {
-    // Create our fake Javalin context
-    Context ctx = ContextUtil.init(mockReq, mockRes, "api/owner");
-    ownerController.getOwners(ctx);
-
-    assertEquals(200, mockRes.getStatus());
-
-    String result = ctx.resultString();
-    assertEquals(db.getCollection("owners").countDocuments(), JavalinJson.fromJson(result, Owner[].class).length);
-  }
 
   @Test
   public void GetOwnerById() throws IOException {
@@ -216,8 +205,18 @@ public class OwnerControllerSpec {
     assertEquals("guyF", addedOwner.getString("x500"));
   }
 
+  @Test
+  public void GetOwnerIDBySubject() throws IOException {
+    String result = ownerController.getOwnerIDBySubject(mySub); // sub from important owner
+    assertEquals(result, importantOwnerId.toHexString());
+  }
 
-
-
+  @Test
+  public void getOwnerIDByBadSubject() throws IOException {
+    Exception exception = assertThrows(NotFoundResponse.class,
+    () -> {
+      ownerController.getOwnerIDBySubject("this sub should not work");
+    });
+  }
 }
 
