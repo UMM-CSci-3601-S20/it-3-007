@@ -65,22 +65,6 @@ public class OwnerController {
     }
   }
 
-  public void getOwnerBySubject(Context ctx) {
-    String subject = tokenVerifier.getSubjectFromToken(ctx);
-    Owner owner;
-
-    try {
-      owner = ownerCollection.find(eq("subject", subject)).first();
-    } catch(IllegalArgumentException e) {
-      throw new BadRequestResponse("The requested owner subject wasn't a legal Mongo Object.");
-    }
-    if (owner == null) {
-      throw new NotFoundResponse("The requested owner was not found and getOwnerBySubject is breaking things");
-    } else {
-      ctx.json(owner);
-    }
-  }
-
   public void getOwnerByx500(Context ctx) {
     String x500 = ctx.pathParam("x500");
     Owner owner;
