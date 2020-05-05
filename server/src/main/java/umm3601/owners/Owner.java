@@ -12,5 +12,6 @@ public class Owner {
   public String email;
   public String building;
   public String x500;
+  public String sub;
 
 }

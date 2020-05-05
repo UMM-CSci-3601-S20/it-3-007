@@ -25,12 +25,6 @@ export class ViewerPageComponent implements OnInit {
   constructor(private notesService: NotesService, private ownerService: OwnerService,
               private router: Router, private route: ActivatedRoute) {}
 
-  //  retrieveUrlId(): void {
-  //   this.route.paramMap.subscribe((pmap) => {
-  //     this.urlId = pmap.get('id');
-  //   });
-  // }
-
   retrieveOwner(): void {
     this.getOwnerSub = this.ownerService.getOwnerByx500(this.urlx500).subscribe(returnedOwner => {
       this.owner = returnedOwner;

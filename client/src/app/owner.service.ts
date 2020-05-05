@@ -21,10 +21,6 @@ export class OwnerService {
     return this.httpClient.get<Owner>(this.ownerUrl + '/x500/' + x500);
   }
 
-  getOwnerByName(name: string): Observable<Owner> {
-    return this.httpClient.get<Owner>(this.ownerUrl + '/' + name);
-  }
-
   // Adds an owner to the collection
   addOwner(newOwner: Owner): Observable<string> {
     // Send post request to add a new owner with the owner data as the body.
