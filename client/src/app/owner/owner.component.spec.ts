@@ -46,10 +46,6 @@ describe('OwnerComponent:', () => {
 
     component.ngOnInit();
     component.ngAfterViewInit();
-
-    // query for the link (<a> tag) by CSS element selector
-    de = fixture.debugElement.query(By.css('#generate-pdf-button'));
-    el = de.nativeElement;
   }));
 
   describe('The ngOnInit() method:', () => {
@@ -84,54 +80,6 @@ describe('OwnerComponent:', () => {
 
       component.deleteNote(id);
       expect(mockNoteService.deleteNote).toHaveBeenCalledWith(id);
-    });
-  });
-
-  describe('Making the sign:', () => {
-    const pretendPdfUrl = 'pretend url';
-
-    beforeEach(() => {
-      spyOn(mockOwnerService, 'getSignUrl').and.returnValue(pretendPdfUrl);
-
-      spyOn(component, 'openExternalLink');
-    });
-
-    describe('The openPDF() method:', () => {
-      it('gets a pdf document from OwnerService', async(() => {
-        component.openPDF();
-
-        fixture.whenStable().then(() => {
-          expect(mockOwnerService.getSignUrl).toHaveBeenCalledTimes(1);
-        });
-      }));
-
-      it('opens that pdf', async(() => {
-        component.openPDF();
-
-        fixture.whenStable().then(() => {
-          expect(component.openExternalLink)
-            .toHaveBeenCalledWith(pretendPdfUrl);
-        });
-      }));
-    });
-
-    describe('The GENERATE SIGN button:', () => {
-      it('gets a pdf document from OwnerService', async(() => {
-        el.click();
-
-        fixture.whenStable().then(() => {
-          expect(mockOwnerService.getSignUrl).toHaveBeenCalledTimes(1);
-        });
-      }));
-
-      it('opens that pdf', async(() => {
-        el.click();
-
-        fixture.whenStable().then(() => {
-          expect(component.openExternalLink)
-            .toHaveBeenCalledWith(pretendPdfUrl);
-        });
-      }));
     });
   });
 });

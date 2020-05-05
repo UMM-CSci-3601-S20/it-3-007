@@ -2,10 +2,7 @@
   <h2>{{(owner | async)?.name}}</h2>
 </nav>
 
-<div fxLayout="row" id="pdf-div">
-  <button mat-button id="generate-pdf-button" type="button" color="primary" (click)="openPDF()">
-    GENERATE SIGN
-  </button>
+<div fxLayout="row" id="share-div">
   <button mat-button class="logoutButton" type="button" color="primary" (click)="this.auth.logout()"> LOGOUT </button>
 </div>
 

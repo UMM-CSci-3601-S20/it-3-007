@@ -64,13 +64,6 @@ export class OwnerComponent implements OnInit, AfterViewInit {
     this._location.replaceState(new URL(REDIRECT_URL).pathname);
   }
 
-  openPDF(): void {
-    this.owner.pipe(take(1)).subscribe(owner => {
-      this.openExternalLink(
-        this.ownerService.getSignUrl(owner.name, owner.x500));
-    });
-  }
-
   openExternalLink(url: string) {
     // We can't use window.open(url, '_blank') here, because Safari
     // doesn't like that.

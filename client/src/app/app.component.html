@@ -7,17 +7,33 @@
 
   <span class="app-title">{{title}}</span>
 
-  <button mat-button class="share-button">
-    <mat-icon>share</mat-icon>
-  </button>
+ <!-- Here is the start of the mat-menu to be used for sharing. -->
+ <button mat-button mat-menu class="share-button" [matMenuTriggerFor]="menu">
+  <mat-icon>share</mat-icon>
+</button>
+
+
 </mat-toolbar>
 
 <div class="main-content mat-typography">
   <router-outlet></router-outlet>
 </div>
 
+<!-- Here is the start of the mat-menu to be used for the hamburger menu. -->
 <mat-menu #appMenu="matMenu">
   <button mat-menu-item routerLink="/"> Your DoorBoard </button>
   <button mat-menu-item routerLink="/trash"> Discarded Notes </button>
   <button mat-menu-item [routerLink]="getViewerLink()"> Viewer Mode </button>
+</mat-menu>
+
+<!-- Here is the start of the mat-menu to be used for sharing. -->
+<mat-menu #menu="matMenu">
+  <button mat-menu-item id="copy-link" color="primary" type="button" (click)="copyURL()">
+    <mat-icon>link</mat-icon>
+    <span>Copy link</span>
+  </button>
+  <button mat-menu-item id="generate-sign-button" type="button" color="primary" (click)="openSign()">
+    <mat-icon>meeting_room</mat-icon>
+    <span>Door Sign</span>
+  </button>
 </mat-menu>
