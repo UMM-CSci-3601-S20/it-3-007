@@ -99,11 +99,9 @@ public class Server {
     server.post("api/owner/new", ownerController::addOwner);
 
     // Get owner by id
-    server.before("api/owner/:id", ownerController::verifyHttpRequest);
     server.get("api/owner/:id", ownerController::getOwnerByID);
 
     // Get owner by x500
-    server.before("api/owner/x500/:x500", ownerController::verifyHttpRequest);
     server.get("api/owner/x500/:x500", ownerController::getOwnerByx500);
 
     // Sign Endpoints
