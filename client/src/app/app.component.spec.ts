@@ -1,4 +1,4 @@
-import { TestBed, async, ComponentFixture, inject } from '@angular/core/testing';
+import { TestBed, async, ComponentFixture } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AppComponent } from './app.component';
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -13,7 +13,6 @@ import { MockAuthService, professorJohnson } from 'src/testing/auth.service.mock
 import { OwnerService } from './owner.service';
 import { MockOwnerService } from 'src/testing/owner.service.mock';
 import { By } from '@angular/platform-browser';
-import { Router } from '@angular/router';
 
 
 describe('AppComponent:', () => {
@@ -58,17 +57,10 @@ describe('AppComponent:', () => {
     expect(app.title).toEqual('DoorBoard');
   });
 
-  describe('The goToViewerPage() method:', () => {
-    it('gives the right url for the viewer page', async(inject([Router], (router: Router) => {
-      spyOn(router, 'navigate');
-      app.goToViewerPage();
-
-      fixture.whenStable().then(() => {
-        expect(router.navigate).toHaveBeenCalledTimes(1);
-        expect(router.navigate)
-          .toHaveBeenCalledWith([`/${professorJohnson.nickname}`]);
-      });
-    })));
+  describe('The getViewerLink() method:', () =>{
+    it('gives the right url for the viewer page', () => {
+      expect(app.getViewerLink()).toEqual(`/${professorJohnson.nickname}`);
+    });
   });
 
   describe('Making the sign:', () => {

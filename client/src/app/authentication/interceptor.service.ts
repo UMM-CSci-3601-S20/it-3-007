@@ -7,7 +7,7 @@ import {
 } from '@angular/common/http';
 import { AuthService } from './auth.service';
 import { Observable, throwError } from 'rxjs';
-import { catchError, concatMap, take } from 'rxjs/operators';
+import { catchError, concatMap } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -20,7 +20,7 @@ export class InterceptorService implements HttpInterceptor {
     req: HttpRequest<any>,
     next: HttpHandler
   ): Observable<HttpEvent<any>> {
-    return this.auth.isAuthenticated$.pipe(take(1), concatMap(loggedIn => {
+    return this.auth.isAuthenticated$.pipe(concatMap(loggedIn => {
       if (!loggedIn) {
         return next.handle(req);
       }

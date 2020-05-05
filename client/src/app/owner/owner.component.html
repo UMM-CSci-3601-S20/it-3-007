@@ -2,6 +2,12 @@
   <h2>{{(owner | async)?.name}}</h2>
 </nav>
 
+<div fxLayout="row" id="share-div">
+  <button mat-button class="logoutButton" type="button" color="primary" (click)="this.auth.logout()"> LOGOUT </button>
+</div>
+
+
+
 <div *ngIf="notes | async; else notesError">
 <ul class= "note-container">
   <mat-card class="note-card" *ngFor="let note of notes | async">

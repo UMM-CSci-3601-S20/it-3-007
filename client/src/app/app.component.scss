@@ -1,13 +1,5 @@
 .mat-toolbar {
   z-index: 1;
-}
-
-#logged-in-toolbar {
   display: flex;
   justify-content: space-between;
-}
-
-#logged-out-toolbar {
-  display: flex;
-  justify-content: center;
 }
