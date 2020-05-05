@@ -59,7 +59,7 @@ public class OwnerController {
       throw new BadRequestResponse("The requested owner id wasn't a legal Mongo Object ID.");
     }
     if (owner == null) {
-      throw new NotFoundResponse("The requested owner was not found and getOwnerByID is breaking things");
+      throw new NotFoundResponse("The requested owner was not found.");
     } else {
       ctx.json(owner);
     }
@@ -75,7 +75,7 @@ public class OwnerController {
       throw new BadRequestResponse("The requested owner x500 wasn't a legal Mongo Object.");
     }
     if (owner == null) {
-      throw new NotFoundResponse("The requested owner was not found and getOwnerByx500 is breaking things");
+      throw new NotFoundResponse("The requested owner was not found.");
     } else {
       ctx.json(owner);
     }
@@ -123,7 +123,7 @@ public class OwnerController {
     }
 
     if(owner== null) {
-      throw new NotFoundResponse("The requested owner ID was not found and getOwnerIDBySubject is breaking things");
+      throw new NotFoundResponse("The requested owner ID was not found.");
     } else {
       return owner._id;
     }

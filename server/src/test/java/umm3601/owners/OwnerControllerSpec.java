@@ -209,7 +209,6 @@ public class OwnerControllerSpec {
   public void GetOwnerIDBySubject() throws IOException {
     String result = ownerController.getOwnerIDBySubject(mySub); // sub from important owner
     assertEquals(result, importantOwnerId.toHexString());
-
   }
 
   @Test
@@ -218,15 +217,6 @@ public class OwnerControllerSpec {
     () -> {
       ownerController.getOwnerIDBySubject("this sub should not work");
     });
-
-    String expectedMessage = "The requested owner ID was not found and getOwnerIDBySubject is breaking things";
-    String actualMessage = exception.getMessage();
-
-    assertTrue(actualMessage.contains(expectedMessage));
   }
-
-
-
-
 }
 
