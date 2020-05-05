@@ -9,6 +9,7 @@ import com.auth0.jwk.UrlJwkProvider;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.github.kevinsawicki.http.HttpRequest;
@@ -81,22 +82,23 @@ public class TokenVerifier {
     return false;
   }
 
-  public String getOwnerx500(Context ctx) {
+  // https://community.auth0.com/t/verify-jwt-token-received-from-auth0/35581/4 never stops being useful
+  // gets the subject from a JWT stored in the context
+  // This will be used in place of repeated calls to auth0 for userinfo, as the sub is a field in our database that we can use to find user info
+  public String getSubjectFromToken(Context ctx) {
 
-    String authorization = ctx.header("Authorization");
+    String token = ctx.header("Authorization").replace("Bearer ", ""); // I don't really get this but it's how they got the token above
+    String subject = "Soon, I will be something else entirely";
 
-    String userInfo = HttpRequest.get(AUTH0_TENANT + "userinfo").authorization(authorization).body();
+    try {
+      DecodedJWT decode = JWT.decode(token);
+      subject = decode.getSubject();
+    }
+    catch ( JWTDecodeException e ) {
+      e.printStackTrace();
+      ctx.status(412); // putting pre-condition failed here because if the decoding has failed, chances are it's because the context didn't have a proper JWT
+    }
 
-    // Pull the x500 out of the body, there's definitely a better way to do this, but idk how
-    System.err.println(userInfo);
-    int startIndex = userInfo.indexOf("\"nickname\":\"");
-    System.err.println(startIndex);
-    String temp = userInfo.substring(startIndex + 12);
-    System.err.println(temp);
-    int endIndex = temp.indexOf('"');
-    System.err.println(endIndex);
-    String x500 = temp.substring(0, endIndex);
-
-    return x500;
+    return subject;
   }
 }
