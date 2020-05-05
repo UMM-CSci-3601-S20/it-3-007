@@ -1,3 +1,4 @@
+<div fxFill class="background">
 <div *ngIf="auth.isAuthenticated$ | async; else simpleToolbar">
   <mat-toolbar color="primary" id="logged-in-toolbar">
     <button mat-button class="menu-button" [matMenuTriggerFor]="appMenu">
@@ -45,3 +46,4 @@
     <span>Door Sign</span>
   </button>
 </mat-menu>
+</div>
