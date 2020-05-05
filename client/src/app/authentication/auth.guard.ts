@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, RouterStateSnapshot, CanActivate } from '@angular/router';
 import { Observable, iif, of } from 'rxjs';
 import { AuthService } from './auth.service';
-import { concatMap, map } from 'rxjs/operators';
+import { concatMap, map, take } from 'rxjs/operators';
 
 // Based on https://community.auth0.com/t/angular-8-isauthenticated-race-condition/37474/3
 @Injectable({
@@ -17,6 +17,7 @@ export class AuthGuard implements CanActivate {
     state: RouterStateSnapshot
   ): Observable<boolean> {
     return this.authService.isAuthenticated$.pipe(
+      take(1),
       concatMap(() => this.authService.handleAuthCallback()),
       concatMap(result =>
         iif(

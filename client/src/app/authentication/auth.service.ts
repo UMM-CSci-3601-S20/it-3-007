@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import createAuth0Client from '@auth0/auth0-spa-js';
 import Auth0Client from '@auth0/auth0-spa-js/dist/typings/Auth0Client';
-import { from, of, Observable, throwError, iif } from 'rxjs';
-import { tap, catchError, concatMap, shareReplay, take, map } from 'rxjs/operators';
+import { from, Observable, throwError, iif, ReplaySubject, Subject } from 'rxjs';
+import { catchError, concatMap, shareReplay, take, map, flatMap } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { environment } from '../../environments/environment';
 
@@ -16,9 +16,6 @@ export const LOGOUT_URL = environment.BASE_URL;
   providedIn: 'root'
 })
 export class AuthService {
-
-  constructor(public router: Router) {}
-
   auth0Client$: Observable<Auth0Client> = from(createAuth0Client({
     domain: environment.AUTH_DOMAIN,
     client_id: environment.AUTH_CLIENT_ID,
@@ -26,13 +23,29 @@ export class AuthService {
     audience: environment.AUTH_API_DOMAIN
   })).pipe(shareReplay(1), catchError(err => throwError(err)));
 
-  isAuthenticated$ = this.auth0Client$.pipe(concatMap((client: Auth0Client) =>
-    from(client.isAuthenticated())
-  ));
-
   handleRedirectCallback$ = this.auth0Client$.pipe(concatMap((client: Auth0Client) =>
     from(client.handleRedirectCallback())
   ));
+
+  // When anyone asks for a value from isAuthenicated$, give back the last
+  // value pushed to it.
+  // (Aside: we're not using a BehaviorSubject because when you construct a
+  // BehaviorSubject, you need to provide an initial value to it immediately.
+  // By contrast, if you make a ReplaySubject with buffer size 1, you can hold
+  // off giving it an initial value until you're ready.)
+  private _isAuthenticated$: Subject<boolean> = new ReplaySubject(1);
+
+  // Only expose the "reading" methods of isAuthenticated$ to the world at
+  // large, not the "writing" methods.
+  public isAuthenticated$ = this._isAuthenticated$.asObservable();
+
+  constructor(public router: Router) {
+    // Get the first value of isAuthenticated$ by calling down to the
+    // underlying Auth0Client. (There shouldn't be any worry of race
+    // conditions; everyone we care about waits for a value from
+    // isAuthenticated$ before proceeding.)
+    this.updateIsAuthenticated().subscribe();
+  }
 
   getUser$(options?): Observable<any> {
     return this.auth0Client$.pipe(concatMap((client: Auth0Client) =>
@@ -56,9 +69,9 @@ export class AuthService {
   }
 
   handleAuthCallback(): Observable<{ loggedIn: boolean; targetUrl: string }> {
-    return of(window.location.search).pipe(concatMap(params =>
+    return this.updateIsAuthenticated().pipe(concatMap(() =>
       iif(
-        () => params.includes('code=') && params.includes('state='),
+        () => this.areCallbackQueryParamsPresent(),
         this.handleRedirectCallback$.pipe(concatMap(redirectResult =>
           this.isAuthenticated$.pipe(take(1), map(loggedIn => {
             let targetUrl;
@@ -77,12 +90,27 @@ export class AuthService {
     ));
   }
 
+  areCallbackQueryParamsPresent(): boolean {
+    return window.location.search.includes('code=')
+      && window.location.search.includes('state=');
+  }
+
   logout() {
-   this.auth0Client$.subscribe((client: Auth0Client) => {
-     client.logout({
-       client_id: environment.AUTH_CLIENT_ID,
-       returnTo: LOGOUT_URL,
+    this.auth0Client$.subscribe((client: Auth0Client) => {
+      client.logout({
+        client_id: environment.AUTH_CLIENT_ID,
+        returnTo: LOGOUT_URL,
+      });
+      this.updateIsAuthenticated().subscribe();
     });
-  });
- }
+  }
+
+  private updateIsAuthenticated(): Observable<void> {
+    return this.auth0Client$.pipe(flatMap(client =>
+      // of(this._isAuthenticated$.next(false))
+      from(client.isAuthenticated()).pipe(map(loggedIn =>
+        this._isAuthenticated$.next(loggedIn)
+      ))
+    ));
+  }
 }
