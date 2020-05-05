@@ -1,19 +1,20 @@
-<mat-toolbar color="primary">
-  <button mat-button class="menu-button" [matMenuTriggerFor]="appMenu">
-    <mat-icon>
-      menu
-    </mat-icon>
-  </button>
+<div *ngIf="auth.isAuthenticated$ | async; else simpleToolbar">
+  <mat-toolbar color="primary" id="logged-in-toolbar">
+    <button mat-button class="menu-button" [matMenuTriggerFor]="appMenu">
+      <mat-icon>menu</mat-icon>
+    </button>
+    <span class="app-title">{{title}}</span>
+    <button mat-button mat-menu class="share-button" [matMenuTriggerFor]="menu">
+      <mat-icon>share</mat-icon>
+    </button>
+  </mat-toolbar>
+</div>
 
-  <span class="app-title">{{title}}</span>
-
- <!-- Here is the start of the mat-menu to be used for sharing. -->
- <button mat-button mat-menu class="share-button" [matMenuTriggerFor]="menu">
-  <mat-icon>share</mat-icon>
-</button>
-
-
-</mat-toolbar>
+<ng-template #simpleToolbar>
+  <mat-toolbar color="primary" id="logged-out-toolbar">
+    <span class="app-title">{{title}}</span>
+  </mat-toolbar>
+</ng-template>
 
 <div class="main-content mat-typography">
   <router-outlet></router-outlet>
