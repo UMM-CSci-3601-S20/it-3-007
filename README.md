@@ -12,25 +12,21 @@ as part of The UMM CSCI Department's "Software Design and Development" class
 
  ## What is DoorBoard
 
-DoorBoard is a secure virtual sticky-note board for office dwellers who need a way to
+DoorBoard is a virtual sticky-note board for office dwellers who need a way to
 remotely and conveniently post last minute scheduling announcements (or other
 information) to visitors.
 
 ## Features 
 
 Doorboard includes:
-  - Authentication using Auth0
-  - The ability to create a new note on your DoorBoard (1000 character limit)
-    - Notes display the date and time that they were created
-  - The ability to move notes to trash
-  - Delete notes permanently from trash.
-  - Switch to viewer mode. This allows an owner of a page to see what their viewers would see.
-  - Creating a downloadable and printable PDF with the owners name and link to their page.
-  - An owner has the ability to easily copy their link to their viewer page.
-
-## Get started using DoorBoard
-
-To get started using DoorBoard you'll simply need to sign-in or sign-up.
+  - Authentication using Auth0.
+  - The ability to create a new note on your DoorBoard (with a 1000 character limit).
+    - Notes display the date and time that they were created.
+  - The ability to move notes to trash.
+  - The ability to delete notes permanently from trash.
+  - The ability to switch to viewer mode. (This allows an owner of a page to see what their viewers would see.)
+  - The ability to create a door sign (in the form of a PDF) with the owner's name and link to their page.
+  - The ability to copy a link to the viewer page to the clipboard.
 
 ## What's on your DoorBoard?
 
@@ -38,43 +34,36 @@ Your DoorBoard will display your name and any active notes.
 
 ## What notes look like
 
-Notes are created using the add note button in the bottom right of the user interface.
-They display the text that you add into them and the date and time that they were created.
-Notes also include an edit button and a trash button. Editing a note is straight forward.
-Clicking the trash button will move a note into the discarded notes section.
+Notes are created using the add button in the bottom right corner of the website.
+In addition the text you write, they display the date and time that they were created.
+Notes also include an edit button and a trash button.
+Clicking the trash button will move a note into the discarded-notes section.
 
 ## Discarded Notes
 
-Once a note has been sent to the discarded notes section it can be viewed by navigating to 
-the discarded notes page. From here notes can be permanently deleted using the trash icon button.
-They can also be restored to your DoorBoard using the Restore Note button.
+Once a note has been sent to the trash you can find it by navigating to 
+the discarded-notes page. From here, notes can be permanently deleted.
+They can also be restored to your DoorBoard using the restore button.
 
-## Navigation Menu (top left in toolbar)
+## Navigation Menu
 
-This contains navigation to your DoorBoard, Discarded Notes, Viewer Mode, and also contains a logout button. 
+This menu, on the left side of the toolbar, lets you navigate to your DoorBoard or your discarded notes, and it lets you see your DoorBoard in viewer mode. It also contains a logout button. 
 
-Viewer Mode brings you to the page that your viewers are able to see.
-When you're still logged in you will still have the tool bar with the navigation and share menu.
-However, when not logged in these won't be visible.
+Viewer mode brings you to the page that your viewers are able to see.
+When you're still logged in, you will still have the tool bar with the navigation and share menu.
+However, if you aren't logged in, these controls won't be present.
 
 ## Share Menu (top right in toolbar)
 
-Here is where you can copy a shareable link to your viewer page and generate your personal Door Sign.
+Here is where you can copy a shareable link to your viewer page and generate your personal door sign.
 
 ## Known Issues
 
-1. There is an issue that comes up occasionally where the page will infinitely refresh. I seems to happen on mobile
-   when it does happen, and doesn't happen too often. The reason this happens is currently unknown. 
+1. An issue sometimes occurs where the page will get stuck refreshing forever. This seems to happen most frequently on mobile browsers. The exact cause of this issue is currently unknown. 
 
 ## Deployment
 
-As always, instructions on how to crate a DigitalOcean Droplet and setup the project are in [DEPLOYMENT.md](DEPLOYMENT.md).
-
-If you want to deploy this project on a new droplet, you will need to
-change the domain name in the file
-`client/src/environments/environment.prod.ts`. (Specifically, you need to
-change the value of `BASE_URL`.) This value is used to generate the link on
-the PDF.
+Instructions for how to set up the project are in [DEPLOYMENT.md](DEPLOYMENT.md).
 
 ## Authors
 
