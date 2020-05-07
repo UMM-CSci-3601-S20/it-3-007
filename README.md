@@ -11,17 +11,19 @@ as part of The UMM CSCI Department's "Software Design and Development" class
 (Spring 2020).
 
 ## Table of Contents
-[What is DoorBoard](#what-is-doorboard)  
-[Features](#features)  
-  [What's on your DoorBoard?](#what's-on-your-doorboard?)  
-  [What notes look like](#what-notes-look-like)  
-  [Discarded Notes](#discarded-notes)  
-  [Navigation Menu](#navigation-menu)  
-  [Share Menu (top right in toolbar)](#share-menu-top-right-in-toolbar)  
-[Known Issues](#known-issues)  
-[Going Forward](#going-forward)  
-[Deployment](#deployment)  
-[Authors](#authors)  
+- [DoorBoard](#doorboard)
+  - [Table of Contents](#table-of-contents)
+  - [What is DoorBoard](#what-is-doorboard)
+  - [Features](#features)
+    - [What's on your DoorBoard?](#whats-on-your-doorboard)
+    - [What notes look like](#what-notes-look-like)
+    - [Discarded Notes](#discarded-notes)
+    - [Navigation Menu](#navigation-menu)
+    - [Share Menu (top right in toolbar)](#share-menu-top-right-in-toolbar)
+  - [Known Issues](#known-issues)
+  - [Going Forward](#going-forward)
+  - [Deployment](#deployment)
+  - [Authors](#authors)
 
  ## What is DoorBoard
 
