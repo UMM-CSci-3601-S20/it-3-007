@@ -1,6 +1,7 @@
 # DoorBoard
 
 **Build Status**
+
 [![Server Build Status](../../workflows/Server%20Java/badge.svg)](../../actions?query=workflow%3A"Server+Java")
 [![Client Build Status](../../workflows/Client%20Angular/badge.svg)](../../actions?query=workflow%3A"Client+Angular")
 [![End to End Build Status](../../workflows/End-to-End/badge.svg)](../../actions?query=workflow%3AEnd-to-End)
@@ -29,7 +30,7 @@ Doorboard includes:
 
 ## Get started using DoorBoard
 
-To get started using DoorBoard you'll simply need to sign in.
+To get started using DoorBoard you'll simply need to sign-in or sign-up.
 
 ## What's on your DoorBoard?
 
@@ -62,11 +63,7 @@ Here is where you can copy a shareable link to your viewer page and generate you
 
 ## Known Issues
 
-Almost all of the code in this repository is in a working state. However, there
-a couple of known issues with this project; if you use this code base, you
-should fix these for the next iteration.
-
-1. There is an issue that comes up every once in awhile where the page will infinitely refresh. I seems to happen on mobile
+1. There is an issue that comes up occasionally where the page will infinitely refresh. I seems to happen on mobile
    when it does happen, and doesn't happen too often. The reason this happens is currently unknown. 
 
 ## Deployment
@@ -78,3 +75,12 @@ change the domain name in the file
 `client/src/environments/environment.prod.ts`. (Specifically, you need to
 change the value of `BASE_URL`.) This value is used to generate the link on
 the PDF.
+
+## Authors
+
+Benjamin Burgess
+Ben Goldstein
+Johannes Martinez
+Jake Peterson
+Joe Walbran
+675yt
