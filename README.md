@@ -15,7 +15,7 @@
 <pre>
 
 
-<a href="https://drive.google.com/file/d/1h7DprNJ8BNqMpuvnTEtOZwidyHk8nKkx/view?usp=sharing">View Pamphlet</a> 
+<a href="https://drive.google.com/file/d/1AObuGiYmq1_xjaT1A1iC9TTB4oEA-Pna/view?usp=sharing">View Pamphlet</a> 
 </pre>
 </div>
 
