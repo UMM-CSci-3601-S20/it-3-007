@@ -20,7 +20,6 @@ This is Team 007's iteration-three code for the DoorBoard web app,
 as part of The UMM CSCI Department's "Software Design and Development" class
 (Spring 2020).
 
-- [Table of Contents](#table-of-contents)
 - [What is DoorBoard](#what-is-doorboard)
 - [Features](#features)
 - [What's on your DoorBoard?](#whats-on-your-doorboard)
