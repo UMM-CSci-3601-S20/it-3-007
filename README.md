@@ -78,9 +78,8 @@ the PDF.
 
 ## Authors
 
-Benjamin Burgess
-Ben Goldstein
-Johannes Martinez
-Jake Peterson
-Joe Walbran
-675yt
+Benjamin Burgess   
+Ben Goldstein   
+Johannes Martinez   
+Jake Peterson   
+Joe Walbran   
