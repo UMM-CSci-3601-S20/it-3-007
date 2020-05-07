@@ -133,3 +133,36 @@ export const environment = {
   AUTH_API_DOMAIN: 'https://172.105.105.10.nip.io/api/',
 };
 ```
+
+
+You'll need to edit line 23 of `server/src/main/java/umm3601/TokenVerifier.java`, setting the `AUTH0_TENANT` field to the URL of your Auth0 tenant (including the protocol). In our example, `TokenVerifier.java` looks like this:
+
+```java
+public class TokenVerifier {
+
+  private JwkProvider provider;
+
+  public static final String AUTH0_TENANT = "https://my-doorboard-tenant.auth0.com/";
+
+  ...
+}
+```
+
+Finally, you'll need to edit `server/src/main/java/umm3601/Server.java`. You'll need to edit line 27 of this file, setting the `BASE_URL` field to the root URL of your website (including the protocol). In our example, the `Server.java` file looks like this:
+
+```java
+public class Server {
+
+  private static MongoDatabase database;
+
+  /**
+   * This is the absolute URL of the root of our website (including the
+   * protocol, without a trailing slash).
+   *
+   * If we get a new domain name, we'll need to change this value.
+   */
+  public static final String BASE_URL = "https://172.105.105.10.nip.io";
+  
+  ...
+}
+```
