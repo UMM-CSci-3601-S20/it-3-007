@@ -1,27 +1,13 @@
-.mat-toolbar.mat-primary {
+.mat-toolbar {
   z-index: 1;
+}
+
+#logged-in-toolbar {
   display: flex;
-  flex-direction: row;
+  justify-content: space-between;
+}
+
+#logged-out-toolbar {
+  display: flex;
   justify-content: center;
-  background-color: #606f81;
 }
-
-.app-title {
-  font-size: larger;
-}
-
-.sidenav-container {
-  height: 100%;
-  background-image: url(/assets/doorboard.jpg);
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: cover;
-  background-attachment: fixed;
-}
-
-
-
-
-
-
-

@@ -39,6 +39,11 @@
     }
   }
 
+  .background {
+    background: mat-color($background, background);
+    color: mat-color($foreground, text);
+  }
+
   .sidenav-list {
     .mat-list-icon {
       color: mat-color($foreground, icon);

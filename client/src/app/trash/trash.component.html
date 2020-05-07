@@ -5,7 +5,13 @@
 <div *ngIf="notes; else notesError">
 <ul class= "note-container">
   <mat-card class="note-card" *ngFor="let note of this.notes">
-    <p> {{this.note.body}} </p>
+    <mat-card-content>
+      <p>{{this.note.body}}</p>
+      <div class='addDate'>
+        <p matLine class="note-list-expiration-date">{{note.expireDate}}</p>
+        <p matLine class="note-list-add-date">Created on {{note.addDate | date:'MMM d'}} at {{note.addDate | date:'h:mm aa'}}</p>
+      </div>
+    </mat-card-content>
     <mat-card-actions>
       <button mat-button class="note-action restore" matTooltip="Restore Note" matTooltipPosition="above" (click)="this.restoreNote(note._id);">
         <mat-icon aria-label="Restore note">restore</mat-icon>
@@ -29,8 +35,3 @@
     </mat-error>
   </div>
 </ng-template>
-
-<button mat-fab class="return-fab" matTooltip="Return to your DoorBoard" matTooltipPosition="right" [routerLink] = "''">
-  <mat-icon class="md-24" aria-label="Return to your DoorBoard">keyboard_return</mat-icon>
-</button>
-

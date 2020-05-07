@@ -18,6 +18,7 @@ repositories {
   // Use jcenter for resolving your dependencies.
   // You can declare any Maven/Ivy/file repository here.
   jcenter()
+  mavenCentral()
 }
 
 // The class where our server is located
@@ -52,8 +53,11 @@ dependencies {
   implementation 'com.auth0:jwks-rsa:0.11.0'
   implementation 'com.auth0:java-jwt:3.10.2'
 
-  //For sending http requests
+  // For sending http requests
   implementation 'com.github.kevinsawicki:http-request:6.0'
+
+  // For generating a pdf
+  implementation 'org.apache.pdfbox:pdfbox:2.0.19'
 
   // JUnit Jupiter API for testing.
   testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'
@@ -61,7 +65,11 @@ dependencies {
   // JUnit Jupiter Engine for testing.
   testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.6.0'
 
+  // A library of pre-defined mock classes for testing servlets.
   testImplementation 'com.mockrunner:mockrunner-servlet:2.0.1'
+
+  // A general-purpose mocking library
+  testImplementation 'org.mockito:mockito-core:2.28.2'
 }
 
 application {

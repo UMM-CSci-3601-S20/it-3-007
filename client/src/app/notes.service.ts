@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpParams, HttpErrorResponse, HttpResponse } from '@angular/common/http';
 import { environment } from '../environments/environment';
-import { Note } from './note';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { Note, NewNote } from './note';
+import { Observable, throwError, of, OperatorFunction } from 'rxjs';
+import { map, catchError } from 'rxjs/operators';
+import { handleHttpError } from './utils';
 
 
 @Injectable({
@@ -12,30 +13,29 @@ import { map } from 'rxjs/operators';
 
 export class NotesService {
 
-  readonly noteUrl: string = environment.API_URL + 'notes';
-  readonly deleteNoteUrl: string = environment.API_URL + 'notes/delete'
+  readonly noteUrl: string = environment.API_URL + '/notes';
+  readonly addNoteUrl: string = environment.API_URL + '/new/notes';
+  readonly deleteNoteUrl: string = environment.API_URL + '/notes/delete';
 
   constructor(private httpClient: HttpClient) {}
 
-  // getNotes() {
-  //   return this.httpClient.get<Note[]>(this.noteUrl);
-  // }
 
-  getOwnerNotes(filters?: { owner_id?: string, posted?: boolean}): Observable<Note[]> {
+  getOwnerNotes(filters: { owner_id?: string, status?: string } = {}): Observable<Note[]> {
     let httpParams: HttpParams = new HttpParams();
     if (filters.owner_id) {
       httpParams = httpParams.set('owner_id', filters.owner_id);
     }
-    if (filters.posted === true || filters.posted === false) {
-      httpParams = httpParams.set('posted', filters.posted.toString());
+    if (filters.status) {
+      httpParams = httpParams.set('status', filters.status);
     }
     return this.httpClient.get<Note[]>(this.noteUrl, {
       params: httpParams,
     });
   }
 
-  addNote(newNote: Note): Observable<string> {
-    return this.httpClient.post<{id: string}>(environment.API_URL + 'new/notes', newNote).pipe(map(res => res.id));
+
+  addNote(newNote: NewNote): Observable<string> {
+    return this.httpClient.post<{id: string}>(environment.API_URL + '/new/notes', newNote).pipe(map(res => res.id));
   }
 
   /**
@@ -48,48 +48,41 @@ export class NotesService {
    * Usually, you can just ignore the return value.
    */
   deleteNote(id: string): Observable<boolean> {
-    type DeleteResponse = 'moved to trash' | 'failed to move to trash';
+    const response =
+      this.httpClient.delete(`${this.noteUrl}/${encodeURI(id)}`);
 
-    const response = this.httpClient.delete(
-      this.noteUrl + '/' + encodeURI(id),
-      {
-        responseType: 'text',
-      },
-    ) as Observable<DeleteResponse>;
-
-    return response.pipe(map(theResponse => theResponse === 'moved to trash'));
+    // Note that functions without arguments will just ignore any inputs given
+    // to them.
+    return response.pipe(
+      map(() => true),
+      handleHttpError(404, () => of(false)),
+    );
   }
 
   permanentlyDeleteNote(id: string): Observable<boolean> {
-    type PermDeleteResponse = 'removed from trash' | 'failed to remove from trash';
+    const response =
+      this.httpClient.delete(`${this.deleteNoteUrl}/${encodeURI(id)}`);
 
-    const response = this.httpClient.delete(
-      this.deleteNoteUrl + '/' + encodeURI(id),
-      {
-        responseType: 'text',
-      },
-    ) as Observable<PermDeleteResponse>;
-
-    return response.pipe(map(theResponse => theResponse === 'removed from trash'));
+    return response.pipe(
+      map(() => true),
+      handleHttpError(404, () => of(false)),
+    );
   }
 
   restoreNote(id: string): Observable<boolean> {
-    type RestoreResponse = 'restored note' | 'failed to restore note';
+    const response =
+      this.httpClient.post(`${this.noteUrl}/${encodeURI(id)}`, null);
 
-    const response = this.httpClient.post(
-      this.noteUrl + '/' + encodeURI(id),
-      {
-        responseType: 'text',
-      },
-    ) as Observable<RestoreResponse>;
-
-    return response.pipe(map(theResponse => theResponse === 'restored note'));
+    return response.pipe(
+      map(() => true),
+      handleHttpError(404, () => of(false)),
+    );
   }
 
 
 
-  editNote(editNote: Note, id: string): Observable<string> {
-    return this.httpClient.post<{id: string}>(this.noteUrl + '/edit/' + id, editNote).pipe(map(res => res.id));
+  editNote(toEdit: Note, id: string): Observable<HttpResponse<object>> {
+    return this.httpClient.post(this.noteUrl + '/edit/' + id, toEdit, {observe: 'response'});
   }
 
   getNoteById(id: string): Observable<Note> {
@@ -97,16 +90,13 @@ export class NotesService {
   }
 
   filterNotes(notes: Note[], filters: {
-    posted?: boolean
+    status?: string
   }): Note[] {
-    // Filter by trash field
-    if (filters.posted === true) {
-      console.log('posted notes');
-
-      notes = notes.filter(note => {
-        return note.posted.valueOf() === true;
-      });
+    if (filters.status) {
+      notes = notes.filter(note => note.status === filters.status);
     }
     return notes;
   }
+  // We could simplify that if statement using a ==, but I've left it
+  // in its expanded form for explicitness' sake.
 }

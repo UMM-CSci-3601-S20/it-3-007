@@ -41,7 +41,7 @@ public class OwnerController {
     tokenVerifier = new TokenVerifier();
   }
 
-  public boolean verifyHttpRequest(Context ctx) throws Exception {
+  public boolean verifyHttpRequest(Context ctx) {
     if (!this.tokenVerifier.verifyToken(ctx)) {
       throw new BadRequestResponse("Invalid header token. The request is not authorized.");
     } else {
@@ -59,7 +59,7 @@ public class OwnerController {
       throw new BadRequestResponse("The requested owner id wasn't a legal Mongo Object ID.");
     }
     if (owner == null) {
-      throw new NotFoundResponse("The requested owner was not found");
+      throw new NotFoundResponse("The requested owner was not found.");
     } else {
       ctx.json(owner);
     }
@@ -75,7 +75,7 @@ public class OwnerController {
       throw new BadRequestResponse("The requested owner x500 wasn't a legal Mongo Object.");
     }
     if (owner == null) {
-      throw new NotFoundResponse("The requested owner was not found");
+      throw new NotFoundResponse("The requested owner was not found.");
     } else {
       ctx.json(owner);
     }
@@ -107,7 +107,23 @@ public class OwnerController {
     }
 
     if(owner== null) {
-      throw new NotFoundResponse("The requested owner was not found");
+      throw new NotFoundResponse("The requested ownerID was not found");
+    } else {
+      return owner._id;
+    }
+  }
+
+  public String getOwnerIDBySubject(String subject) {
+    Owner owner;
+
+    try {
+      owner = ownerCollection.find(eq("sub", subject)).first();
+    } catch(IllegalArgumentException e) {
+      throw new BadRequestResponse("The requested owner subject wasn't a legal Mongo Object.");
+    }
+
+    if(owner== null) {
+      throw new NotFoundResponse("The requested owner ID was not found.");
     } else {
       return owner._id;
     }

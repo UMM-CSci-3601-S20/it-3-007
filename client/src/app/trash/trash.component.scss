@@ -18,6 +18,12 @@
   justify-content: space-between;
 }
 
+.addDate {
+  font-size: small;
+  text-align: right;
+  font-weight: lighter;
+}
+
 // For some reason, Angular gives margins to every button but the first.
 // So, we have to go back and add these margins manually.
 .note-card .mat-card-actions .mat-button:first-child {
