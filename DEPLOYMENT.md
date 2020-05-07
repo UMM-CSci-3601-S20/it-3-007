@@ -20,11 +20,11 @@ To deploy the project, you're going to need to create two things: first, an appl
 
 ### Creating an application with Auth0
 
-When you go to the applications tab, you'll see that there's already an application named "Default App". This is just a placeholder; you can safely ignore it, or delete it if you want.
+When you go to the applications page, you'll see that there's already an application named "Default App". This is just a placeholder; you can safely ignore it, or delete it if you want.
 
 What you want to do is click the big orange "CREATE APPLICATION" button:
 
-![The applications tab](deployment-screenshots/2.png)
+![The applications page](deployment-screenshots/2.png)
 
 You can give the Application any name you want, but be aware that this name will be publicly shown when the user logs in. This is an Angular project, so when prompted about the application type, select "Single-Page Web Applications".
 
@@ -61,3 +61,15 @@ You may also wish to look at the "Connections" tab and configure the settings th
 If you use anything other than username-password login, you should strongly consider acquiring your own API keys for the relevant websites. If you don't, Auth0 will provide you with "development" keys, but these aren't really meant for production use, and they may not work correctly.
 
 When setting up social login options, it's important to keep in mind that DoorBoard is designed to be used within a single organization: it assumes that the local-part of users' email addresses (the part before the at-sign) is globally unique. If possible, you may wish to restrict login so that only users from a single organization may create accounts.
+
+### Creating an Application with Auth0
+
+Next, you'll want to head over to the "APIs" page, and click the big orange "CREATE API" button:
+
+![The APIs page](deployment-screenshots/7.png)
+
+When filling out the information, the friendly name can be anything you want, but the identifier should be of the form `https://<your domain name>/api/`. (In our example, the identifier will be **`https://172.105.105.10.nip.io/api/`**.) Make sure you use the default signing algorithm, RS256.
+
+![The dialog for creating a new API](deployment-screenshots/8.png)
+
+After creating the API, you should be good to go! You don't need to change any settings.
