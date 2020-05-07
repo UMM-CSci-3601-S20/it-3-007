@@ -12,11 +12,7 @@
 <br>
 <img src="readme-screenshots/light_mode.png" width="40%" />
 <img src="readme-screenshots/dark_mode.png" width="40%" />
-<pre>
 
-
-<a href="https://drive.google.com/file/d/1AObuGiYmq1_xjaT1A1iC9TTB4oEA-Pna/view?usp=sharing">View Pamphlet</a> 
-</pre>
 </div>
 
 ## Table of Contents
