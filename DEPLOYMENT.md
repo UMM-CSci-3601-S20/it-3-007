@@ -100,3 +100,36 @@ APP_HOST=172.105.105.10.nip.io
 APP_ACME_AGREE=true
 APP_TLS_EMAIL=walbr037@morris.umn.edu
 ```
+
+Next, you need to edit a few constants in the code so that it uses your URLs.
+
+First, you want to change the file `client/src/environments/environment.prod.ts`, which tells the client-side what URLs to use in production. You'll want to change lines 4, 5, 6, and 7, setting these fields to the root URL of your website (including the protocol), your Auth0 tenant domain, your Auth0 Client ID, and your Auth0 API Identifier, respectively. In our example, the `environment.prod.ts` file looks like this:
+
+*Note: whether or not any given URL has a trailing slash is very important. Make sure you exactly match the pattern shown here.*
+
+```ts
+export const environment = {
+  production: true,
+  API_URL: '/api',
+  BASE_URL: 'https://172.105.105.10.nip.io',
+  AUTH_DOMAIN: 'my-doorboard-tenant.auth0.com',
+  AUTH_CLIENT_ID: 'fnDD76W87Xst7GsUrg0LbxOfIncrgLLz',
+  AUTH_API_DOMAIN: 'https://172.105.105.10.nip.io/api/',
+};
+```
+
+Next, you probably also want to change the file `client/src/environments/environment.ts`, which tells the client-side what URLs to use when running the project locally. You'll want to change lines 12, 13, and 14, setting these fields to your Auth0 tenant domain, your Auth0 Client ID, and your Auth0 API Identifier, respectively. In our example, the `environment.ts` file should look like this:
+
+```ts
+export const environment = {
+  production: false,
+  API_URL: '/api',
+  BASE_URL: 'http://localhost:4200',
+
+  // Authentication variables, please change if you're using this code base for a different iteration
+  // Change them both here and in 'environment.prod.ts'
+  AUTH_DOMAIN: 'my-doorboard-tenant.auth0.com',
+  AUTH_CLIENT_ID: 'fnDD76W87Xst7GsUrg0LbxOfIncrgLLz',
+  AUTH_API_DOMAIN: 'https://172.105.105.10.nip.io/api/',
+};
+```
