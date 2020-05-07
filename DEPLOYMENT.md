@@ -73,3 +73,30 @@ When filling out the information, the friendly name can be anything you want, bu
 ![The dialog for creating a new API](deployment-screenshots/8.png)
 
 After creating the API, you should be good to go! You don't need to change any settings.
+
+## Getting the code
+
+Next, you need to get the project's code onto your server. You can do this by running
+
+```sh
+git clone https://github.com/UMM-CSci-3601-S20/it-3-007.git
+cd it-3-007
+```
+
+However, before compiling and running the project, you'll need to change a few files.
+
+First, you should create a file in the `it-3-007` directory (the root of the project) named `.env`, with the following 3 lines:
+
+```
+APP_HOST=<your domain name>
+APP_ACME_AGREE=true
+APP_TLS_EMAIL=<your email>
+```
+
+This file is used to set up Let's Encrypt certificates, so that your server can use HTTPS. In our example, our `.env` file looks like this:
+
+```
+APP_HOST=172.105.105.10.nip.io
+APP_ACME_AGREE=true
+APP_TLS_EMAIL=walbr037@morris.umn.edu
+```
