@@ -166,3 +166,19 @@ public class Server {
   ...
 }
 ```
+
+## Compiling and running the project
+
+After you've made these changes, you can deploy it to the web by going to the root of the project (the `it-3-007` directory) and running the command
+
+```sh
+docker-compose up -d --build
+```
+
+Then, your project should be up and running!
+
+To stop the project, you can run
+
+```sh
+docker-compose down --rmi all
+```
