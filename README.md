@@ -10,7 +10,7 @@ This is Team 007's iteration-three code for the DoorBoard web app,
 as part of The UMM CSCI Department's "Software Design and Development" class
 (Spring 2020).
 
-<!-- TOC depthFrom:1 withLinks:1 -->
+<!-- TOC depthFrom:1 depthTo:5 withLinks:1 updateOnSave:1 orderedList:0 -->
 ## Table of Contents
 [What is DoorBoard](#what-is-doorboard)
 [Features](#features)
