@@ -1,5 +1,3 @@
-# DoorBoard
-
 **Build Status**
 
 [![Server Build Status](../../workflows/Server%20Java/badge.svg)](../../actions?query=workflow%3A"Server+Java")
@@ -9,6 +7,18 @@
 This is Team 007's iteration-three code for the DoorBoard web app,
 as part of The UMM CSCI Department's "Software Design and Development" class
 (Spring 2020).
+
+- [What is DoorBoard](#what-is-doorboard)
+- [Features](#features)
+  - [What's on your DoorBoard?](#whats-on-your-doorboard)
+  - [What notes look like](#what-notes-look-like)
+  - [Discarded Notes](#discarded-notes)
+  - [Navigation Menu](#navigation-menu)
+  - [Share Menu (top right in toolbar)](#share-menu-top-right-in-toolbar)
+- [Known Issues](#known-issues)
+- [Going Forward](#going-forward)
+- [Deployment](#deployment)
+- [Authors](#authors)
 
  ## What is DoorBoard
 
@@ -28,24 +38,24 @@ Doorboard includes:
   - The ability to create a door sign (in the form of a PDF) with the owner's name and link to their page.
   - The ability to copy a link to the viewer page to the clipboard.
 
-## What's on your DoorBoard?
+### What's on your DoorBoard?
 
 Your DoorBoard will display your name and any active notes. 
 
-## What notes look like
+### What notes look like
 
 Notes are created using the add button in the bottom right corner of the website.
 In addition to the text you write, notes display the date and time that they were created.
 They also include an edit button and a trash button;
 clicking the trash button will move a note into the discarded-notes section.
 
-## Discarded Notes
+### Discarded Notes
 
 Once a note has been sent to the trash you can find it by navigating to 
 the discarded-notes page. From here, notes can be permanently deleted.
 They can also be restored to your DoorBoard using the restore button.
 
-## Navigation Menu
+### Navigation Menu
 
 This menu, on the left side of the toolbar, lets you navigate to your DoorBoard or your discarded notes, and it lets you see your DoorBoard in viewer mode. It also contains a logout button. 
 
@@ -53,7 +63,7 @@ Viewer mode brings you to the page that your viewers are able to see.
 When you're still logged in, you will still have the tool bar with the navigation and share menu.
 However, if you aren't logged in, these controls won't be present.
 
-## Share Menu (top right in toolbar)
+### Share Menu (top right in toolbar)
 
 Here is where you can copy a shareable link to your viewer page and generate your personal door sign.
 
