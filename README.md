@@ -10,16 +10,29 @@
 </div>
 <div align="center">
 <br>
-<img src="readme-screenshots/dark_mode.png" width="40%" />
+<img src="readme-screenshots/light_mode.png" width="40%" />
 <img src="readme-screenshots/dark_mode.png" width="40%" />
 
 </div>
 
-
+## Table of Contents
 This is Team 007's iteration-three code for the DoorBoard web app,
 as part of The UMM CSCI Department's "Software Design and Development" class
 (Spring 2020).
 
+- [Table of Contents](#table-of-contents)
+- [What is DoorBoard](#what-is-doorboard)
+- [Features](#features)
+- [What's on your DoorBoard?](#whats-on-your-doorboard)
+- [What notes look like](#what-notes-look-like)
+- [Discarded Notes](#discarded-notes)
+- [Navigation Menu](#navigation-menu)
+- [Share Menu (top right in toolbar)](#share-menu-top-right-in-toolbar)
+- [Known Issues](#known-issues)
+- [Going Forward](#going-forward)
+- [Deployment](#deployment)
+- [Authors](#authors)
+  
  ## What is DoorBoard
 
 DoorBoard is a virtual sticky-note board for office dwellers who need a way to
