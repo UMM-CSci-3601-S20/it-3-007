@@ -35,9 +35,9 @@ Your DoorBoard will display your name and any active notes.
 ## What notes look like
 
 Notes are created using the add button in the bottom right corner of the website.
-In addition the text you write, they display the date and time that they were created.
-Notes also include an edit button and a trash button.
-Clicking the trash button will move a note into the discarded-notes section.
+In addition to the text you write, notes display the date and time that they were created.
+They also include an edit button and a trash button;
+clicking the trash button will move a note into the discarded-notes section.
 
 ## Discarded Notes
 
