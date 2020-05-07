@@ -10,10 +10,11 @@ This is Team 007's iteration-three code for the DoorBoard web app,
 as part of The UMM CSCI Department's "Software Design and Development" class
 (Spring 2020).
 
+<!-- TOC depthFrom:1 withLinks:1 -->
 ## Table of Contents
 [What is DoorBoard](#what-is-doorboard)
 [Features](#features)
-
+<!-- /TOC -->
  ## What is DoorBoard
 
 DoorBoard is a virtual sticky-note board for office dwellers who need a way to
