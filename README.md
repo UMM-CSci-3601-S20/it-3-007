@@ -12,11 +12,11 @@ as part of The UMM CSCI Department's "Software Design and Development" class
 
  ## What is DoorBoard
 
- ![The Owner Page](readme-screenshots/droptables.csci.app_iPad.png)
 
 DoorBoard is a virtual sticky-note board for office dwellers who need a way to
 remotely and conveniently post last minute scheduling announcements (or other
 information) to visitors.
+See more in our [DoorBoard_Pamphlet.pdf](readme-screenshots/DoorBoard_Pamphlet.pdf).
 
 ## Features 
 
