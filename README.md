@@ -59,7 +59,19 @@ Here is where you can copy a shareable link to your viewer page and generate you
 
 ## Known Issues
 
-1. An issue sometimes occurs where the page will get stuck refreshing forever. This seems to happen most frequently on mobile browsers. The exact cause of this issue is currently unknown. 
+1. An issue sometimes occurs where the page will get stuck refreshing forever. This seems to happen most frequently on mobile browsers. The exact cause of this issue is currently unknown, although we have been able to reproduce the bug on an iPhone 7 running Safari.
+
+2. Viewing another user’s DoorBoard while you are logged in yourself will keep the menu and share buttons on the toolbar at the top functional, although they will bring you to your own associated info rather than the user who owns the DoorBoard you were viewing.
+
+3. The viewer-page.component.spec file still needs to have its tests written.
+
+## Going Forward
+
+1. You may want to shorten the url to view a DoorBoard or attach a QR code to the door sign the page generates to make it easier for potential DoorBoard viewers to quickly and easily access a user’s page.
+
+2. Note expiration dates were never fully implemented. You will likely want to either remove the expireDate field from the note.ts and note.java files, or finish implementing note expiration.
+
+3. You may want to write e2e tests for your project, as this build does not currently have any.
 
 ## Deployment
 
